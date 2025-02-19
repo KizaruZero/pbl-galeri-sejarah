@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('metadata_photo', function (Blueprint $table) {
+            $table->id(); // Kolom id otomatis
+            $table->date('collection_date'); // Tanggal pengambilan foto
+            $table->unsignedBigInteger('file_size'); // Ukuran file dalam byte
+            $table->string('photo'); // Path atau nama file foto
+            $table->string('aperture')->nullable(); // Aperture (bukaan diafragma)
+            $table->string('tag')->nullable(); // Tag foto
+            $table->string('location')->nullable(); // Lokasi pengambilan foto
+            $table->string('model')->nullable(); // Model kamera
+            $table->string('ISO')->nullable(); // ISO
+            $table->string('dimensions')->nullable(); // Dimensi foto (misal: 1920x1080)
+            $table->timestamps(); // Kolom created_at dan updated_at
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('metadata_photo');
+    }
+};
