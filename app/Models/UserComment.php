@@ -3,6 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
+
 class UserComment extends Model
 {
     protected $table = 'user_comments';
@@ -21,7 +22,7 @@ class UserComment extends Model
 
     public function photo()
     {
-        return $this->belongsTo(ContentFoto::class, 'content_photo');
+        return $this->belongsTo(ContentPhoto::class, 'content_photo');
     }
 
     public function video()
