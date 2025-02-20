@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('content_photo', function (Blueprint $table) {
+        Schema::create('content_video', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->unsignedBigInteger('metadata_photo_id');
+            $table->string('video_url');
             $table->text('description')->nullable();
-            $table->string('source');
-            $table->string('alt_text')->nullable();
             $table->text('note')->nullable();
+            $table->string('source');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
-            $table->foreign('metadata_photo_id')->references('id')->on('metadata_photo')->onDelete('cascade');
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -29,7 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
-        Schema::dropIfExists('content_photo');
+        Schema::dropIfExists('content_video');
     }
 };

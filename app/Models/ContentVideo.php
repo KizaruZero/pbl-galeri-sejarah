@@ -16,7 +16,8 @@ class ContentVideo extends Model
         'note',
         'source',
         'category_id',
-        'metadata_video_id',
+        'user_id',
+        'video_url',
     ];
 
     public function category()
@@ -27,5 +28,10 @@ class ContentVideo extends Model
     public function metadataVideo()
     {
         return $this->belongsTo(MetadataVideo::class, 'metadata_video_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

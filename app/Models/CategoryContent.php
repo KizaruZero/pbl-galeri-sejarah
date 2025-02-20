@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CategoryContent extends Model
 {
+    protected $table = 'category_content';
+
     protected $fillable = [
         'category_id',
         'content_photo_id',

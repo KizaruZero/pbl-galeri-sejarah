@@ -23,10 +23,16 @@ class MetadataVideo extends Model
         'tag',
         'codec_video_audio',
         'collection_date',
+        'content_video_id',
     ];
 
     // Kolom yang harus di-cast ke tipe data tertentu
     protected $casts = [
         'collection_date' => 'date', // Cast kolom collection_date ke tipe date
     ];
+
+    public function contentVideo()
+    {
+        return $this->belongsTo(ContentVideo::class);
+    }
 }

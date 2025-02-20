@@ -13,11 +13,12 @@ class ContentPhoto extends Model
     protected $fillable = [
         'title',
         'category_id',
-        'metadata_photo_id',
+        'user_id',
         'description',
         'source',
         'alt_text',
         'note',
+        'image_url',
     ];
 
     public function category()
@@ -28,5 +29,10 @@ class ContentPhoto extends Model
     public function metadataPhoto()
     {
         return $this->belongsTo(MetadataPhoto::class, 'metadata_photo_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

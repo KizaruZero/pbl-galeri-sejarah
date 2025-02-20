@@ -16,12 +16,17 @@ class MetadataPhoto extends Model
     protected $fillable = [
         'collection_date',
         'file_size',
-        'photo',
         'aperture',
         'tag',
         'location',
         'model',
         'ISO',
         'dimensions',
+        'content_photo_id',
     ];
+
+    public function contentPhoto ()
+    {
+        return $this->belongsTo(ContentPhoto::class);
+    }
 }

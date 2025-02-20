@@ -23,6 +23,10 @@ return new class extends Migration
             $table->string('codec_video_audio')->nullable(); // Codec video dan audio (misal: H.264, AAC)
             $table->date('collection_date'); // Tanggal pengambilan video
             $table->timestamps(); // Kolom created_at dan updated_at
+            $table->unsignedBigInteger('content_video_id'); // Kolom content_video_id sebagai foreign key
+
+            $table->foreign('content_video_id')->references('id')->on('content_video')->onDelete('cascade'); // Menambahkan foreign key ke kolom content_video_id yang merujuk ke kolom id pada tabel content_video
+
         });
     }
 

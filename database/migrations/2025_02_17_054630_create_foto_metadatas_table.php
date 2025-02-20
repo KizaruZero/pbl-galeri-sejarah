@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id(); // Kolom id otomatis
             $table->date('collection_date'); // Tanggal pengambilan foto
             $table->unsignedBigInteger('file_size'); // Ukuran file dalam byte
-            $table->string('photo'); // Path atau nama file foto
             $table->string('aperture')->nullable(); // Aperture (bukaan diafragma)
             $table->string('tag')->nullable(); // Tag foto
             $table->string('location')->nullable(); // Lokasi pengambilan foto
@@ -23,6 +22,10 @@ return new class extends Migration
             $table->string('ISO')->nullable(); // ISO
             $table->string('dimensions')->nullable(); // Dimensi foto (misal: 1920x1080)
             $table->timestamps(); // Kolom created_at dan updated_at
+            $table->unsignedBigInteger('content_photo_id'); // Kolom  sebagai foreign key
+
+            $table->foreign('content_photo_id')->references('id')->on('content_photo')->onDelete('cascade'); // Menambahkan foreign key ke kolom content_photo_id yang merujuk ke kolom id pada tabel content_photo
+
         });
     }
 
