@@ -52,8 +52,7 @@ class ContentVideoResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('source')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('user.name')
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('video_url')
                     ->disk('public'),

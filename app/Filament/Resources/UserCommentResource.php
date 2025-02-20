@@ -28,15 +28,15 @@ class UserCommentResource extends Resource
                 Forms\Components\Textarea::make('content')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('content_photo_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('content_video_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->required(),
+                Forms\Components\Select::make('content_photo_id')
+                    ->nullable()
+                    ->relationship('contentPhoto', 'title'),
+                Forms\Components\Select::make('content_video_id')
+                    ->nullable()
+                    ->relationship('contentVideo', 'title'),
             ]);
     }
 
@@ -44,14 +44,13 @@ class UserCommentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('user.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('content_photo_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('contentPhoto.title')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('content_video_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('contentVideo.title')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

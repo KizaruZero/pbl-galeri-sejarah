@@ -11,8 +11,8 @@ class UserComment extends Model
     protected $fillable = [
         'content',
         'user_id',
-        'content_photo',
-        'content_video',
+        'content_photo_id',
+        'content_video_id',
     ];
 
     public function user()
@@ -20,13 +20,13 @@ class UserComment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function photo()
+    public function contentPhoto()
     {
-        return $this->belongsTo(ContentPhoto::class, 'content_photo');
+        return $this->belongsTo(ContentPhoto::class, 'content_photo_id');
     }
 
-    public function video()
+    public function contentVideo()
     {
-        return $this->belongsTo(ContentVideo::class, 'content_video');
+        return $this->belongsTo(ContentVideo::class, 'content_video_id');
     }
 }

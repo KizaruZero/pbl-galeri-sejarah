@@ -25,12 +25,12 @@ class UserReactionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('comment_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('reaction_type_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('comment_id')
+                    ->relationship('comment', 'content')
+                    ->required(),
+                Forms\Components\Select::make('reaction_type_id')
+                    ->relationship('reactionType', 'react_type')
+                    ->required(),                    
             ]);
     }
 
@@ -41,7 +41,9 @@ class UserReactionResource extends Resource
                 Tables\Columns\TextColumn::make('comment_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('reaction_type_id')
+                Tables\Columns\TextColumn::make('comment.content')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('reactionType.react_type')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
