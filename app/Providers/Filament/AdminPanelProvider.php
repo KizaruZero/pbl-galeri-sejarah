@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('dashboard')
+            ->id('admin')
             ->path('dashboard')
             ->login()
             ->brandName('KASUNANAN')
@@ -62,6 +62,9 @@ class AdminPanelProvider extends PanelProvider
                 'Video Contents',
                 'Content Management',
                 'Users'
+            ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ]);
     }
 }

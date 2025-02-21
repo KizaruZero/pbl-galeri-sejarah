@@ -9,11 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Support\Facades\Auth;
 use Filament\Panel;
+use Spatie\Permission\Traits\HasRoles;
+
 
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -49,6 +51,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->role, 'admin');
+        $allowedRoles = ['admin', 'direktur']; // Add all roles that should have access
+        return in_array($this->role, $allowedRoles);
     }
 }

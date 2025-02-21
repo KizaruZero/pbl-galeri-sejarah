@@ -45,7 +45,7 @@ class MetadataPhotoResource extends Resource
                 Forms\Components\Select::make('content_photo_id')
                     ->relationship('contentPhoto', 'title')
                     ->required(),
-                    
+
             ]);
     }
 
@@ -85,8 +85,10 @@ class MetadataPhotoResource extends Resource
                     ->numeric()
                     ->sortable(),
             ])
-            ->filters([
-                //
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

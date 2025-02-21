@@ -30,7 +30,7 @@ class UserReactionResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('reaction_type_id')
                     ->relationship('reactionType', 'react_type')
-                    ->required(),                    
+                    ->required(),
             ]);
     }
 
@@ -59,7 +59,9 @@ class UserReactionResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -74,6 +76,7 @@ class UserReactionResource extends Resource
             //
         ];
     }
+
 
     public static function getPages(): array
     {

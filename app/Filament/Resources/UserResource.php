@@ -25,7 +25,7 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'Users';
     protected static ?int $navigationSort = 2;
-    
+
 
     public static function form(Form $form): Form
     {
@@ -42,16 +42,18 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (Page $livewire) => ($livewire instanceof CreateRecord))
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required(fn(Page $livewire) => ($livewire instanceof CreateRecord))
                     ->maxLength(255),
                 Select::make('role')
                     ->options([
                         'admin' => 'Admin',
                         'direktur' => 'Direktur',
                         'member' => 'Member',
-                    ])
+                    ]),
+                Select::make('roles')
+                    ->relationship('roles', 'name')
                     ->required()
                     ->default('member'),
                 Forms\Components\TextInput::make('photo_profile')
@@ -70,7 +72,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('role')
+                Tables\Columns\TextColumn::make('roles.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('photo_profile')
                     ->searchable(),
@@ -87,7 +89,9 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
