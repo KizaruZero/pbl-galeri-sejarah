@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('user_reactions', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id'); // Pengguna yang memberikan reaksi
             $table->unsignedBigInteger('comment_id'); // Komentar yang direaksi
             $table->unsignedBigInteger('reaction_type_id'); // Jenis reaksi
             $table->timestamps();
 
             // Foreign keys
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('comment_id')->references('id')->on('user_comments')->onDelete('cascade');
             $table->foreign('reaction_type_id')->references('id')->on('reactions')->onDelete('cascade');
         });

@@ -18,9 +18,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('note')->nullable();
             $table->string('source');
+            $table->string('status')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

@@ -19,6 +19,7 @@ class ContentPhoto extends Model
         'alt_text',
         'note',
         'image_url',
+        'status',
     ];
 
     public function category()
@@ -34,5 +35,15 @@ class ContentPhoto extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function userComments()
+    {
+        return $this->hasMany(UserComment::class);
+    }
+
+    public function categoryContents()
+    {
+        return $this->hasMany(CategoryContent::class, 'content_photo_id');
     }
 }

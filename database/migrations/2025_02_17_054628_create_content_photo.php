@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('source');
             $table->string('alt_text')->nullable();
             $table->text('note')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

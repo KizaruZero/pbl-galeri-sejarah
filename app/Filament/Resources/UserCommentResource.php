@@ -46,6 +46,7 @@ class UserCommentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('content'),
                 Tables\Columns\TextColumn::make('contentPhoto.title')
                     ->searchable()
                     ->sortable(),

@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Filters\CategoryFilter;
+
 
 class ContentPhotoResource extends Resource
 {
@@ -62,6 +64,8 @@ class ContentPhotoResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url')
                     ->disk('public'),
+                Tables\Columns\TextColumn::make('categoryContents.category.category_name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -70,10 +74,9 @@ class ContentPhotoResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
             ])
             ->filters([
-                //
+                CategoryFilter::make('category'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

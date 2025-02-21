@@ -18,6 +18,7 @@ class ContentVideo extends Model
         'category_id',
         'user_id',
         'video_url',
+        'status',
     ];
 
     public function category()

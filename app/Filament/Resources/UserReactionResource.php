@@ -25,6 +25,9 @@ class UserReactionResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->required(),
                 Forms\Components\Select::make('comment_id')
                     ->relationship('comment', 'content')
                     ->required(),
@@ -38,6 +41,8 @@ class UserReactionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('comment_id')
                     ->numeric()
                     ->sortable(),
