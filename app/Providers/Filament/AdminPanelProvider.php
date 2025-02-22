@@ -19,6 +19,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
+use Rupadana\ApiService\ApiServicePlugin;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -65,6 +67,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+            ])
+            ->plugins([
+                ApiServicePlugin::make()
             ]);
     }
 }
