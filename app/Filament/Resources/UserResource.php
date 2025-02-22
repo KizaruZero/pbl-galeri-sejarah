@@ -41,11 +41,11 @@ class UserResource extends Resource
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->required()
-                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                    ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(Page $livewire) => ($livewire instanceof CreateRecord))
-                    ->maxLength(255),
+                    ->required(fn(Page $livewire) => $livewire instanceof CreateRecord) // Wajib diisi hanya saat membuat record baru
+                    ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null) // Hash password hanya jika diisi
+                    ->dehydrated(fn($state) => filled($state)) // Hanya simpan jika diisi
+                    ->maxLength(255)
+                    ->rules(['nullable', 'min:6']),
                 Select::make('role')
                     ->options([
                         'admin' => 'Admin',

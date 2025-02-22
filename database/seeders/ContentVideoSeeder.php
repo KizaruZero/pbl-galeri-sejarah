@@ -64,7 +64,7 @@ class ContentVideoSeeder extends Seeder
                 'description' => 'A relaxing sunset by the beach.',
                 'note' => 'Filmed with a DSLR camera.',
                 'source' => 'User Upload',
-                'status' => 'accepted',
+                'status' => 'approved',
                 'user_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),
