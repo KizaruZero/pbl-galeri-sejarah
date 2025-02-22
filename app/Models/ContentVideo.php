@@ -1,4 +1,4 @@
-<?php  
+<?php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +19,7 @@ class ContentVideo extends Model
         'user_id',
         'video_url',
         'status',
+        'approved_at',
     ];
 
     public function category()

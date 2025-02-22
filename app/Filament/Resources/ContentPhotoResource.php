@@ -13,6 +13,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Filters\CategoryFilter;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\Action;
+
+
 
 
 class ContentPhotoResource extends Resource
@@ -47,6 +51,13 @@ class ContentPhotoResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Textarea::make('note')
                     ->columnSpanFull(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -66,6 +77,20 @@ class ContentPhotoResource extends Resource
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('categoryContents.category.category_name')
                     ->searchable(),
+                BadgeColumn::make('status')->state(function (ContentPhoto $record): string {
+                    return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
+                    };
+                })->colors([
+                            'primary' => 'Pending',
+                            'success' => 'Approved',
+                            'danger' => 'Rejected',
+                        ])
+                    ->icons([
+                        'heroicon-o-clock' => 'Pending',
+                        'heroicon-o-check-circle' => 'Approved',
+                        'heroicon-o-x-circle' => 'Rejected',
+                    ])
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -82,6 +107,21 @@ class ContentPhotoResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Action::make('approve')
+                    ->label('Approve')
+                    ->visible(fn(ContentPhoto $record) => $record->status === 'pending')
+                    ->action(function (ContentPhoto $record) {
+                        $record->update([
+                            'status' => 'approved',
+                            'approved_at' => now(),
+                        ]);
+                        return response()->json(['message' => 'Order approved and receipt sent to the user!']);
+                    }),
+
+                Action::make('reject')
+                    ->label('Reject')
+                    ->visible(fn(ContentPhoto $record) => $record->status === 'pending')
+                    ->action(fn(ContentPhoto $record) => $record->update(['status' => 'rejected'])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

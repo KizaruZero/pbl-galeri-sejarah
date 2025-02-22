@@ -1,4 +1,4 @@
-<?php  
+<?php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +9,7 @@ class ContentPhoto extends Model
     use HasFactory;
 
     protected $table = 'content_photo';
-    
+
     protected $fillable = [
         'title',
         'category_id',
@@ -20,6 +20,7 @@ class ContentPhoto extends Model
         'note',
         'image_url',
         'status',
+        'approved_at',
     ];
 
     public function category()

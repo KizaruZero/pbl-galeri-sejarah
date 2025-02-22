@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\Action;
 
 class ContentVideoResource extends Resource
 {
@@ -41,6 +43,13 @@ class ContentVideoResource extends Resource
                     ->directory('video_content')
                     ->disk('public')
                     ->maxSize(20000),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -64,7 +73,24 @@ class ContentVideoResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
+                BadgeColumn::make('status')->state(function (ContentVideo $record): string {
+                    return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
+                    };
+                })->colors([
+                            'primary' => 'Pending',
+                            'success' => 'Approved',
+                            'danger' => 'Rejected',
+                        ])
+                    ->icons([
+                        'heroicon-o-clock' => 'Pending',
+                        'heroicon-o-check-circle' => 'Approved',
+                        'heroicon-o-x-circle' => 'Rejected',
+                    ])
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('approved_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -73,6 +99,21 @@ class ContentVideoResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Action::make('approve')
+                    ->label('Approve')
+                    ->visible(fn(ContentVideo $record) => $record->status === 'pending')
+                    ->action(function (ContentVideo $record) {
+                        $record->update([
+                            'status' => 'approved',
+                            'approved_at' => now(),
+                        ]);
+                        return response()->json(['message' => 'Order approved and receipt sent to the user!']);
+                    }),
+
+                Action::make('reject')
+                    ->label('Reject')
+                    ->visible(fn(ContentVideo $record) => $record->status === 'pending')
+                    ->action(fn(ContentVideo $record) => $record->update(['status' => 'rejected'])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
