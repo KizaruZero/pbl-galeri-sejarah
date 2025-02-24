@@ -25,6 +25,16 @@ class UserComment extends Model
         return $this->belongsTo(ContentPhoto::class, 'content_photo_id');
     }
 
+    public function metadataPhoto()
+    {
+        return $this->belongsTo(MetadataPhoto::class);
+    }
+
+    public function metadataVideo()
+    {
+        return $this->belongsTo(MetadataVideo::class);
+    }
+
     public function contentVideo()
     {
         return $this->belongsTo(ContentVideo::class, 'content_video_id');

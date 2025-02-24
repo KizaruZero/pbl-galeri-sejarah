@@ -35,4 +35,9 @@ class MetadataVideo extends Model
     {
         return $this->belongsTo(ContentVideo::class);
     }
+
+    public function userComments()
+    {
+        return $this->hasMany(UserComment::class);
+    }
 }

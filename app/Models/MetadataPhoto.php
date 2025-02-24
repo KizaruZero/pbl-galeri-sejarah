@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ContentPhoto;
+use App\Models\UserComment;
 
 class MetadataPhoto extends Model
 {
@@ -25,8 +27,13 @@ class MetadataPhoto extends Model
         'content_photo_id',
     ];
 
-    public function contentPhoto ()
+    public function contentPhoto()
     {
         return $this->belongsTo(ContentPhoto::class);
+    }
+
+    public function userComments()
+    {
+        return $this->hasMany(UserComment::class);
     }
 }

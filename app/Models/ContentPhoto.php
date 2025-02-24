@@ -3,11 +3,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Searchable;
+use App\Models\Category;
+use App\Models\MetadataPhoto;
+use App\Models\User;
+use App\Models\UserComment;
+
 
 class ContentPhoto extends Model
 {
-    use HasFactory;
-
+    use HasFactory, Searchable;
+    protected $searchableFields = ['title', 'description', 'note', 'alt_text'];
     protected $table = 'content_photo';
 
     protected $fillable = [
@@ -30,7 +36,7 @@ class ContentPhoto extends Model
 
     public function metadataPhoto()
     {
-        return $this->belongsTo(MetadataPhoto::class, 'metadata_photo_id');
+        return $this->hasOne(MetadataPhoto::class, 'content_photo_id');
     }
 
     public function user()
