@@ -8,6 +8,7 @@ class UserReaction extends Model
 {
     //
     protected $table = 'user_reactions';
+    protected $with = 'reactionType';
     protected $fillable = [
         'user_id',
         'comment_id',
@@ -18,7 +19,6 @@ class UserReaction extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
     public function comment()
     {
         return $this->belongsTo(UserComment::class, 'comment_id');
@@ -29,5 +29,5 @@ class UserReaction extends Model
         return $this->belongsTo(Reaction::class, 'reaction_type_id');
     }
 
-    
+
 }

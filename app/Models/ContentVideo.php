@@ -11,6 +11,7 @@ class ContentVideo extends Model
     use HasFactory, Searchable;
 
     protected $table = 'content_video';
+    protected $with = 'metadataVideo';
     protected $searchableFields = ['title', 'description', 'note'];
     // protected $with = ['metadataVideo', 'userComments'];
 
@@ -30,6 +31,11 @@ class ContentVideo extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function categoryContents()
+    {
+        return $this->hasMany(CategoryContent::class, 'content_video_id');
     }
 
     public function metadataVideo()

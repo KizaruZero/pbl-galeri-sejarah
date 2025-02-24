@@ -29,14 +29,17 @@ class UserComment extends Model
     {
         return $this->belongsTo(MetadataPhoto::class);
     }
-
     public function metadataVideo()
     {
         return $this->belongsTo(MetadataVideo::class);
     }
-
     public function contentVideo()
     {
         return $this->belongsTo(ContentVideo::class, 'content_video_id');
+    }
+
+    public function userReactions()
+    {
+        return $this->hasMany(UserReaction::class, 'comment_id');
     }
 }

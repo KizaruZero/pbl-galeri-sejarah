@@ -40,7 +40,7 @@ class SearchController extends Controller
             ->get();
 
         $userComments = UserComment::whereRaw("MATCH(content) AGAINST(? IN BOOLEAN MODE)", [$query])
-            ->with('contentPhoto', 'contentVideo', 'metadataPhoto', 'metadataVideo') // Eager load related content photo and video
+            ->with('contentPhoto', 'contentVideo', 'metadataPhoto', 'metadataVideo', 'userReactions') // Eager load related content photo and video
             ->get();
 
         // Combine all results into a single response

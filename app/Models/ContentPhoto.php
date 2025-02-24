@@ -15,6 +15,7 @@ class ContentPhoto extends Model
     use HasFactory, Searchable;
     protected $searchableFields = ['title', 'description', 'note', 'alt_text'];
     protected $table = 'content_photo';
+    protected $with = 'metadataPhoto';
 
     protected $fillable = [
         'title',
