@@ -47,9 +47,21 @@ class ContentPhoto extends Model
 
     public function userComments()
     {
-        return $this->hasMany(UserComment::class);
+        return $this->hasMany(UserComment::class, 'content_photo_id');
+    }
+    public function contentReactions()
+    {
+        return $this->hasMany(ContentReaction::class, 'content_photo_id');
+    }
+    public function getTotalReactionsAttribute()
+    {
+        return $this->contentReactions()->count();
     }
 
+    public function getTotalCommentsAttribute()
+    {
+        return $this->userComments()->count();
+    }
     public function categoryContents()
     {
         return $this->hasMany(CategoryContent::class, 'content_photo_id');

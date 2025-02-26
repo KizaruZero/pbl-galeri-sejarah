@@ -42,4 +42,9 @@ class UserComment extends Model
     {
         return $this->hasMany(UserReaction::class, 'comment_id');
     }
+    // get total comment every content
+    public static function getTotalComment($content_id, $content_type)
+    {
+        return UserComment::where($content_type . '_id', $content_id)->count();
+    }
 }

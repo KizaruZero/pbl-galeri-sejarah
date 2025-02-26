@@ -50,17 +50,18 @@ class ContentVideo extends Model
 
     public function userComments()
     {
-        return $this->hasMany(UserComment::class);
+        return $this->hasMany(UserComment::class, 'content_photo_id');
     }
-
-    // public static function searchWithMetadata($searchTerm)
-    // {
-    //     return static::with(['category', 'metadataVideo', 'user'])
-    //         ->where(function ($query) use ($searchTerm) {
-    //             $query->search($searchTerm)
-    //                 ->orWhereHas('metadataVideo', function ($q) use ($searchTerm) {
-    //                     $q->whereRaw('MATCH(location, tag) AGAINST(? IN BOOLEAN MODE)', [$searchTerm]);
-    //                 });
-    //         });
-    // }
+    public function contentReactions()
+    {
+        return $this->hasMany(ContentReaction::class, 'content_video_id');
+    }
+    public function getTotalReactionsAttribute()
+    {
+        return $this->contentReactions()->count();
+    }
+    public function getTotalCommentsAttribute()
+    {
+        return $this->userComments()->count();
+    }
 }

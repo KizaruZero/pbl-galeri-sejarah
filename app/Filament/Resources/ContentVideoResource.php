@@ -59,11 +59,15 @@ class ContentVideoResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('source')
+                    ->limit(length: 20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable(),
+                // Tables\Columns\TextColumn::make('source')
+                //     ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(length: 20)
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('video_url')
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
@@ -76,6 +80,18 @@ class ContentVideoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('categoryContents.category.category_name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('total_comments') // Accessor
+                    ->label('Total Comments')
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Urutkan berdasarkan jumlah komentar
+                        $query->withCount('userComments')->orderBy('user_comments_count', $direction);
+                    }),
+                Tables\Columns\TextColumn::make('total_reactions') // Accessor
+                    ->label('Total Likes')
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Urutkan berdasarkan jumlah komentar
+                        $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
+                    }),
                 BadgeColumn::make('status')->state(function (ContentVideo $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };

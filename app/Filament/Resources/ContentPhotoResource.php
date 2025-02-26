@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Filters\CategoryFilter;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
+use App\Models\UserComment;
 
 
 
@@ -75,19 +76,32 @@ class ContentPhotoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->limit(length: 20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('source')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('alt_text')
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(length: 20)
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url')
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('categoryContents.category.category_name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('total_comments') // Accessor
+                    ->label('Total Comments')
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Urutkan berdasarkan jumlah komentar
+                        $query->withCount('userComments')->orderBy('user_comments_count', $direction);
+                    }),
+                Tables\Columns\TextColumn::make('total_reactions') // Accessor
+                    ->label('Total Likes')
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Urutkan berdasarkan jumlah komentar
+                        $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
+                    }),
                 BadgeColumn::make('status')->state(function (ContentPhoto $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };
@@ -107,6 +121,10 @@ class ContentPhotoResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('approved_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -147,6 +165,13 @@ class ContentPhotoResource extends Resource
             //
         ];
     }
+
+    public static function query(Builder $query): Builder
+    {
+        return $query->withCount('userComments', 'contentReactions');
+    }
+
+
 
     public static function getPages(): array
     {
