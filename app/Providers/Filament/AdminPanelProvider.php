@@ -69,7 +69,8 @@ class AdminPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ])
             ->plugins([
-                ApiServicePlugin::make()
+                ApiServicePlugin::make(),
+                \BezhanSalleh\FilamentGoogleAnalytics\FilamentGoogleAnalyticsPlugin::make()
             ]);
     }
 }
