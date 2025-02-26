@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserReaction extends Model
+class ContentReaction extends Model
 {
     //
-    protected $table = 'user_reactions';
+    protected $table = 'content_reactions';
     protected $with = 'reactionType';
     protected $fillable = [
         'user_id',
-        'comment_id',
+        'content_photo_id',
+        'content_video_id',
         'reaction_type_id',
     ];
 
@@ -19,11 +20,14 @@ class UserReaction extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    public function comment()
+    public function contentPhoto()
     {
-        return $this->belongsTo(UserComment::class, 'comment_id');
+        return $this->belongsTo(ContentPhoto::class, 'content_photo_id');
     }
-
+    public function contentVideo()
+    {
+        return $this->belongsTo(ContentVideo::class, 'content_video_id');
+    }
     public function reactionType()
     {
         return $this->belongsTo(Reaction::class, 'reaction_type_id');

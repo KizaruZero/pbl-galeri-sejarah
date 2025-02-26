@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
+use App\Filament\Filters\CategoryFilter;
 
 class ContentVideoResource extends Resource
 {
@@ -73,6 +74,8 @@ class ContentVideoResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('categoryContents.category.category_name')
+                    ->searchable(),
                 BadgeColumn::make('status')->state(function (ContentVideo $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };
@@ -93,7 +96,7 @@ class ContentVideoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                CategoryFilter::make('category'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

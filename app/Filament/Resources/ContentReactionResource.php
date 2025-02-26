@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserReactionResource\Pages;
-use App\Filament\Resources\UserReactionResource\RelationManagers;
-use App\Models\UserReaction;
+use App\Filament\Resources\ContentReactionResource\Pages;
+use App\Filament\Resources\ContentReactionResource\RelationManagers;
+use App\Models\ContentReaction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,15 +13,14 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserReactionResource extends Resource
+class ContentReactionResource extends Resource
 {
-    protected static ?string $model = UserReaction::class;
+    protected static ?string $model = ContentReaction::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-face-smile';
     protected static ?string $navigationGroup = 'Content Management';
+    protected static ?int $navigationSort = 4;
 
-    protected static ?string $navigationLabel = 'Comments Reactions';
-    protected static ?int $navigationSort = 5;
 
 
 
@@ -32,9 +31,12 @@ class UserReactionResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\Select::make('comment_id')
-                    ->relationship('comment', 'content')
-                    ->required(),
+                Forms\Components\Select::make('content_photo_id')
+                    ->relationship('contentPhoto', 'title')
+                    ->nullable(),
+                Forms\Components\Select::make('content_video_id')
+                    ->relationship('contentVideo', 'title')
+                    ->nullable(),
                 Forms\Components\Select::make('reaction_type_id')
                     ->relationship('reactionType', 'react_type')
                     ->required(),
@@ -46,12 +48,13 @@ class UserReactionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('comment_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('comment.content')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('contentPhoto.title')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('contentVideo.title')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('reactionType.react_type')
                     ->numeric()
                     ->sortable(),
@@ -68,9 +71,7 @@ class UserReactionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -86,13 +87,12 @@ class UserReactionResource extends Resource
         ];
     }
 
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUserReactions::route('/'),
-            'create' => Pages\CreateUserReaction::route('/create'),
-            'edit' => Pages\EditUserReaction::route('/{record}/edit'),
+            'index' => Pages\ListContentReactions::route('/'),
+            'create' => Pages\CreateContentReaction::route('/create'),
+            'edit' => Pages\EditContentReaction::route('/{record}/edit'),
         ];
     }
 }

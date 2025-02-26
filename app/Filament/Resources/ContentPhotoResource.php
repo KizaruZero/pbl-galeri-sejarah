@@ -57,7 +57,18 @@ class ContentPhotoResource extends Resource
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
                     ])
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state === 'approved') {
+                            $set('approved_at', now()->toDateTimeString());
+                        } else {
+                            $set('approved_at', null);
+                        }
+                    }),
+                Forms\Components\DateTimePicker::make('approved_at')
+                    ->hidden()
+                    ->dehydrated(true),
             ]);
     }
 
