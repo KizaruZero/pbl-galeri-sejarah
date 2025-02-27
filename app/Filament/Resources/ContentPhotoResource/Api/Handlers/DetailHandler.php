@@ -11,8 +11,10 @@ use App\Filament\Resources\ContentPhotoResource\Api\Transformers\ContentPhotoTra
 
 class DetailHandler extends Handlers
 {
-    public static string | null $uri = '/{id}';
-    public static string | null $resource = ContentPhotoResource::class;
+    public static string|null $uri = '/{id}';
+    public static string|null $resource = ContentPhotoResource::class;
+    public static bool $public = true;
+
 
 
     /**
@@ -24,7 +26,7 @@ class DetailHandler extends Handlers
     public function handler(Request $request)
     {
         $id = $request->route('id');
-        
+
         $query = static::getEloquentQuery();
 
         $query = QueryBuilder::for(
@@ -32,7 +34,8 @@ class DetailHandler extends Handlers
         )
             ->first();
 
-        if (!$query) return static::sendNotFoundResponse();
+        if (!$query)
+            return static::sendNotFoundResponse();
 
         return new ContentPhotoTransformer($query);
     }

@@ -11,8 +11,10 @@ use App\Filament\Resources\CategoryContentResource\Api\Transformers\CategoryCont
 
 class DetailHandler extends Handlers
 {
-    public static string | null $uri = '/{id}';
-    public static string | null $resource = CategoryContentResource::class;
+    public static string|null $uri = '/{id}';
+    public static string|null $resource = CategoryContentResource::class;
+    public static bool $public = true;
+
 
 
     /**
@@ -24,7 +26,7 @@ class DetailHandler extends Handlers
     public function handler(Request $request)
     {
         $id = $request->route('id');
-        
+
         $query = static::getEloquentQuery();
 
         $query = QueryBuilder::for(
@@ -32,7 +34,8 @@ class DetailHandler extends Handlers
         )
             ->first();
 
-        if (!$query) return static::sendNotFoundResponse();
+        if (!$query)
+            return static::sendNotFoundResponse();
 
         return new CategoryContentTransformer($query);
     }
