@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Traits\CalculatesPopularity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Searchable;
@@ -12,7 +13,7 @@ use App\Models\UserComment;
 
 class ContentPhoto extends Model
 {
-    use HasFactory, Searchable;
+    use HasFactory, Searchable, CalculatesPopularity;
     protected $searchableFields = ['title', 'description', 'note', 'alt_text'];
     protected $table = 'content_photo';
     protected $with = 'metadataPhoto';
@@ -28,6 +29,7 @@ class ContentPhoto extends Model
         'image_url',
         'status',
         'approved_at',
+        'popularity',
     ];
 
     public function category()
@@ -66,4 +68,6 @@ class ContentPhoto extends Model
     {
         return $this->hasMany(CategoryContent::class, 'content_photo_id');
     }
+
+
 }

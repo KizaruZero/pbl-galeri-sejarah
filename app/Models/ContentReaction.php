@@ -32,4 +32,25 @@ class ContentReaction extends Model
     {
         return $this->belongsTo(Reaction::class, 'reaction_type_id');
     }
+
+    protected static function booted()
+    {
+        static::created(function ($contentReaction) {
+            if ($contentReaction->contentPhoto) {
+                $contentReaction->contentPhoto->updatePopularity();
+            }
+            if ($contentReaction->contentVideo) {
+                $contentReaction->contentVideo->updatePopularity();
+            }
+        });
+
+        static::deleted(function ($contentReaction) {
+            if ($contentReaction->contentPhoto) {
+                $contentReaction->contentPhoto->updatePopularity();
+            }
+            if ($contentReaction->contentVideo) {
+                $contentReaction->contentVideo->updatePopularity();
+            }
+        });
+    }
 }

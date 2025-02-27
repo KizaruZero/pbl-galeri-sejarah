@@ -47,4 +47,25 @@ class UserComment extends Model
     {
         return UserComment::where($content_type . '_id', $content_id)->count();
     }
+
+    protected static function booted()
+    {
+        static::created(function ($userComment) {
+            if ($userComment->contentPhoto) {
+                $userComment->contentPhoto->updatePopularity();
+            }
+            if ($userComment->contentVideo) {
+                $userComment->contentVideo->updatePopularity();
+            }
+        });
+
+        static::deleted(function ($userComment) {
+            if ($userComment->contentPhoto) {
+                $userComment->contentPhoto->updatePopularity();
+            }
+            if ($userComment->contentVideo) {
+                $userComment->contentVideo->updatePopularity();
+            }
+        });
+    }
 }

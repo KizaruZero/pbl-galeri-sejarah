@@ -92,6 +92,10 @@ class ContentVideoResource extends Resource
                         // Urutkan berdasarkan jumlah komentar
                         $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
                     }),
+                Tables\Columns\TextColumn::make('popularity')
+                    ->limit(length: 20)
+                    ->sortable()
+                    ->searchable(),
                 BadgeColumn::make('status')->state(function (ContentVideo $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };

@@ -4,11 +4,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Searchable;
+use App\Traits\CalculatesPopularity;
 
 
 class ContentVideo extends Model
 {
-    use HasFactory, Searchable;
+    use HasFactory, Searchable, CalculatesPopularity;
 
     protected $table = 'content_video';
     protected $with = 'metadataVideo';
@@ -26,6 +27,7 @@ class ContentVideo extends Model
         'video_url',
         'status',
         'approved_at',
+        'popularity',
     ];
 
     public function category()
