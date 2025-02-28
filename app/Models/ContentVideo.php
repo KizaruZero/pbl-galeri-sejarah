@@ -25,6 +25,7 @@ class ContentVideo extends Model
         'category_id',
         'user_id',
         'video_url',
+        'thumbnail',
         'status',
         'approved_at',
         'popularity',

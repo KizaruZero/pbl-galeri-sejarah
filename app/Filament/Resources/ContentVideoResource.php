@@ -44,6 +44,10 @@ class ContentVideoResource extends Resource
                     ->directory('video_content')
                     ->disk('public')
                     ->maxSize(20000),
+                Forms\Components\FileUpload::make('thumbnail')
+                    ->directory('video_content')
+                    ->disk('public')
+                    ->maxSize(20000),
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
@@ -69,6 +73,8 @@ class ContentVideoResource extends Resource
                     ->limit(length: 20)
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('video_url')
+                    ->disk('public'),
+                Tables\Columns\ImageColumn::make('thumbnail')
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
