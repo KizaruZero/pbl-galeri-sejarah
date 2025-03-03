@@ -6,7 +6,7 @@
             alt="Keraton Solo background image"
         />
         <!-- Overlay Hitam Transparan -->
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="absolute inset-0 bg-[var(--color-black)]/60"></div>
         <h1
             class="absolute top-2/4 left-2/4 w-full text-8xl text-center text-white uppercase 
             -translate-x-2/4 -translate-y-2/4 max-w-[1141px] font-bellefair 
@@ -17,6 +17,7 @@
 </template>
 
 <script setup>
+    
 </script>
 
 <style>
