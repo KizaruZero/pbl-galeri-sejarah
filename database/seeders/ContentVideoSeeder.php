@@ -17,6 +17,7 @@ class ContentVideoSeeder extends Seeder
             [
                 'title' => 'Exploring the Mountains',
                 'video_url' => 'https://example.com/mountain_video.mp4',
+                'thumbnail' => 'https://example.com/mountain_thumbnail.jpg',    
                 'description' => 'A breathtaking journey through the mountains.',
                 'note' => 'Filmed with a drone.',
                 'source' => 'User Upload',
@@ -28,6 +29,7 @@ class ContentVideoSeeder extends Seeder
             [
                 'title' => 'City Life at Night',
                 'video_url' => 'https://example.com/city_video.mp4',
+                'thumbnail' => 'https://example.com/mountain_thumbnail.jpg',    
                 'description' => 'The vibrant nightlife of the city.',
                 'note' => 'Time-lapse video.',
                 'source' => 'User Upload',
@@ -39,6 +41,7 @@ class ContentVideoSeeder extends Seeder
             [
                 'title' => 'Underwater Adventure',
                 'video_url' => 'https://example.com/underwater_video.mp4',
+                'thumbnail' => 'https://example.com/mountain_thumbnail.jpg',    
                 'description' => 'Exploring the beauty of the ocean.',
                 'note' => 'Filmed with a waterproof camera.',
                 'source' => 'User Upload',
@@ -50,6 +53,7 @@ class ContentVideoSeeder extends Seeder
             [
                 'title' => 'Autumn in the Park',
                 'video_url' => 'https://example.com/autumn_video.mp4',
+                'thumbnail' => 'https://example.com/mountain_thumbnail.jpg',    
                 'description' => 'A peaceful walk through the park during autumn.',
                 'note' => 'Filmed with a smartphone.',
                 'source' => 'User Upload',
@@ -61,6 +65,7 @@ class ContentVideoSeeder extends Seeder
             [
                 'title' => 'Sunset on the Beach',
                 'video_url' => 'https://example.com/sunset_video.mp4',
+                'thumbnail' => 'https://example.com/mountain_thumbnail.jpg',    
                 'description' => 'A relaxing sunset by the beach.',
                 'note' => 'Filmed with a DSLR camera.',
                 'source' => 'User Upload',

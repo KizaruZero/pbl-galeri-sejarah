@@ -21,8 +21,10 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ContentPhotoSeeder::class,
             ContentVideoSeeder::class,
+            ContentReactionSeeder::class,
+            MertadataPhotoSeeder::class,
+            MertadataVideoSeeder::class,
             UserCommentSeeder::class,
-            UserReactionSeeder::class,
             UserReactionSeeder::class,
             CategoryContentSeeder::class,
         ]);

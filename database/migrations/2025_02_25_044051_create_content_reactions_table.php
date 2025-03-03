@@ -12,10 +12,10 @@ return new class extends Migration {
     {
         Schema::create('content_reactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('content_photo_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('content_video_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('reaction_type_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id'); // Pengguna yang memberikan reaksi
+            $table->unsignedBigInteger('content_photo_id')->nullable();
+            $table->unsignedBigInteger('content_video_id')->nullable();
+            $table->unsignedBigInteger('reaction_type_id'); // Jenis reaksi
             $table->timestamps();
 
             $table->foreign('content_photo_id')->references('id')->on('content_photo')->onDelete('cascade');
