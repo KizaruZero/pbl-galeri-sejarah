@@ -4,14 +4,17 @@
     >
       <!-- Bagian Kiri -->
       <div class="flex gap-6 flex-1 justify-start">
-        <router-link to="/" class="border border-solid border-neutral-700 py-2 px-4">
+        <router-link to="/" class=" border-neutral-700 py-2 px-4 relative group">
           Home
+          <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
         </router-link>
-        <router-link to="/events" class="border border-solid border-neutral-700 py-2 px-4">
+        <router-link to="/events" class=" border-neutral-700 py-2 px-4 relative group">
           Events
+          <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
         </router-link>
-        <router-link to="/gallery" class="border border-solid border-neutral-700 py-2 px-4">
+        <router-link to="/gallery" class=" border-neutral-700 py-2 px-4 relative group">
           Gallery
+          <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
         </router-link>
       </div>
   
@@ -24,16 +27,18 @@
   
       <!-- Bagian Kanan -->
       <div class="flex gap-6 flex-1 justify-end">
-        <router-link to="/member" class="border border-solid border-neutral-700 py-2 px-4">
+        <router-link to="/member" class=" border-neutral-700 py-2 px-4 relative group">
           Member
+          <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
         </router-link>
-        <router-link to="/history" class="border border-solid border-neutral-700 py-2 px-4">
+        <router-link to="/sejarah" class=" border-neutral-700 py-2 px-4 relative group">
           History
+          <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
         </router-link>
-        <router-link to="/contact" class="border border-solid border-neutral-700 py-2 px-4">
+        <router-link to="/contact" class=" border-neutral-700 py-2 px-4 relative group">
           Contact
+          <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
         </router-link>
       </div>
     </nav>
   </template>
-  

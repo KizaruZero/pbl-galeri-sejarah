@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import BudayaView from '../views/BudayaView.vue'
-import HomeView from '@/views/HomeView.vue'
+import SejarahView from '../views/SejarahView.vue'
+import DetailSejarah from '@/views/DetailSejarah.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,16 @@ const router = createRouter({
       path: '/budaya',
       name: 'budaya',
       component: BudayaView,
+    },
+    {
+      path: '/sejarah',
+      name: 'sejarah',
+      component: SejarahView,
+    },
+    {
+      path: '/detail/:slug',
+      name: 'Detail',
+      component: DetailSejarah, props: true,
     },
   ],
 })

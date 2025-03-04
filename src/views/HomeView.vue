@@ -4,6 +4,7 @@
       <HeroSection />
       <PakubuwonoSection />
       <UpcomingEvent />
+      <JoinUs />
     </MainLayout>
   </main>
 </template>
@@ -13,4 +14,5 @@
   import HeroSection from '../components/LandingPage/HeroSection.vue'
   import PakubuwonoSection from '../components/LandingPage/PakubuwonoSection.vue'
   import UpcomingEvent from '../components/LandingPage/UpcomingEvent.vue'
+  import JoinUs from '../components/JoinUs.vue'
 </script>
