@@ -13,8 +13,8 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/budaya',
-      name: 'budaya',
+      path: '/events',
+      name: 'events',
       component: BudayaView,
     },
     {
