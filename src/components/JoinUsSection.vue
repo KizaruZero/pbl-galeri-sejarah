@@ -30,8 +30,8 @@
                 alt="Keraton Solo background image" />
 
             <!-- Tombol JOIN US -->
-            <button @click="$router.push('/member')" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white font-bellefair text-4xl uppercase tracking-wider
-        px-6 py-2 border-2 border-white backdrop-blur-sm rounded-md transition duration-300 hover:bg-white/20
+            <button @click="$router.push('/member')" class="absolute bottom-50 left-1/2 transform -translate-x-1/2 text-white font-bellefair text-3xl uppercase tracking-wider
+        px-5 py-2 border-2 border-white backdrop-blur-sm rounded-md transition duration-300 hover:bg-white/20
         max-md:text-2xl max-sm:text-xl max-md:px-4 max-md:py-1 cursor-pointer">
                 JOIN US
             </button>

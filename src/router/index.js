@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import BudayaView from '../views/BudayaView.vue'
 import SejarahView from '../views/SejarahView.vue'
 import DetailSejarah from '@/views/DetailSejarah.vue'
+import GalleryView from '../views/GalleryView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/sejarah',
       name: 'sejarah',
       component: SejarahView,
+    },
+    {
+      path: '/gallery',
+      name: 'gallery',
+      component: GalleryView,
     },
     {
       path: '/detail/:slug',

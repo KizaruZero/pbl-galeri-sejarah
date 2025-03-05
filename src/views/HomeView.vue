@@ -10,9 +10,9 @@
 </template>
 
 <script setup>
-  import MainLayout from '../Layout/MainLayout.vue';
+  import MainLayout from '../components/layouts/MainLayout.vue'
   import HeroSection from '../components/LandingPage/HeroSection.vue'
   import PakubuwonoSection from '../components/LandingPage/PakubuwonoSection.vue'
   import UpcomingEvent from '../components/LandingPage/UpcomingEvent.vue'
-  import JoinUs from '../components/JoinUs.vue'
+  import JoinUs from '@/components/JoinUsSection.vue';
 </script>
