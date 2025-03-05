@@ -14,6 +14,9 @@ lerna-debug.log*
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app
+/bootstrap/cache
+/storage/framework/views
 /vendor
 .env
 .env.backup
