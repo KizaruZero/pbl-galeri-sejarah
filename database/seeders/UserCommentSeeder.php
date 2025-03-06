@@ -21,6 +21,7 @@ class UserCommentSeeder extends Seeder
                 'user_id' => 1,
                 'content_photo_id' => 1, // ID dari content_photo
                 'content_video_id' => null,
+                'status' => 'published',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -29,6 +30,7 @@ class UserCommentSeeder extends Seeder
                 'user_id' => 2,
                 'content_photo_id' => 2, // ID dari content_photo
                 'content_video_id' => null,
+                'status' => 'published',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -38,6 +40,7 @@ class UserCommentSeeder extends Seeder
                 'user_id' => 3,
                 'content_photo_id' => null,
                 'content_video_id' => 1, // ID dari content_video
+                'status' => 'published',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -46,6 +49,7 @@ class UserCommentSeeder extends Seeder
                 'user_id' => 4,
                 'content_photo_id' => null,
                 'content_video_id' => 2, // ID dari content_video
+                'status' => 'published',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -55,6 +59,7 @@ class UserCommentSeeder extends Seeder
                 'user_id' => 5,
                 'content_photo_id' => 5, // ID dari content_photo
                 'content_video_id' => null,
+                'status' => 'published',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

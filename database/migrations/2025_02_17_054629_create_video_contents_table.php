@@ -15,10 +15,11 @@ return new class extends Migration {
             $table->string('title');
             $table->string('video_url');
             $table->string('thumbnail');
+            $table->string('link_youtube')->nullable();
             $table->text('description')->nullable();
             $table->text('note')->nullable();
             $table->string('source');
-            $table->string('status')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->integer('popularity')->default(0);
             $table->unsignedBigInteger('user_id');

@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\Action;
 
 class UserCommentResource extends Resource
 {
@@ -37,6 +39,13 @@ class UserCommentResource extends Resource
                 Forms\Components\Select::make('content_video_id')
                     ->nullable()
                     ->relationship('contentVideo', 'title'),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'published' => 'Published',
+                        'hidden' => 'Hidden',
+                    ])
+                    ->default('published')
+                    ->required(),
             ]);
     }
 
@@ -53,6 +62,22 @@ class UserCommentResource extends Resource
                 Tables\Columns\TextColumn::make('contentVideo.title')
                     ->searchable()
                     ->sortable(),
+                BadgeColumn::make('status')->state(function (UserComment $record): string {
+                    return match ($record->status) { 'published' => 'Published', 'hidden' => 'Hidden', default => $record->status,
+                    };
+                })->colors([
+                            'success' => 'Published',
+                            'danger' => 'Hidden',
+                        ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'Published',
+                        'heroicon-o-x-circle' => 'Hidden',
+                    ])
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('approved_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -66,9 +91,26 @@ class UserCommentResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('published')
+                    ->label('Publish')
+                    ->icon('heroicon-o-check-circle')
+                    ->visible(fn(UserComment $record) => $record->status === 'hidden')
+                    ->action(function (UserComment $record) {
+                        $record->update([
+                            'status' => 'published',
+                        ]);
+                        return response()->json(['message' => 'Order approved and receipt sent to the user!']);
+                    }),
+
+                Action::make('hidden')
+                    ->label('Hide')
+                    ->icon('heroicon-o-eye-slash')
+                    ->visible(fn(UserComment $record) => $record->status === 'published')
+                    ->action(fn(UserComment $record) => $record->update(['status' => 'hidden'])),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

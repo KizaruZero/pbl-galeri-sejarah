@@ -13,6 +13,7 @@ class UserComment extends Model
         'user_id',
         'content_photo_id',
         'content_video_id',
+        'status',
     ];
 
     public function user()

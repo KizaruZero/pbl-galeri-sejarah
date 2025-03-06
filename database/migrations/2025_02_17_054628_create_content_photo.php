@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('source');
             $table->string('alt_text')->nullable();
             $table->text('note')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->integer('popularity')->default(0);
             $table->timestamps();

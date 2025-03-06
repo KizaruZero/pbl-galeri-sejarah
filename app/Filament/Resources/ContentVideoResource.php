@@ -44,6 +44,8 @@ class ContentVideoResource extends Resource
                     ->directory('video_content')
                     ->disk('public')
                     ->maxSize(20000),
+                Forms\Components\TextInput::make('link_youtube')
+                    ->nullable(),
                 Forms\Components\FileUpload::make('thumbnail')
                     ->directory('video_content')
                     ->disk('public')
@@ -74,6 +76,7 @@ class ContentVideoResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('video_url')
                     ->disk('public'),
+                Tables\Columns\TextColumn::make('link_youtube'),
                 Tables\Columns\ImageColumn::make('thumbnail')
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
