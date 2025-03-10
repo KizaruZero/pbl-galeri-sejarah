@@ -20,7 +20,7 @@
                                 {{ slotProps.data.title }}
                             </h1>
                             <p
-                                class="mb-8 text-3xl leading-10 text-white max-w-[442px] max-md:max-w-full max-md:text-2xl max-sm:text-lg">
+                                class="mb-8 text-2xl leading-10 text-white max-w-[442px] max-md:max-w-full max-md:text-2xl max-sm:text-lg">
                                 {{ slotProps.data.description }}
                             </p>
                             <p
@@ -28,11 +28,6 @@
                                 {{ slotProps.data.detailedDescription }}
                             </p>
                         </section>
-
-                        <!-- Circle Overlay -->
-                        <div
-                            class="absolute rounded-full border-white border-solid blur-[15px] border-[10px] h-[853px] left-[457px] top-[213px] w-[853px] z-[1] max-md:top-2/4 max-md:left-2/4 max-md:-translate-x-2/4 max-md:-translate-y-2/4 max-md:h-[600px] max-md:w-[600px] max-sm:h-[300px] max-sm:w-[300px]">
-                        </div>
 
                         <!-- Status Tag if needed -->
                         <Tag v-if="slotProps.data.status" :value="slotProps.data.status"

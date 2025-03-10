@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import GalleryColumn from "@/components/BudayaPage/GalleryColumn.vue";
+    import GalleryColumn from "@/components/GalleryColumn.vue";
 
     export default {
         name: "ImageGallery",
