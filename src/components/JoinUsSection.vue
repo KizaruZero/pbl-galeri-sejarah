@@ -25,18 +25,22 @@
     </section>
 
     <div class="relative flex flex-col items-center bg-black bg-opacity-70 overflow-hidden px-5">
-        <div class="w-full max-w-[1300px] h-[650px] mt-5 rounded-lg overflow-hidden max-md:h-[400px] max-sm:h-[300px]">
-            <img src="@/assets/img/join.png" class="object-cover w-full h-full rounded-lg"
-                alt="Keraton Solo background image" />
+    <div class="w-full max-w-[1300px] h-[650px] mt-5 rounded-lg overflow-hidden max-md:h-[400px] max-sm:h-[300px] relative">
+        <img src="@/assets/img/Logo/joinus.png" class="object-cover w-full h-full rounded-lg" alt="Join Us Banner" />
 
-            <!-- Tombol JOIN US -->
-            <button @click="$router.push('/member')" class="absolute bottom-50 left-1/2 transform -translate-x-1/2 text-white font-bellefair text-3xl uppercase tracking-wider
-        px-5 py-2 border-2 border-white backdrop-blur-sm rounded-md transition duration-300 hover:bg-white/20
+        <!-- Tombol JOIN US -->
+        <button @click="$router.push('/member')" class="absolute bottom-50 left-1/2 transform -translate-x-1/2 text-white font-bellefair text-3xl uppercase tracking-wider 
+        px-5 py-2 border-2 border-white bg-black/30 backdrop-blur-sm rounded-md transition duration-300 hover:bg-white/20 
         max-md:text-2xl max-sm:text-xl max-md:px-4 max-md:py-1 cursor-pointer">
-                JOIN US
-            </button>
-        </div>
+            JOIN US
+        </button>
+
+        <!-- Teks ajakan gabung (disembunyikan di resolusi kecil) -->
+        <h3 class="absolute bottom-30 left-1/2 transform -translate-x-1/2 text-white text-2xl text-center max-w-[80%] max-md:hidden">
+            Gabung dengan kami untuk melihat dan menambah koleksi mengenai Kasunanan Surakarta.
+        </h3>
     </div>
+</div>
 </template>
 
 <script setup>
