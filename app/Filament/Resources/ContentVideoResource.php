@@ -28,8 +28,11 @@ class ContentVideoResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))            
+                        ->required()
+                        ->maxLength(255),
+                Forms\Components\TextInput::make('slug'),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('note')
@@ -101,10 +104,18 @@ class ContentVideoResource extends Resource
                         // Urutkan berdasarkan jumlah komentar
                         $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
                     }),
-                Tables\Columns\TextColumn::make('popularity')
+                Tables\Columns\TextColumn::make('total_views')
                     ->limit(length: 20)
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('popularity')
+                    ->label('Popularity')
+                    ->sortable()
+                    ->getStateUsing(function (ContentVideo $record) {
+                        return $record->calculatePopularity();
+                    })
+                    ->searchable()
+                    ->limit(20),
                 BadgeColumn::make('status')->state(function (ContentVideo $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };

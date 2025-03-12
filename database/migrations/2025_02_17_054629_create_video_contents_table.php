@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('content_video', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->string('video_url');
             $table->string('thumbnail');
             $table->string('link_youtube')->nullable();
@@ -21,7 +22,7 @@ return new class extends Migration {
             $table->string('source');
             $table->string('status')->default('pending');
             $table->timestamp('approved_at')->nullable();
-            $table->integer('popularity')->default(0);
+            $table->integer('total_views')->default(0);
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

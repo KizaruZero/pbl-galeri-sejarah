@@ -14,12 +14,13 @@ use App\Models\UserComment;
 class ContentPhoto extends Model
 {
     use HasFactory, Searchable, CalculatesPopularity;
-    protected $searchableFields = ['title', 'description', 'note', 'alt_text'];
+    protected $searchableFields = ['title', 'slug', 'description', 'note', 'alt_text'];
     protected $table = 'content_photo';
     protected $with = 'metadataPhoto';
 
     protected $fillable = [
         'title',
+        'slug',
         'category_id',
         'user_id',
         'description',
@@ -29,7 +30,7 @@ class ContentPhoto extends Model
         'image_url',
         'status',
         'approved_at',
-        'popularity',
+        'total_views',
     ];
 
     public function category()

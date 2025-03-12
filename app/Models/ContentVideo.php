@@ -13,12 +13,13 @@ class ContentVideo extends Model
 
     protected $table = 'content_video';
     protected $with = 'metadataVideo';
-    protected $searchableFields = ['title', 'description', 'note'];
+    protected $searchableFields = ['title', 'slug', 'description', 'note'];
     // protected $with = ['metadataVideo', 'userComments'];
 
 
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'note',
         'source',
@@ -29,7 +30,7 @@ class ContentVideo extends Model
         'thumbnail',
         'status',
         'approved_at',
-        'popularity',
+        'total_views',
     ];
 
     public function category()

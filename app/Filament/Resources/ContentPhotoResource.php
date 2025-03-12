@@ -16,6 +16,8 @@ use App\Filament\Filters\CategoryFilter;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
 use App\Models\UserComment;
+use Filament\Forms\Set;
+use Illuminate\Support\Str;
 
 
 
@@ -32,9 +34,12 @@ class ContentPhotoResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
+            Forms\Components\TextInput::make('title')
+            ->live(onBlur: true)
+            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))            
+                ->required()
+                ->maxLength(255),
+            Forms\Components\TextInput::make('slug'),
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
@@ -102,10 +107,18 @@ class ContentPhotoResource extends Resource
                         // Urutkan berdasarkan jumlah komentar
                         $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
                     }),
-                Tables\Columns\TextColumn::make('popularity')
+                Tables\Columns\TextColumn::make('total_views')
                     ->limit(length: 20)
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('popularity')
+                    ->label('Popularity')
+                    ->sortable()
+                    ->getStateUsing(function (ContentPhoto $record) {
+                        return $record->calculatePopularity();
+                    })
+                    ->searchable()
+                    ->limit(20),
                 BadgeColumn::make('status')->state(function (ContentPhoto $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };
@@ -170,10 +183,35 @@ class ContentPhotoResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['contentReactions', 'userComments'])
+            ->when(request()->has('sort'), function (Builder $query) {
+                if (request('sort') === 'popularity') {
+                    $query->orderByRaw('
+                        (SELECT COUNT(*) FROM content_reactions WHERE content_reactions.content_photo_id = content_photo.id) * 1 +
+                        (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 2 +
+                        (content_photo.total_views) * 0.5
+                    ' . (request('direction') === 'desc' ? 'DESC' : 'ASC'));
+                }
+            })
+            ->when(request()->has('search'), function (Builder $query) {
+                $search = request('search');
+                $query->whereRaw('
+                    (SELECT COUNT(*) FROM content_reactions WHERE content_reactions.content_photo_id = content_photo.id) * 1 +
+                    (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 2 +
+                    (content_photo.total_views) * 0.5
+                    LIKE ?', ["%{$search}%"]
+                );
+            });
+    }
+
     public static function query(Builder $query): Builder
     {
         return $query->withCount('userComments', 'contentReactions');
     }
+
 
 
 

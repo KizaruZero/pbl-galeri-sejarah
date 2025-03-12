@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ContentVideoSeeder extends Seeder
 {
@@ -12,8 +13,9 @@ class ContentVideoSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
-        DB::table('content_video')->insert([
+    {        
+        
+        $videos = [
             [
                 'title' => 'Exploring the Mountains',
                 'video_url' => 'https://example.com/mountain_video.mp4',
@@ -24,6 +26,7 @@ class ContentVideoSeeder extends Seeder
                 'source' => 'User Upload',
                 'status' => 'pending',
                 'user_id' => 1,
+                'total_views' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -37,6 +40,7 @@ class ContentVideoSeeder extends Seeder
                 'source' => 'User Upload',
                 'status' => 'pending',
                 'user_id' => 2,
+                'total_views' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -50,6 +54,7 @@ class ContentVideoSeeder extends Seeder
                 'source' => 'User Upload',
                 'status' => 'pending',
                 'user_id' => 3,
+                'total_views' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -63,6 +68,7 @@ class ContentVideoSeeder extends Seeder
                 'source' => 'User Upload',
                 'status' => 'pending',
                 'user_id' => 4,
+                'total_views' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -76,9 +82,17 @@ class ContentVideoSeeder extends Seeder
                 'source' => 'User Upload',
                 'status' => 'approved',
                 'user_id' => 5,
+                'total_views' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        foreach ($videos as &$video) {
+            $video['slug'] = Str::slug($video['title']); // Generate slug dari judul
+        }
+
+        // Insert data ke database
+        DB::table('content_video')->insert($videos);
     }
 }

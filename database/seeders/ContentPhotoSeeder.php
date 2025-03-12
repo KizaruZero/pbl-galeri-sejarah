@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ContentPhotoSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class ContentPhotoSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('content_photo')->insert([
+        $photos = [
             [
                 'title' => 'Sunset at the Beach',
                 'user_id' => 1,
@@ -23,7 +24,7 @@ class ContentPhotoSeeder extends Seeder
                 'alt_text' => 'Sunset at the beach',
                 'note' => 'Taken with a DSLR camera.',
                 'status' => 'pending',
-                'popularity' => 0,
+                'total_views' => 0,
                 'approved_at' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -37,7 +38,7 @@ class ContentPhotoSeeder extends Seeder
                 'alt_text' => 'Mountain hike view',
                 'note' => 'Hiked for 5 hours to reach the top.',
                 'status' => 'pending',
-                'popularity' => 0,
+                'total_views' => 0,
                 'approved_at' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -51,7 +52,7 @@ class ContentPhotoSeeder extends Seeder
                 'alt_text' => 'City lights at night',
                 'note' => 'Long exposure shot.',
                 'status' => 'approved',
-                'popularity' => 0,
+                'total_views' => 0,
                 'approved_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -65,7 +66,7 @@ class ContentPhotoSeeder extends Seeder
                 'alt_text' => 'Forest trail',
                 'note' => 'Early morning hike.',
                 'status' => 'approved',
-                'popularity' => 0,
+                'total_views' => 0,
                 'approved_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -79,11 +80,18 @@ class ContentPhotoSeeder extends Seeder
                 'alt_text' => 'Autumn leaves',
                 'note' => 'Taken during the fall season.',
                 'status' => 'approved',
-                'popularity' => 0,
+                'total_views' => 0,
                 'approved_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        foreach ($photos as &$photo) {
+            $photo['slug'] = Str::slug($photo['title']); // Generate slug dari judul
+        }
+
+        // Insert data ke database
+        DB::table('content_photo')->insert($photos);
     }
 }

@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('content_photo', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->unsignedBigInteger('user_id');
             $table->string('image_url');
             $table->text('description')->nullable();
@@ -21,7 +22,7 @@ return new class extends Migration {
             $table->text('note')->nullable();
             $table->string('status')->default('pending');
             $table->timestamp('approved_at')->nullable();
-            $table->integer('popularity')->default(0);
+            $table->integer('total_views')->default(0);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
