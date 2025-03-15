@@ -43,5 +43,11 @@ class Article extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function updateTotalViews()
+    {
+        $this->total_views++;
+        $this->save();
+    }
+
 
 }
