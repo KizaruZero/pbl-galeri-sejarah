@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
 use App\Filament\Filters\CategoryFilter;
+use Filament\Forms\Set;
+use Illuminate\Support\Str;
 
 class ContentVideoResource extends Resource
 {
@@ -29,9 +31,9 @@ class ContentVideoResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('title')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))            
-                        ->required()
-                        ->maxLength(255),
+                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),

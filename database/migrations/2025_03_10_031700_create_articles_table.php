@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -25,13 +24,11 @@ return new class extends Migration
             $table->longText('content');
 
             // Penulis Artikel (Foreign Key ke tabel users)
-            $table->unsignedBigInteger('author_id');
+            $table->unsignedBigInteger('user_id');
             $table->foreign('author_id')->references('id')->on('users')->onDelete('cascade');
 
-            // Kategori Artikel (Foreign Key ke tabel categories, opsional)
-            $table->unsignedBigInteger('category_id')->nullable();
             $table->string('image_url')->nullable();
-            
+
             $table->string('thumbnail_url')->nullable();
 
             // Status Artikel (draft, published, archived)

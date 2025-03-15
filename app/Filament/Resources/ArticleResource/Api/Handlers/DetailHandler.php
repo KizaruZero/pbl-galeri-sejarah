@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Filament\Resources\ContentPhotoResource\Api\Handlers;
+namespace App\Filament\Resources\ArticleResource\Api\Handlers;
 
 use App\Filament\Resources\SettingResource;
-use App\Filament\Resources\ContentPhotoResource;
+use App\Filament\Resources\ArticleResource;
 use Rupadana\ApiService\Http\Handlers;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Http\Request;
-use App\Filament\Resources\ContentPhotoResource\Api\Transformers\ContentPhotoTransformer;
+use App\Filament\Resources\ArticleResource\Api\Transformers\ArticleTransformer;
 
 class DetailHandler extends Handlers
 {
     public static string|null $uri = '/{slug}';
-    public static string|null $resource = ContentPhotoResource::class;
+    public static string|null $resource = ArticleResource::class;
     public static bool $public = true;
 
 
 
     /**
-     * Show ContentPhoto
+     * Show Article
      *
      * @param Request $request
-     * @return ContentPhotoTransformer
+     * @return ArticleTransformer
      */
     public function handler(Request $request)
     {
@@ -37,6 +37,6 @@ class DetailHandler extends Handlers
         if (!$query)
             return static::sendNotFoundResponse();
 
-        return new ContentPhotoTransformer($query);
+        return new ArticleTransformer($query);
     }
 }

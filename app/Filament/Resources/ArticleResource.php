@@ -28,18 +28,16 @@ class ArticleResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('title')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))            
-                        ->required()
-                        ->maxLength(255),
+                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\MarkdownEditor::make('content')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('author_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('category_id')
-                    ->numeric(),
+                Forms\Components\Select::make('user_id')
+                    ->relationship('author', 'name')
+                    ->required(),
                 Forms\Components\FileUpload::make('image_url')
                     ->disk('public')
                     ->image(),
@@ -62,15 +60,13 @@ class ArticleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->limit(length: 20)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
+                    ->limit(length: 20)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('author_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('author.name')
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url'),
                 Tables\Columns\ImageColumn::make('thumbnail_url'),
                 Tables\Columns\TextColumn::make('status'),

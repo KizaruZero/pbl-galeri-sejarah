@@ -18,8 +18,9 @@ class Article extends Model
         'title',
         'slug',
         'content',
-        'author_id',
+        'user_id',
         'image_url',
+        'thumbnail_url',
         'status',
         'published_at',
         'total_views',
@@ -39,7 +40,7 @@ class Article extends Model
      */
     public function author()
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
 

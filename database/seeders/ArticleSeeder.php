@@ -19,7 +19,7 @@ class ArticleSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        
+
         // Make sure we have users and categories
         $userIds = User::pluck('id')->toArray();
         if (empty($userIds)) {
@@ -27,19 +27,19 @@ class ArticleSeeder extends Seeder
             $user = User::factory()->create();
             $userIds = [$user->id];
         }
-        
-        
+
+
         // Create 50 sample articles
         for ($i = 0; $i < 50; $i++) {
             $title = $faker->sentence(6, true);
             $status = $faker->randomElement(['draft', 'published', 'archived']);
             $publishedAt = $status === 'published' ? $faker->dateTimeBetween('-1 year', 'now') : null;
-            
+
             Article::create([
                 'title' => $title,
                 'slug' => Str::slug($title),
                 'content' => $faker->paragraphs(rand(3, 7), true),
-                'author_id' => $faker->randomElement($userIds),
+                'user_id' => $faker->randomElement($userIds),
                 'image_url' => $faker->boolean(70) ? $faker->imageUrl(640, 480, 'article', true) : null,
                 'status' => $status,
                 'published_at' => $publishedAt,
