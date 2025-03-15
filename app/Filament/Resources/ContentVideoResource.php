@@ -112,12 +112,14 @@ class ContentVideoResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('popularity')
                     ->label('Popularity')
-                    ->sortable()
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Calculate popularity in the query
+                        return $query->withCount(['contentReactions', 'userComments'])
+                            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 2) + (total_views * 0.5) ' . $direction);
+                    })
                     ->getStateUsing(function (ContentVideo $record) {
                         return $record->calculatePopularity();
-                    })
-                    ->searchable()
-                    ->limit(20),
+                    }),
                 BadgeColumn::make('status')->state(function (ContentVideo $record): string {
                     return match ($record->status) { 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', default => $record->status,
                     };

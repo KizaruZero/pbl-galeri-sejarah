@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\Action;
 
 
 class ArticleResource extends Resource
@@ -69,7 +71,20 @@ class ArticleResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url'),
                 Tables\Columns\ImageColumn::make('thumbnail_url'),
-                Tables\Columns\TextColumn::make('status'),
+                BadgeColumn::make('status')->state(function (Article $record): string {
+                    return match ($record->status) { 'draft' => 'Draft', 'published' => 'Published', 'archived' => 'Archived', default => $record->status,
+                    };
+                })->colors([
+                            'primary' => 'Draft',
+                            'success' => 'Published',
+                            'danger' => 'Archived',
+                        ])
+                    ->icons([
+                        'heroicon-o-clock' => 'Draft',
+                        'heroicon-o-check-circle' => 'Published',
+                        'heroicon-o-x-circle' => 'Archived',
+                    ])
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('published_at')
                     ->dateTime()
                     ->sortable(),
@@ -90,6 +105,23 @@ class ArticleResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('published')
+                    ->label('Publish')
+                    ->icon('heroicon-o-check-circle')
+                    ->visible(fn(Article $record) => $record->status === 'draft' || $record->status === 'archived')
+                    ->action(function (Article $record) {
+                        $record->update([
+                            'status' => 'published',
+                            'published_at' => now(),
+                        ]);
+                        return response()->json(['message' => 'Order approved and receipt sent to the user!']);
+                    }),
+
+                Action::make('archived')
+                    ->label('Archive')
+                    ->icon('heroicon-o-eye-slash')
+                    ->visible(fn(Article $record) => $record->status === 'published')
+                    ->action(fn(Article $record) => $record->update(['status' => 'archived'])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

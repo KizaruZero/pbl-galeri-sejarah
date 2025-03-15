@@ -69,4 +69,11 @@ class ContentVideo extends Model
     {
         return $this->userComments()->count();
     }
+
+    public function updateTotalViews()
+    {
+        $this->total_views++;
+        $this->save();
+        $this->calculatePopularity();
+    }
 }

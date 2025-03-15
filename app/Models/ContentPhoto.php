@@ -69,6 +69,11 @@ class ContentPhoto extends Model
     {
         return $this->hasMany(CategoryContent::class, 'content_photo_id');
     }
-
+    public function updateTotalViews()
+    {
+        $this->total_views++;
+        $this->save();
+        $this->calculatePopularity();
+    }
 
 }

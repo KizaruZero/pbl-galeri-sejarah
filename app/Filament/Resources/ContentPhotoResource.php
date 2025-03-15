@@ -34,12 +34,12 @@ class ContentPhotoResource extends Resource
     {
         return $form
             ->schema([
-            Forms\Components\TextInput::make('title')
-            ->live(onBlur: true)
-            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))            
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('slug'),
+                Forms\Components\TextInput::make('title')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('slug'),
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
@@ -113,7 +113,11 @@ class ContentPhotoResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('popularity')
                     ->label('Popularity')
-                    ->sortable()
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Calculate popularity in the query
+                        return $query->withCount(['contentReactions', 'userComments'])
+                            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 2) + (total_views * 0.5) ' . $direction);
+                    })
                     ->getStateUsing(function (ContentPhoto $record) {
                         return $record->calculatePopularity();
                     })
@@ -202,7 +206,8 @@ class ContentPhotoResource extends Resource
                     (SELECT COUNT(*) FROM content_reactions WHERE content_reactions.content_photo_id = content_photo.id) * 1 +
                     (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 2 +
                     (content_photo.total_views) * 0.5
-                    LIKE ?', ["%{$search}%"]
+                    LIKE ?',
+                    ["%{$search}%"]
                 );
             });
     }

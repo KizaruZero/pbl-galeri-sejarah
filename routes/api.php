@@ -13,6 +13,6 @@ Route::get('/user', function (Request $request) {
 // routes/api.php
 Route::get('/search', [SearchController::class, 'search']);
 Route::get('/content-photo', [PhotoController::class, 'index']);
-Route::get('/content-photo/{id}', [PhotoController::class, 'show']);
+Route::get('/content-photo/{slug}', [PhotoController::class, 'show']);
 Route::get('/content-video', [VideoController::class, 'index']);
-Route::get('/content-video/{id}', [VideoController::class, 'show']);
+Route::get('/content-video/{slug}', [VideoController::class, 'show']);
