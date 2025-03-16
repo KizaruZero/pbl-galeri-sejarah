@@ -46,18 +46,20 @@ class UserResource extends Resource
                     ->dehydrated(fn($state) => filled($state)) // Hanya simpan jika diisi
                     ->maxLength(255)
                     ->rules(['nullable', 'min:6']),
-                Select::make('role')
-                    ->options([
-                        'admin' => 'Admin',
-                        'direktur' => 'Direktur',
-                        'member' => 'Member',
-                    ]),
+                // Select::make('role')
+                //     ->options([
+                //         'admin' => 'Admin',
+                //         'direktur' => 'Direktur',
+                //         'member' => 'Member',
+                //     ]),
                 Select::make('roles')
                     ->relationship('roles', 'name')
                     ->required()
                     ->default('member'),
-                Forms\Components\TextInput::make('photo_profile')
-                    ->maxLength(255),
+                Forms\Components\FileUpload::make('photo_profile')
+                    ->image()
+                    ->disk('public')
+                    ->directory('photo_profile'),
             ]);
     }
 

@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
 
 
 
+
 class ContentPhotoResource extends Resource
 {
     protected static ?string $model = ContentPhoto::class;
@@ -46,6 +47,8 @@ class ContentPhotoResource extends Resource
                 Forms\Components\FileUpload::make('image_url')
                     ->image()
                     ->directory('foto_content')
+                    ->optimize('webp')
+                    ->resize(50)
                     ->disk('public')
                     ->maxSize(20000),
                 Forms\Components\Textarea::make('description')
@@ -159,6 +162,8 @@ class ContentPhotoResource extends Resource
                 Tables\Actions\DeleteAction::make(),
                 Action::make('approve')
                     ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
                     ->visible(fn(ContentPhoto $record) => $record->status === 'pending')
                     ->action(function (ContentPhoto $record) {
                         $record->update([
@@ -170,6 +175,8 @@ class ContentPhotoResource extends Resource
 
                 Action::make('reject')
                     ->label('Reject')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
                     ->visible(fn(ContentPhoto $record) => $record->status === 'pending')
                     ->action(fn(ContentPhoto $record) => $record->update(['status' => 'rejected'])),
             ])

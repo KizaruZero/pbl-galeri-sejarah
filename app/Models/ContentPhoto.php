@@ -50,7 +50,8 @@ class ContentPhoto extends Model
 
     public function userComments()
     {
-        return $this->hasMany(UserComment::class, 'content_photo_id');
+        return $this->hasMany(UserComment::class, 'content_photo_id')
+            ->where('status', 'published');
     }
     public function contentReactions()
     {

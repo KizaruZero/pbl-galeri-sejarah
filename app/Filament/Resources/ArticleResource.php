@@ -16,6 +16,7 @@ use Filament\Forms\Set;
 use Illuminate\Support\Str;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
 
 
 class ArticleResource extends Resource
@@ -39,12 +40,18 @@ class ArticleResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('user_id')
                     ->relationship('author', 'name')
-                    ->required(),
+                    ->default(Auth::id()) // Automatically set the default value to the logged-in user's ID
+                    ->required()
+                    ->dehydrated(), // Include the field in the form submission data
                 Forms\Components\FileUpload::make('image_url')
                     ->disk('public')
+                    ->optimize('webp')
+                    ->resize(50)
                     ->image(),
                 Forms\Components\FileUpload::make('thumbnail_url')
                     ->disk('public')
+                    ->optimize('webp')
+                    ->resize(50)
                     ->image(),
                 Forms\Components\Select::make('status')
                     ->options([
@@ -103,6 +110,11 @@ class ArticleResource extends Resource
             ->filters([
                 //
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                if (auth()->user()->role != 'superadmin' && auth()->user()->role != 'admin') {
+                    return $query->where('user_id', auth()->id());
+                }
+            })
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Action::make('published')

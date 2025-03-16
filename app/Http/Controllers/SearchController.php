@@ -73,12 +73,14 @@ class SearchController extends Controller
 
         if (!empty($allContentPhotoIds)) {
             $contentPhotos = ContentPhoto::whereIn('id', $allContentPhotoIds)
+                ->where('status', 'approved')
                 ->with('metadataPhoto', 'userComments', 'user')
                 ->get();
         }
 
         if (!empty($allContentVideoIds)) {
             $contentVideos = ContentVideo::whereIn('id', $allContentVideoIds)
+                ->where('status', 'approved')
                 ->with('metadataVideo', 'userComments', 'user')
                 ->get();
         }

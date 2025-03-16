@@ -47,6 +47,8 @@ class ContentVideoResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('video_url')
                     ->directory('video_content')
+                    ->optimize('webp')
+                    ->resize(50)
                     ->disk('public')
                     ->maxSize(20000),
                 Forms\Components\TextInput::make('link_youtube')
@@ -148,6 +150,8 @@ class ContentVideoResource extends Resource
                 Tables\Actions\DeleteAction::make(),
                 Action::make('approve')
                     ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
                     ->visible(fn(ContentVideo $record) => $record->status === 'pending')
                     ->action(function (ContentVideo $record) {
                         $record->update([
@@ -159,6 +163,8 @@ class ContentVideoResource extends Resource
 
                 Action::make('reject')
                     ->label('Reject')
+                    ->label('Reject')
+                    ->icon('heroicon-o-x-circle')
                     ->visible(fn(ContentVideo $record) => $record->status === 'pending')
                     ->action(fn(ContentVideo $record) => $record->update(['status' => 'rejected'])),
             ])
