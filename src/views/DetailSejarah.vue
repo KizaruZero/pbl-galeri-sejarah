@@ -1,7 +1,7 @@
 <template>
   <main>
     <MainLayout>
-      <div class="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
+      <div class="flex flex-col items-center justify-center bg-black text-white p-6">
         <template v-if="article">
           <h1 class="text-4xl font-bold">{{ article.title }}</h1>
           <img :src="article.image" class="mt-5 w-full max-w-lg" :alt="article.title" />

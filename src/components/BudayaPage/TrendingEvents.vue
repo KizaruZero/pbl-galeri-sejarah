@@ -9,7 +9,7 @@
     </div>
 
     <!-- Container utama -->
-    <div class="relative flex flex-col items-center w-full min-h-screen bg-black bg-opacity-70 py-10">
+    <div class="relative flex flex-col items-center w-full bg-black bg-opacity-70 py-10">
         <div class="relative flex flex-col items-center w-full max-w-[1300px] bg-neutral-900 rounded-lg shadow-lg px-5 py-10">
             <!-- Gambar Slider -->
             <div class="relative flex items-center justify-center w-full max-w-[900px] gap-5">
