@@ -1,9 +1,9 @@
 <template>
     <section class="px-20 pt-11 pb-5 w-full bg-black bg-opacity-70 max-md:px-5 max-md:max-w-full">
         <div class="flex gap-5 max-md:flex-col">
-            <GalleryColumn :images="firstColumnImages" />
-            <GalleryColumn :images="secondColumnImages" />
-            <GalleryColumn :images="thirdColumnImages" />
+            <GalleryColumn :images="firstColumnImages" class="max-md:w-3/4 max-sm:w-1/2 mx-auto" />
+            <GalleryColumn :images="secondColumnImages" class="max-md:w-3/4 max-sm:w-1/2 mx-auto" />
+            <GalleryColumn :images="thirdColumnImages" class="max-md:w-3/4 max-sm:w-1/2 mx-auto" />
         </div>
     </section>
 </template>

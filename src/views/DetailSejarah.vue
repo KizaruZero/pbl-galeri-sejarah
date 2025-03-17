@@ -1,4 +1,5 @@
 <template>
+  <MainLayout>
     <div class="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
     <!-- Tombol kembali di pojok kiri atas -->
     <button 
@@ -13,9 +14,11 @@
       <img :src="article?.image" class="mt-5 w-full max-w-lg" :alt="article?.title" />
       <p class="mt-4 text-lg">{{ article?.content }}</p>
     </div>
+  </MainLayout>
   </template>
   
   <script>
+   import MainLayout from '../components/layouts/MainLayout.vue'
   import pusakaImage from "@/assets/img/Sejarah/pusaka.png";
   import gerbongImage from "@/assets/img/Sejarah/gerbong.png";
   import latbelImage from "@/assets/img/Sejarah/latbel.png";
