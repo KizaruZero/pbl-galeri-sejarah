@@ -1,61 +1,54 @@
 <template>
-    <section class="flex overflow-hidden relative justify-center items-center w-full bg-black bg-opacity-70">
-        <div class="relative w-full max-w-[1440px] px-5">
-            <!-- Garis Dekoratif Kiri -->
-            <svg class="absolute left-0 top-1/2 transform -translate-y-1/2 max-md:hidden" width="447" height="72"
-                viewBox="0 0 447 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <section class="flex relative justify-center items-center w-full bg-black bg-opacity-70 py-10">
+        <div class="relative flex flex-col items-center justify-center w-full max-w-[1440px] px-5 text-center">
+            <!-- Garis Dekoratif Kiri (disembunyikan di mobile) -->
+            <svg class="hidden md:block absolute left-0 w-40 lg:w-[447px]" viewBox="0 0 447 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path :d="leftLinePath" stroke="white" stroke-width="3.41894" />
             </svg>
 
             <!-- Teks JOIN US -->
-            <div class="flex flex-col items-center justify-center text-center">
-                <h1
-                    class="font-bellefair text-8xl text-white leading-tight tracking-normal max-md:text-6xl max-sm:text-4xl">
-                    JOIN
-                    <span class="block">US</span>
-                </h1>
-            </div>
+            <h1 class="font-bellefair text-white text-6xl md:text-8xl tracking-wide leading-tight">
+                JOIN
+                <span class="block">US</span>
+            </h1>
 
-            <!-- Garis Dekoratif Kanan -->
-            <svg class="absolute right-0 top-1/2 transform -translate-y-1/2 max-md:hidden" width="447" height="72"
-                viewBox="0 0 447 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Garis Dekoratif Kanan (disembunyikan di mobile) -->
+            <svg class="hidden md:block absolute right-0 w-40 lg:w-[447px]" viewBox="0 0 447 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path :d="rightLinePath" stroke="white" stroke-width="3.41894" />
             </svg>
         </div>
     </section>
 
-    <div class="relative flex flex-col items-center bg-black bg-opacity-70 overflow-hidden px-5">
-    <div class="w-full max-w-[1300px] h-[650px] mt-5 rounded-lg overflow-hidden max-md:h-[400px] max-sm:h-[300px] relative">
-        <img src="@/assets/img/Logo/joinus.png" class="object-cover w-full h-full rounded-lg" alt="Join Us Banner" />
+    <div class="relative flex flex-col items-center bg-black bg-opacity-70 overflow-hidden px-5 py-10">
+        <div class="relative w-full max-w-[1300px] h-[500px] md:h-[650px] rounded-lg overflow-hidden">
+            <img src="@/assets/img/Logo/joinus.png" class="object-cover w-full h-full rounded-lg" alt="Join Us Banner" />
 
-        <!-- Tombol JOIN US -->
-        <button @click="$router.push('/member')" class="absolute bottom-50 left-1/2 transform -translate-x-1/2 text-white font-bellefair text-3xl uppercase tracking-wider 
-        px-5 py-2 border-2 border-white bg-black/30 backdrop-blur-sm rounded-md transition duration-300 hover:bg-white/20 
-        max-md:text-2xl max-sm:text-xl max-md:px-4 max-md:py-1 cursor-pointer">
-            JOIN US
-        </button>
-
-        <!-- Teks ajakan gabung (disembunyikan di resolusi kecil) -->
-        <h3 class="absolute bottom-30 left-1/2 transform -translate-x-1/2 text-white text-2xl text-center max-w-[80%] max-md:hidden">
-            Gabung dengan kami untuk melihat dan menambah koleksi mengenai Kasunanan Surakarta.
-        </h3>
+            <!-- Wrapper untuk teks & tombol agar tetap berada di tengah -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center bg-black/40  px-5">
+                <h3 class="text-white text-lg md:text-2xl max-w-[80%]">
+                    Gabung dengan kami untuk melihat dan menambah koleksi mengenai Kasunanan Surakarta.
+                </h3>
+                <button @click="$router.push('/member')" 
+                    class="mt-5 text-white font-bellefair text-2xl md:text-3xl uppercase tracking-wider 
+                    px-6 py-3 border-2 border-white bg-black/50 rounded-lg transition duration-300 hover:bg-white/20">
+                    JOIN US
+                </button>
+            </div>
+        </div>
     </div>
-</div>
 </template>
 
 <script setup>
-    import {
-        ref
-    } from "vue";
+import { ref } from "vue";
 
-    const leftLinePath = "M10 50 C150 100, 250 0, 400 50";
-    const rightLinePath = "M10 50 C150 0, 250 100, 400 50";
+const leftLinePath = "M10 50 C150 100, 250 0, 400 50";
+const rightLinePath = "M10 50 C150 0, 250 100, 400 50";
 </script>
 
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Bellefair&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bellefair&display=swap");
 
-    .font-bellefair {
-        font-family: "Bellefair", serif;
-    }
+.font-bellefair {
+    font-family: "Bellefair", serif;
+}
 </style>

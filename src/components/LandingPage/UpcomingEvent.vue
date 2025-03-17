@@ -1,5 +1,5 @@
 <template>
-    <main class="relative p-5 min-h-screen bg-black">
+    <main class="relative p-5 bg-black">
         <div class="flex items-center justify-between">
             <h1 class="mt-4 ml-5 text-7xl text-white max-md:text-5xl max-sm:mt-2.5 max-sm:text-4xl">
                 <span class="block w-50 h-0.5 bg-white mt-2"></span>
