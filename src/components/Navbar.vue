@@ -24,14 +24,14 @@
     </div>
 
     <!-- Logo (desktop) -->
-    <img src="../assets/img/Logo/LOGO.png" alt="Logo" class="hidden md:block object-contain w-[80px] h-auto">
+    <img src="../assets/img/Logo/LOGO.png" alt="Logo" class="hidden md:block object-contain w-[60px] h-auto">
 
     <!-- Bagian Kanan -->
     <div class="hidden md:flex flex-1 justify-end gap-6 gap-x-20 px-40 text-base tracking-widest uppercase">
-      <router-link to="/member" class="relative group">Member
+      <router-link to="/sejarah" class="relative group">Article
         <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
       </router-link>
-      <router-link to="/sejarah" class="relative group">History
+      <router-link to="/member" class="relative group">Member
         <span class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform"></span>
       </router-link>
       <router-link to="/contact" class="relative group">Contact
