@@ -25,7 +25,7 @@ return new class extends Migration {
 
             // Penulis Artikel (Foreign Key ke tabel users)
             $table->unsignedBigInteger('user_id');
-            $table->foreign('author_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->string('image_url')->nullable();
 
