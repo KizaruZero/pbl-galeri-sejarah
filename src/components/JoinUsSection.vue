@@ -30,7 +30,7 @@
                 </h3>
                 <button @click="$router.push('/member')" 
                     class="mt-5 text-white font-bellefair text-2xl md:text-3xl uppercase tracking-wider 
-                    px-6 py-3 border-2 border-white bg-black/50 rounded-lg transition duration-300 hover:bg-white/20">
+                    px-6 py-3 border-2 border-white bg-black/50 rounded-lg transition duration-300 hover:bg-white/20 cursor-pointer">
                     JOIN US
                 </button>
             </div>

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import BudayaView from '../views/BudayaView.vue'
-import SejarahView from '../views/SejarahView.vue'
+import EventView from '../views/EventView.vue'
+import ArticleView from '../views/ArticleView.vue'
 import DetailSejarah from '@/views/DetailSejarah.vue'
 import GalleryView from '../views/GalleryView.vue'
 import ProfileView from '@/views/ProfileView.vue'
@@ -17,12 +17,12 @@ const router = createRouter({
     {
       path: '/events',
       name: 'events',
-      component: BudayaView,
+      component: EventView,
     },
     {
-      path: '/sejarah',
-      name: 'sejarah',
-      component: SejarahView,
+      path: '/article',
+      name: 'article',
+      component: ArticleView,
     },
     {
       path: '/gallery',

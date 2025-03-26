@@ -9,7 +9,7 @@
 
             <!-- View All Button -->
             <button
-                class="absolute top-5 right-5 flex items-center justify-center w-[94px] h-[94px] rounded-full border border-white text-white text-2xl transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black">
+                class="absolute top-5 right-5 flex items-center justify-center w-[94px] h-[94px] rounded-full border border-white text-white text-xl transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black cursor-pointer">
                 <span class="relative z-10">View All</span>
             </button>
         </div>

@@ -1,7 +1,7 @@
 <template>
   <main>
     <MainLayout>
-      <div class="flex flex-col items-center justify-center bg-black text-white p-6">
+      <div class="flex flex-col items-center justify-center bg-black text-white p-6 mt-25">
         <template v-if="article">
           <h1 class="text-4xl font-bold">{{ article.title }}</h1>
           <img :src="article.image" class="mt-5 w-full max-w-lg" :alt="article.title" />
@@ -18,7 +18,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import MainLayout from '../components/layouts/MainLayout.vue';
 
 // Import gambar
@@ -32,7 +32,6 @@ import gangsaImage from "@/assets/img/Sejarah/gangsa.png";
 import sriImage from "@/assets/img/Sejarah/sri.png";
 import jejakImage from "@/assets/img/Sejarah/jejak.png";
 
-// Ambil parameter route
 const route = useRoute();
 
 // Data artikel

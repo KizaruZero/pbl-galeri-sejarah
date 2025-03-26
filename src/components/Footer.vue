@@ -15,10 +15,10 @@
     <div class="w-full sm:w-auto md:w-1/3 flex flex-col items-center order-2 md:order-none mt-6 md:mt-0">
       <nav class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 text-sm uppercase">
         <router-link to="/" class="hover:underline">Home</router-link>
-        <router-link to="/member" class="hover:underline">Member</router-link>
         <router-link to="/events" class="hover:underline">Events</router-link>
-        <router-link to="/history" class="hover:underline">Article</router-link>
         <router-link to="/gallery" class="hover:underline">Gallery</router-link>
+        <router-link to="/history" class="hover:underline">Article</router-link>
+        <router-link to="/member" class="hover:underline">Member</router-link>
         <router-link to="/contact" class="hover:underline">Contact</router-link>
       </nav>
     </div>
@@ -27,7 +27,7 @@
     <div class="w-full sm:w-auto md:w-1/3 flex flex-col gap-3 text-sm font-light items-center md:items-end order-3 mt-6 md:mt-0">
       <div class="flex items-center gap-2">
         <img src="../assets/img/Logo/Vector.png" class="w-4" alt="Email icon" />
-        <a href="mailto:work@uxmcreativestudio.com" class="hover:text-gray-400">work@uxmcreativestudio.com</a>
+        <a href="mailto:info@biptek.com" class="hover:text-gray-400">info@biptek.com</a>
       </div>
       <div class="flex items-center gap-2">
         <img src="../assets/img/Logo/Vector2.png" class="w-4" alt="Location icon" />

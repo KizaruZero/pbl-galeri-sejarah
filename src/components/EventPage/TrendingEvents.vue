@@ -2,9 +2,9 @@
     <div class="relative flex flex-col bg-black bg-opacity-70 px-5">
         <!-- Judul -->
         <h1 class="text-white text-4xl md:text-5xl font-serif mt-10 text-center relative">
-            <span class="block w-20 h-0.5 bg-white mb-2 mx-auto"></span>
+            <span class="block w-20 h-0.5 bg-white mb-4 mx-auto"></span>
             Trending Events
-            <span class="block w-20 h-0.5 bg-white mt-2 mx-auto"></span>
+            <span class="block w-20 h-0.5 bg-white mt-4 mx-auto"></span>
         </h1>
     </div>
 
