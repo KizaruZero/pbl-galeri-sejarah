@@ -172,7 +172,6 @@ class ContentPhotoResource extends Resource
                         ]);
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
-
                 Action::make('reject')
                     ->label('Reject')
                     ->icon('heroicon-o-x-circle')

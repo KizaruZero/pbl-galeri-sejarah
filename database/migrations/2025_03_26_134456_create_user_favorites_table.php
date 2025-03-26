@@ -10,18 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('user_comments', function (Blueprint $table) {
-            $table->id(); // Kept as BIGINT for compatibility
-            // Comment content (TEXT is appropriate for variable-length content)
-            $table->text('content');
-            // Relationships
+        Schema::create('user_favorites', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('user_id'); // Matches users.id
             $table->unsignedBigInteger('content_photo_id')->nullable();
             $table->unsignedBigInteger('content_video_id')->nullable();
-            // Status with ENUM for fixed values
-            $table->enum('status', ['published', 'hidden', 'deleted'])->default('published');
-            $table->timestamps();
-            // Foreign keys
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
@@ -34,8 +27,8 @@ return new class extends Migration {
                 ->references('id')
                 ->on('content_video')
                 ->onDelete('cascade');
-            // Composite index for better performance on content relationships
             $table->index(['content_photo_id', 'content_video_id']);
+            $table->timestamps();
         });
     }
 
@@ -44,6 +37,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_comments');
+        Schema::dropIfExists('user_favorites');
     }
 };

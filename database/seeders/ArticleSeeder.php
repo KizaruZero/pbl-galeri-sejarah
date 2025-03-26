@@ -33,7 +33,7 @@ class ArticleSeeder extends Seeder
         for ($i = 0; $i < 50; $i++) {
             $title = $faker->sentence(6, true);
             $status = $faker->randomElement(['draft', 'published', 'archived']);
-            $publishedAt = $status === 'published' ? $faker->dateTimeBetween('-1 year', 'now') : null;
+            $publishedAt = $status === 1 ? $faker->dateTimeBetween('-1 year', 'now') : null;
 
             Article::create([
                 'title' => $title,

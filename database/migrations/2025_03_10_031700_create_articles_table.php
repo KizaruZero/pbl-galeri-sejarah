@@ -12,36 +12,30 @@ return new class extends Migration {
     {
         Schema::create('articles', function (Blueprint $table) {
             // Primary Key
-            $table->id();
-
-            // Judul Artikel
-            $table->string('title');
-
-            // Slug untuk URL
-            $table->string('slug')->unique();
-
-            // Konten Artikel
-            $table->longText('content');
-
-            // Penulis Artikel (Foreign Key ke tabel users)
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
-            $table->string('image_url')->nullable();
-
-            $table->string('thumbnail_url')->nullable();
-
-            // Status Artikel (draft, published, archived)
+            $table->id(); // Kept as BIGINT for compatibility
+            // Article Identification
+            $table->string('title', 120); // Reduced from 255 to 120 (most titles <100 chars)
+            $table->string('slug', 130)->unique(); // Reduced from 255 to 130 (title + 10 char hash)
+            // Content
+            $table->longText('content'); // Kept as LONGTEXT for full articles
+            // Relationships
+            $table->unsignedBigInteger('user_id'); // Matches users.id
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+            // Media URLs
+            $table->string('image_url', 220)->nullable(); // Reduced from 255 to 220
+            $table->string('thumbnail_url', 220)->nullable(); // Reduced from 255 to 220
+            // Publication Status
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
-
-            // Tanggal Publikasi
-            $table->timestamp('published_at')->nullable();
-
-            // Jumlah Views
-            $table->integer('total_views')->default(0);
-
             // Timestamps
+            $table->timestamp('published_at')->nullable()->index(); // Added index for sorting
+            $table->unsignedInteger('total_views')->default(0); // Changed to UNSIGNED
             $table->timestamps();
+            // Additional Indexes
+            $table->index('status');
+            $table->index('user_id');
         });
     }
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\UserReactionResource\Api\Requests;
+namespace App\Filament\Resources\UserFavoriteResource\Api\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserReactionRequest extends FormRequest
+class UpdateUserFavoriteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,8 @@ class UpdateUserReactionRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer',
-            'comment_id' => 'nullable|integer',
-            'reaction_type_id' => 'nullable|integer'
+            'content_photo_id' => 'nullable|integer',
+            'content_video_id' => 'nullable|integer'
         ];
     }
 }

@@ -17,6 +17,8 @@ use Filament\Tables\Actions\Action;
 use App\Filament\Filters\CategoryFilter;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+
 
 class ContentVideoResource extends Resource
 {
@@ -47,14 +49,18 @@ class ContentVideoResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('video_url')
                     ->directory('video_content')
-                    ->optimize('webp')
                     ->resize(50)
                     ->disk('public')
+                    ->nullable()
+                    ->requiredWithout('video_url,link_youtube')
                     ->maxSize(20000),
                 Forms\Components\TextInput::make('link_youtube')
                     ->nullable(),
                 Forms\Components\FileUpload::make('thumbnail')
-                    ->directory('video_content')
+                    ->image()
+                    ->optimize('webp')
+                    ->directory('thumbnail_video')
+                    ->resize(50)
                     ->disk('public')
                     ->maxSize(20000),
                 Forms\Components\Select::make('status')
@@ -173,6 +179,7 @@ class ContentVideoResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+
     }
 
     public static function getRelations(): array

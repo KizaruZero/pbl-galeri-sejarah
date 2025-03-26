@@ -33,6 +33,10 @@ class ContentVideo extends Model
         'total_views',
     ];
 
+    protected $attributes = [
+        'video_url' => '', // default empty string instead of null
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');

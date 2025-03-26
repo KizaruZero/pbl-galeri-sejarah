@@ -13,8 +13,8 @@ class ContentVideoSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {        
-        
+    {
+
         $videos = [
             [
                 'title' => 'Exploring the Mountains',
@@ -24,7 +24,7 @@ class ContentVideoSeeder extends Seeder
                 'description' => 'A breathtaking journey through the mountains.',
                 'note' => 'Filmed with a drone.',
                 'source' => 'User Upload',
-                'status' => 'pending',
+                'status' => 2,
                 'user_id' => 1,
                 'total_views' => 0,
                 'created_at' => now(),
@@ -38,7 +38,7 @@ class ContentVideoSeeder extends Seeder
                 'description' => 'The vibrant nightlife of the city.',
                 'note' => 'Time-lapse video.',
                 'source' => 'User Upload',
-                'status' => 'pending',
+                'status' => 2,
                 'user_id' => 2,
                 'total_views' => 0,
                 'created_at' => now(),
@@ -52,7 +52,7 @@ class ContentVideoSeeder extends Seeder
                 'description' => 'Exploring the beauty of the ocean.',
                 'note' => 'Filmed with a waterproof camera.',
                 'source' => 'User Upload',
-                'status' => 'pending',
+                'status' => 2,
                 'user_id' => 3,
                 'total_views' => 0,
                 'created_at' => now(),
@@ -66,7 +66,7 @@ class ContentVideoSeeder extends Seeder
                 'description' => 'A peaceful walk through the park during autumn.',
                 'note' => 'Filmed with a smartphone.',
                 'source' => 'User Upload',
-                'status' => 'pending',
+                'status' => 2,
                 'user_id' => 4,
                 'total_views' => 0,
                 'created_at' => now(),
@@ -80,7 +80,7 @@ class ContentVideoSeeder extends Seeder
                 'description' => 'A relaxing sunset by the beach.',
                 'note' => 'Filmed with a DSLR camera.',
                 'source' => 'User Upload',
-                'status' => 'approved',
+                'status' => 2,
                 'user_id' => 5,
                 'total_views' => 0,
                 'created_at' => now(),

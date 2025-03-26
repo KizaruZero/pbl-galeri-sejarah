@@ -22,9 +22,9 @@ class CreateCategoryContentRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'category_id' => 'required|integer',
-			'content_photo_id' => 'required|integer',
-			'content_video_id' => 'required|integer'
-		];
+            'category_id' => 'required|integer',
+            'content_photo_id' => 'nullable|integer',
+            'content_video_id' => 'nullable|integer'
+        ];
     }
 }

@@ -22,10 +22,10 @@ class UpdateUserCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'content' => 'required|string',
-			'user_id' => 'required|integer',
-			'content_photo_id' => 'required|integer',
-			'content_video_id' => 'required|integer'
-		];
+            'content' => 'required|string',
+            'user_id' => 'required|integer',
+            'content_photo_id' => 'nullable|integer',
+            'content_video_id' => 'nullable|integer'
+        ];
     }
 }

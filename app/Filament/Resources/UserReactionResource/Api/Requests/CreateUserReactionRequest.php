@@ -22,9 +22,9 @@ class CreateUserReactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'user_id' => 'required|integer',
-			'comment_id' => 'required|integer',
-			'reaction_type_id' => 'required|integer'
-		];
+            'user_id' => 'required|integer',
+            'comment_id' => 'nullable|integer',
+            'reaction_type_id' => 'nullable|integer'
+        ];
     }
 }
