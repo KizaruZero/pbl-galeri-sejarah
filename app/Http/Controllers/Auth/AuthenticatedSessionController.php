@@ -13,6 +13,8 @@ use Inertia\Response;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -32,7 +34,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+
+        $userEmail = $request->email;
+
+        $user = User::where('email', $userEmail)->first();
+        if ($user && is_null($user->password)) {
+            throw ValidationException::withMessages([
+                'email' => 'This email is registered with Google. Please login with Google.',
+            ]);
+        }
+
         $request->authenticate();
+
 
         $request->session()->regenerate();
 
@@ -57,46 +70,44 @@ class AuthenticatedSessionController extends Controller
      * Redirect to the login page.
      */
 
-     public function redirectToGoogle()
-     {
-         return Socialite::driver('google')->redirect();
-     }
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
 
-        /**
-        * Handle the Google callback.
-        */
-    
-        public function handleGoogleCallback()
-{
-    $googleUser = Socialite::driver('google')->user();
-    
-    // First try to find user by google_id
-    $user = User::where('google_id', $googleUser->id)->first();
-    
-    // If not found, try to find by email
-    if (!$user) {
-        $user = User::where('email', $googleUser->email)->first();
-        
-        // If user exists but doesn't have google_id, update it
-        if ($user) {
-            $user->update([
+    /**
+     * Handle the Google callback.
+     */
+
+    public function handleGoogleCallback()
+    {
+        $googleUser = Socialite::driver('google')->user();
+
+        // First try to find user by google_id
+        $user = User::where('google_id', $googleUser->id)->first();
+
+        // If not found, try to find by email
+        if (!$user) {
+            $user = User::where('email', $googleUser->email)->first();
+
+            // If user exists but doesn't have google_id, update it
+            if ($user) {
+                $user->update([
+                    'google_id' => $googleUser->id,
+                ]);
+            }
+        }
+
+        // If user still not found, create a new one
+        if (!$user) {
+            $user = User::create([
+                'name' => $googleUser->name,
+                'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
+                'email_verified_at' => now(),
             ]);
         }
+        Auth::login($user, true);
+        return redirect()->intended(route('/'));  // Make sure 'home' is a valid route name
     }
-    
-    // If user still not found, create a new one
-    if (!$user) {
-        $user = User::create([
-            'name' => $googleUser->name,
-            'email' => $googleUser->email,
-            'google_id' => $googleUser->id,
-            'email_verified_at' => now(),
-        ]);
-    }
-
-    Auth::login($user, true);
-
-    return redirect()->intended(route('/'));  // Make sure 'home' is a valid route name
-}
 }
