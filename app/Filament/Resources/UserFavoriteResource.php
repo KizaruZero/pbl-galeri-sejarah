@@ -17,7 +17,9 @@ class UserFavoriteResource extends Resource
 {
     protected static ?string $model = UserFavorite::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-star';
+    protected static ?string $navigationGroup = 'Users';
+
 
     public static function form(Form $form): Form
     {

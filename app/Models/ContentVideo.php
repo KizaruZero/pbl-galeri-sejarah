@@ -66,6 +66,10 @@ class ContentVideo extends Model
     {
         return $this->hasMany(ContentReaction::class, 'content_video_id');
     }
+    public function userFavorite()
+    {
+        return $this->hasMany(UserFavorite::class, 'content_video_id');
+    }
     public function getTotalReactionsAttribute()
     {
         return $this->contentReactions()->count();
@@ -73,6 +77,10 @@ class ContentVideo extends Model
     public function getTotalCommentsAttribute()
     {
         return $this->userComments()->count();
+    }
+    public function getUserFavoritesAttribute()
+    {
+        return $this->userFavorite()->count();
     }
 
     public function updateTotalViews()

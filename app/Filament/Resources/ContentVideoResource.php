@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\ContentPhotoResource\Widgets\ContentVideoOverview;
 use App\Filament\Resources\ContentVideoResource\Pages;
 use App\Filament\Resources\ContentVideoResource\RelationManagers;
 use App\Models\ContentVideo;
@@ -17,7 +18,10 @@ use Filament\Tables\Actions\Action;
 use App\Filament\Filters\CategoryFilter;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\Textarea;
 use Illuminate\Validation\Rule;
+use Filament\Notifications\Notification;
+
 
 
 class ContentVideoResource extends Resource
@@ -87,11 +91,9 @@ class ContentVideoResource extends Resource
                 Tables\Columns\TextColumn::make('description')
                     ->limit(length: 20)
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('video_url')
-                    ->disk('public'),
-                Tables\Columns\TextColumn::make('link_youtube'),
                 Tables\Columns\ImageColumn::make('thumbnail')
                     ->disk('public'),
+                Tables\Columns\TextColumn::make('link_youtube'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -118,12 +120,19 @@ class ContentVideoResource extends Resource
                     ->limit(length: 20)
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('user_favorites')
+                    ->limit(length: 20)
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Urutkan berdasarkan jumlah komentar
+                        $query->withCount('userFavorite')->orderBy('user_favorite_count', $direction);
+                    })
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('popularity')
                     ->label('Popularity')
                     ->sortable(query: function (Builder $query, string $direction) {
                         // Calculate popularity in the query
-                        return $query->withCount(['contentReactions', 'userComments'])
-                            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 2) + (total_views * 0.5) ' . $direction);
+                        return $query->withCount(['contentReactions', 'userComments', 'userFavorite'])
+                            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) ' . $direction);
                     })
                     ->getStateUsing(function (ContentVideo $record) {
                         return $record->calculatePopularity();
@@ -147,6 +156,7 @@ class ContentVideoResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 CategoryFilter::make('category'),
             ])
@@ -164,15 +174,37 @@ class ContentVideoResource extends Resource
                             'status' => 'approved',
                             'approved_at' => now(),
                         ]);
-                        return response()->json(['message' => 'Order approved and receipt sent to the user!']);
+                        Notification::make()
+                            ->title('Content Approved')
+                            ->body('The content has been approved!')
+                            ->success()
+                            ->send();
+                        return response()->json(['message' => 'The content has been approved!']);
                     }),
 
                 Action::make('reject')
                     ->label('Reject')
-                    ->label('Reject')
                     ->icon('heroicon-o-x-circle')
+                    ->color('danger')
                     ->visible(fn(ContentVideo $record) => $record->status === 'pending')
-                    ->action(fn(ContentVideo $record) => $record->update(['status' => 'rejected'])),
+                    ->form([
+                        Textarea::make('note')
+                            ->label('Rejection Reason')
+                            ->required()
+                            ->placeholder('Enter the reason for rejection...')
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function (ContentVideo $record, array $data) {
+                        $record->update([
+                            'status' => 'rejected',
+                            'note' => $data['note'], // or whatever your notes column is named
+                        ]);
+                        Notification::make()
+                            ->title('Content Rejected')
+                            ->body('The content has been rejected. Reason: ' . $data['note'])
+                            ->danger()
+                            ->send();
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -186,6 +218,13 @@ class ContentVideoResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            ContentVideoOverview::class,
         ];
     }
 

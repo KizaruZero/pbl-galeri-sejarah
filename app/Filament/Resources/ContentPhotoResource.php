@@ -18,6 +18,10 @@ use Filament\Tables\Actions\Action;
 use App\Models\UserComment;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
+use App\Filament\Resources\ContentPhotoResource\Widgets\ContentPhotoOverview;
+
 
 
 
@@ -114,6 +118,13 @@ class ContentPhotoResource extends Resource
                     ->limit(length: 20)
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('user_favorites')
+                    ->limit(length: 20)
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        // Urutkan berdasarkan jumlah komentar
+                        $query->withCount('userFavorite')->orderBy('user_favorite_count', $direction);
+                    })
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('popularity')
                     ->label('Popularity')
                     ->sortable(query: function (Builder $query, string $direction) {
@@ -156,6 +167,7 @@ class ContentPhotoResource extends Resource
             ->filters([
                 CategoryFilter::make('category'),
             ])
+            ->defaultSort('created_at', 'desc')
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -170,6 +182,11 @@ class ContentPhotoResource extends Resource
                             'status' => 'approved',
                             'approved_at' => now(),
                         ]);
+                        Notification::make()
+                            ->title('Content Approved')
+                            ->body('The content has been approved!')
+                            ->success()
+                            ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
                 Action::make('reject')
@@ -177,7 +194,29 @@ class ContentPhotoResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->visible(fn(ContentPhoto $record) => $record->status === 'pending')
-                    ->action(fn(ContentPhoto $record) => $record->update(['status' => 'rejected'])),
+                    ->form([
+                        Textarea::make('note')
+                            ->label('Rejection Reason')
+                            ->required()
+                            ->placeholder('Enter the reason for rejection...')
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function (ContentPhoto $record, array $data) {
+                        $record->update([
+                            'status' => 'rejected',
+                            'note' => $data['note'], // or whatever your notes column is named
+                        ]);
+                        Notification::make()
+                            ->title('Content Rejected')
+                            ->body('The content has been rejected. Reason: ' . $data['note'])
+                            ->danger()
+                            ->send();
+                        // Optional: Add notification
+                    })
+                    ->modalHeading('Reject Photo')
+                    ->modalDescription('Please provide a reason for rejecting this photo.')
+                    ->modalSubmitActionLabel('Confirm Rejection'),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -196,13 +235,13 @@ class ContentPhotoResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->with(['contentReactions', 'userComments'])
+            ->with(['contentReactions', 'userComments', 'userFavorite'])
             ->when(request()->has('sort'), function (Builder $query) {
                 if (request('sort') === 'popularity') {
                     $query->orderByRaw('
                         (SELECT COUNT(*) FROM content_reactions WHERE content_reactions.content_photo_id = content_photo.id) * 1 +
-                        (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 2 +
-                        (content_photo.total_views) * 0.5
+                        (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 1 +
+                        (content_photo.total_views) * 0.5 + (SELECT COUNT(*) FROM user_favorites WHERE user_favorites.content_photo_id = content_photo.id) * 1
                     ' . (request('direction') === 'desc' ? 'DESC' : 'ASC'));
                 }
             })
@@ -210,8 +249,8 @@ class ContentPhotoResource extends Resource
                 $search = request('search');
                 $query->whereRaw('
                     (SELECT COUNT(*) FROM content_reactions WHERE content_reactions.content_photo_id = content_photo.id) * 1 +
-                    (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 2 +
-                    (content_photo.total_views) * 0.5
+                    (SELECT COUNT(*) FROM user_comments WHERE user_comments.content_photo_id = content_photo.id) * 1 +
+                    (content_photo.total_views) * 0.5 + (SELECT COUNT(*) FROM user_favorites WHERE user_favorites.content_photo_id = content_photo.id) * 1
                     LIKE ?',
                     ["%{$search}%"]
                 );
@@ -223,8 +262,12 @@ class ContentPhotoResource extends Resource
         return $query->withCount('userComments', 'contentReactions');
     }
 
-
-
+    public static function getWidgets(): array
+    {
+        return [
+            ContentPhotoOverview::class,
+        ];
+    }
 
     public static function getPages(): array
     {

@@ -15,16 +15,19 @@ trait CalculatesPopularity
         // Ambil total_comments dari relasi userComments
         $totalComments = $this->userComments()->count();
 
+        $totalFavorites = $this->userFavorite()->count();
+
         // Ambil total_views langsung dari kolom di tabel content_photo
         $totalViews = $this->total_views ?? 0;
 
         // Define weights for each factor
         $reactionWeight = 1;
-        $commentWeight = 2;
+        $favoriteWeight = 1;
+        $commentWeight = 1;
         $viewWeight = 0.5;
 
         // Calculate popularity
-        $popularity = ($totalReactions * $reactionWeight) + ($totalComments * $commentWeight) + ($totalViews * $viewWeight);
+        $popularity = ($totalReactions * $reactionWeight) + ($totalComments * $commentWeight) + ($totalViews * $viewWeight) + ($totalFavorites * $favoriteWeight);
 
         return $popularity;
     }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Filament\Resources\ArticleResource\RelationManagers;
+use App\Filament\Resources\ContentPhotoResource\Widgets\ArticleOverview;
 use App\Models\Article;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,6 +18,8 @@ use Illuminate\Support\Str;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
+
 
 
 class ArticleResource extends Resource
@@ -78,6 +81,12 @@ class ArticleResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url'),
                 Tables\Columns\ImageColumn::make('thumbnail_url'),
+                Tables\Columns\TextColumn::make('published_at')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_views')
+                    ->numeric()
+                    ->sortable(),
                 BadgeColumn::make('status')->state(function (Article $record): string {
                     return match ($record->status) { 'draft' => 'Draft', 'published' => 'Published', 'archived' => 'Archived', default => $record->status,
                     };
@@ -91,12 +100,6 @@ class ArticleResource extends Resource
                         'heroicon-o-check-circle' => 'Published',
                         'heroicon-o-x-circle' => 'Archived',
                     ])
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('published_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('total_views')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -116,7 +119,6 @@ class ArticleResource extends Resource
                 }
             })
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Action::make('published')
                     ->label('Publish')
                     ->icon('heroicon-o-check-circle')
@@ -126,14 +128,30 @@ class ArticleResource extends Resource
                             'status' => 'published',
                             'published_at' => now(),
                         ]);
+                        Notification::make()
+                            ->title('Article Published')
+                            ->body('The article has been published!')
+                            ->success()
+                            ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
-
                 Action::make('archived')
                     ->label('Archive')
                     ->icon('heroicon-o-eye-slash')
                     ->visible(fn(Article $record) => $record->status === 'published')
-                    ->action(fn(Article $record) => $record->update(['status' => 'archived'])),
+                    ->action(function (Article $record) {
+                        $record->update(['status' => 'archived']);
+
+                        Notification::make()
+                            ->title('Article Archived')
+                            ->body('The article has been archived!')
+                            ->danger()
+                            ->send();
+                    }),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -146,6 +164,13 @@ class ArticleResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            ArticleOverview::class,
         ];
     }
 

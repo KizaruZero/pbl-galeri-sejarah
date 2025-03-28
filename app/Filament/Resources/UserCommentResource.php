@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserCommentResource\Pages;
 use App\Filament\Resources\UserCommentResource\RelationManagers;
+use App\Filament\Resources\UserCommentResource\Widgets\UserCommentOverview;
 use App\Models\UserComment;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
+
 
 class UserCommentResource extends Resource
 {
@@ -99,6 +102,10 @@ class UserCommentResource extends Resource
                         $record->update([
                             'status' => 'published',
                         ]);
+                        Notification::make()
+                            ->title('Comment Published')
+                            ->success()
+                            ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
 
@@ -106,11 +113,18 @@ class UserCommentResource extends Resource
                     ->label('Hide')
                     ->icon('heroicon-o-eye-slash')
                     ->visible(fn(UserComment $record) => $record->status === 'published')
-                    ->action(fn(UserComment $record) => $record->update(['status' => 'hidden'])),
+                    ->action(function (UserComment $record) {
+                        $record->update(['status' => 'hidden']);
+
+                        Notification::make()
+                            ->title('Comment Hidden')
+                            ->body('The comment has been successfully hidden from public view.')
+                            ->danger()
+                            ->send();
+                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -132,6 +146,13 @@ class UserCommentResource extends Resource
             'index' => Pages\ListUserComments::route('/'),
             'create' => Pages\CreateUserComment::route('/create'),
             'edit' => Pages\EditUserComment::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            UserCommentOverview::class,
         ];
     }
 }
