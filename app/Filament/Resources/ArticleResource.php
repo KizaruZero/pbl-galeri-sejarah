@@ -132,6 +132,7 @@ class ArticleResource extends Resource
                             ->title('Article Published')
                             ->body('The article has been published!')
                             ->success()
+                            ->sendToDatabase(auth()->user())
                             ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
@@ -146,6 +147,7 @@ class ArticleResource extends Resource
                             ->title('Article Archived')
                             ->body('The article has been archived!')
                             ->danger()
+                            ->sendToDatabase(auth()->user())
                             ->send();
                     }),
                 Tables\Actions\ViewAction::make(),
@@ -172,6 +174,18 @@ class ArticleResource extends Resource
         return [
             ArticleOverview::class,
         ];
+    }
+
+    public static function getHourlyUploadedContent()
+    {
+        $newContent = Article::whereBetween('created_at', [now()->subHour(), now()])->count();
+        if ($newContent > 0) {
+            Notification::make()
+                ->title('New Content Uploaded')
+                ->body("There are {$newContent} new article uploaded in the last hour.")
+                ->sendToDatabase(auth()->user())
+                ->send();
+        }
     }
 
     public static function getPages(): array

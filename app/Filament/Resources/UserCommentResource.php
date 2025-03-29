@@ -16,18 +16,21 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action as NotificationAction;
+use Filament\Notifications\Livewire\DatabaseNotifications;
+
 
 
 class UserCommentResource extends Resource
 {
     protected static ?string $model = UserComment::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-bottom-center-text';
     protected static ?string $navigationGroup = 'Users';
 
 
     public static function form(Form $form): Form
     {
+
         return $form
             ->schema([
                 Forms\Components\Textarea::make('content')
@@ -54,6 +57,8 @@ class UserCommentResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $recipient = auth()->user();
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
@@ -95,6 +100,7 @@ class UserCommentResource extends Resource
             ])
             ->actions([
                 Action::make('published')
+
                     ->label('Publish')
                     ->icon('heroicon-o-check-circle')
                     ->visible(fn(UserComment $record) => $record->status === 'hidden')
@@ -104,7 +110,9 @@ class UserCommentResource extends Resource
                         ]);
                         Notification::make()
                             ->title('Comment Published')
+                            ->body('The comment has been successfully published.')
                             ->success()
+                            ->sendToDatabase(auth()->user())
                             ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
@@ -115,11 +123,11 @@ class UserCommentResource extends Resource
                     ->visible(fn(UserComment $record) => $record->status === 'published')
                     ->action(function (UserComment $record) {
                         $record->update(['status' => 'hidden']);
-
                         Notification::make()
                             ->title('Comment Hidden')
                             ->body('The comment has been successfully hidden from public view.')
                             ->danger()
+                            ->sendToDatabase(auth()->user())
                             ->send();
                     }),
                 Tables\Actions\ViewAction::make(),

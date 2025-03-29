@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Filament\Resources\ContentVideoResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Searchable;
@@ -33,6 +34,12 @@ class ContentVideo extends Model
         'total_views',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($contentPhoto) {
+            app()->call([ContentVideoResource::class, 'getHourlyUploadedContent']);
+        });
+    }
     protected $attributes = [
         'video_url' => '', // default empty string instead of null
     ];

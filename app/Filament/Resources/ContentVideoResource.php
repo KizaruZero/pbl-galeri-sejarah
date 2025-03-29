@@ -178,6 +178,7 @@ class ContentVideoResource extends Resource
                             ->title('Content Approved')
                             ->body('The content has been approved!')
                             ->success()
+                            ->sendToDatabase(users: auth()->user())
                             ->send();
                         return response()->json(['message' => 'The content has been approved!']);
                     }),
@@ -203,6 +204,7 @@ class ContentVideoResource extends Resource
                             ->title('Content Rejected')
                             ->body('The content has been rejected. Reason: ' . $data['note'])
                             ->danger()
+                            ->sendToDatabase(users: auth()->user())
                             ->send();
                     })
             ])
@@ -226,6 +228,18 @@ class ContentVideoResource extends Resource
         return [
             ContentVideoOverview::class,
         ];
+    }
+
+    public static function getHourlyUploadedContent()
+    {
+        $newContent = ContentVideo::whereBetween('created_at', [now()->subHour(), now()])->count();
+        if ($newContent > 0) {
+            Notification::make()
+                ->title('New Content Uploaded')
+                ->body("There are {$newContent} new content video uploaded in the last hour.")
+                ->sendToDatabase(auth()->user())
+                ->send();
+        }
     }
 
     public static function getPages(): array

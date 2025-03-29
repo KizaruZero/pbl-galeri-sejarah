@@ -12,11 +12,11 @@ class LatestPhoto extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-                ContentPhoto::query()
+            ->query(function () {
+                return ContentPhoto::query()
                     ->latest()
-                    ->limit(5)
-            )
+                    ->limit(5);
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->limit(length: 20)

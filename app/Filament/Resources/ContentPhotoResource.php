@@ -186,6 +186,11 @@ class ContentPhotoResource extends Resource
                             ->title('Content Approved')
                             ->body('The content has been approved!')
                             ->success()
+                            ->sendToDatabase(auth()->user())
+                            ->actions([
+                                Action::make('view')
+                                    ->button()
+                            ])
                             ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
@@ -210,8 +215,8 @@ class ContentPhotoResource extends Resource
                             ->title('Content Rejected')
                             ->body('The content has been rejected. Reason: ' . $data['note'])
                             ->danger()
+                            ->sendToDatabase(auth()->user())
                             ->send();
-                        // Optional: Add notification
                     })
                     ->modalHeading('Reject Photo')
                     ->modalDescription('Please provide a reason for rejecting this photo.')
@@ -276,5 +281,17 @@ class ContentPhotoResource extends Resource
             'create' => Pages\CreateContentPhoto::route('/create'),
             'edit' => Pages\EditContentPhoto::route('/{record}/edit'),
         ];
+    }
+
+    public static function getHourlyUploadedContent()
+    {
+        $newContent = ContentPhoto::whereBetween('created_at', [now()->subHour(), now()])->count();
+        if ($newContent > 0) {
+            Notification::make()
+                ->title('New Content Uploaded')
+                ->body("There are {$newContent} new content photo uploaded in the last hour.")
+                ->sendToDatabase(auth()->user())
+                ->send();
+        }
     }
 }
