@@ -24,6 +24,7 @@ class ContentVideo extends Model
         'description',
         'note',
         'source',
+        'tag',
         'category_id',
         'user_id',
         'video_url',

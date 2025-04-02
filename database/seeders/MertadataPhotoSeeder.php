@@ -20,7 +20,7 @@ class MertadataPhotoSeeder extends Seeder
                 'collection_date' => '2023-10-01',
                 'file_size' => 2048000, // 2 MB
                 'aperture' => 'f/2.8',
-                'tag' => 'nature, sunset',
+                //'tag' => 'nature, sunset',
                 'location' => 'Bali, Indonesia',
                 'model' => 'Canon EOS 5D Mark IV',
                 'ISO' => '100',
@@ -34,7 +34,7 @@ class MertadataPhotoSeeder extends Seeder
                 'collection_date' => '2023-09-15',
                 'file_size' => 4096000, // 4 MB
                 'aperture' => 'f/4',
-                'tag' => 'mountain, hike',
+                //'tag' => 'mountain, hike',
                 'location' => 'Mount Fuji, Japan',
                 'model' => 'Nikon D850',
                 'ISO' => '200',
@@ -48,7 +48,7 @@ class MertadataPhotoSeeder extends Seeder
                 'collection_date' => '2023-08-20',
                 'file_size' => 1024000, // 1 MB
                 'aperture' => 'f/5.6',
-                'tag' => 'city, night',
+                //'tag' => 'city, night',
                 'location' => 'New York, USA',
                 'model' => 'Sony A7 III',
                 'ISO' => '400',
@@ -62,7 +62,7 @@ class MertadataPhotoSeeder extends Seeder
                 'collection_date' => '2023-07-10',
                 'file_size' => 3072000, // 3 MB
                 'aperture' => 'f/3.5',
-                'tag' => 'forest, trail',
+                //'tag' => 'forest, trail',
                 'location' => 'Amazon Rainforest, Brazil',
                 'model' => 'Fujifilm X-T4',
                 'ISO' => '160',
@@ -76,7 +76,7 @@ class MertadataPhotoSeeder extends Seeder
                 'collection_date' => '2023-06-05',
                 'file_size' => 5120000, // 5 MB
                 'aperture' => 'f/2.0',
-                'tag' => 'autumn, leaves',
+                //'tag' => 'autumn, leaves',
                 'location' => 'Kyoto, Japan',
                 'model' => 'Olympus OM-D E-M1 Mark III',
                 'ISO' => '320',

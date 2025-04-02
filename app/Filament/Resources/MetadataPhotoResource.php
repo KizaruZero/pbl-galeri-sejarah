@@ -32,8 +32,6 @@ class MetadataPhotoResource extends Resource
                     ->numeric(),
                 Forms\Components\TextInput::make('aperture')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('tag')
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('location')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('model')
@@ -62,8 +60,6 @@ class MetadataPhotoResource extends Resource
                 Tables\Columns\TextColumn::make('photo')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('aperture')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tag')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('location')
                     ->searchable(),

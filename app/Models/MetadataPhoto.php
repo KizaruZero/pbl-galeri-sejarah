@@ -19,7 +19,6 @@ class MetadataPhoto extends Model
         'collection_date',
         'file_size',
         'aperture',
-        'tag',
         'location',
         'model',
         'ISO',

@@ -11,29 +11,21 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('articles', function (Blueprint $table) {
-            // Primary Key
-            $table->id(); // Kept as BIGINT for compatibility
-            // Article Identification
-            $table->string('title', 120); // Reduced from 255 to 120 (most titles <100 chars)
-            $table->string('slug', 130)->unique(); // Reduced from 255 to 130 (title + 10 char hash)
-            // Content
-            $table->longText('content'); // Kept as LONGTEXT for full articles
-            // Relationships
-            $table->unsignedBigInteger('user_id'); // Matches users.id
+            $table->id();
+            $table->string('title', 120);
+            $table->string('slug', 130)->unique();
+            $table->longText('content');
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
-            // Media URLs
-            $table->string('image_url', 220)->nullable(); // Reduced from 255 to 220
-            $table->string('thumbnail_url', 220)->nullable(); // Reduced from 255 to 220
-            // Publication Status
+            $table->string('image_url', 220)->nullable();
+            $table->string('thumbnail_url', 220)->nullable();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
-            // Timestamps
-            $table->timestamp('published_at')->nullable()->index(); // Added index for sorting
-            $table->unsignedInteger('total_views')->default(0); // Changed to UNSIGNED
+            $table->timestamp('published_at')->nullable()->index();
+            $table->unsignedInteger('total_views')->default(0);
             $table->timestamps();
-            // Additional Indexes
             $table->index('status');
             $table->index('user_id');
         });

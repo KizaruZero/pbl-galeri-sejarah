@@ -23,7 +23,7 @@ class MertadataVideoSeeder extends Seeder
                 'resolution' => '1920x1080',
                 'duration' => '00:05:30',
                 'format_file' => 'MP4',
-                'tag' => 'mountain, adventure',
+                //'tag' => 'mountain, adventure',
                 'codec_video_audio' => 'H.264, AAC',
                 'collection_date' => '2023-10-01',
                 'content_video_id' => 1, // ID dari content_video
@@ -38,7 +38,7 @@ class MertadataVideoSeeder extends Seeder
                 'resolution' => '1280x720',
                 'duration' => '00:03:45',
                 'format_file' => 'AVI',
-                'tag' => 'city, nightlife',
+                //'tag' => 'city, nightlife',
                 'codec_video_audio' => 'MPEG-4, MP3',
                 'collection_date' => '2023-09-15',
                 'content_video_id' => 2, // ID dari content_video
@@ -53,7 +53,7 @@ class MertadataVideoSeeder extends Seeder
                 'resolution' => '3840x2160',
                 'duration' => '00:10:00',
                 'format_file' => 'MP4',
-                'tag' => 'nature, wildlife',
+                //'tag' => 'nature, wildlife',
                 'codec_video_audio' => 'H.265, AAC',
                 'collection_date' => '2023-08-20',
                 'content_video_id' => 3, // ID dari content_video
@@ -68,7 +68,7 @@ class MertadataVideoSeeder extends Seeder
                 'resolution' => '1920x1080',
                 'duration' => '00:07:15',
                 'format_file' => 'MOV',
-                'tag' => 'autumn, culture',
+                //'tag' => 'autumn, culture',
                 'codec_video_audio' => 'H.264, AAC',
                 'collection_date' => '2023-07-10',
                 'content_video_id' => 4, // ID dari content_video
@@ -83,7 +83,7 @@ class MertadataVideoSeeder extends Seeder
                 'resolution' => '2560x1440',
                 'duration' => '00:12:30',
                 'format_file' => 'MP4',
-                'tag' => 'beach, sunset',
+                //'tag' => 'beach, sunset',
                 'codec_video_audio' => 'H.265, AAC',
                 'collection_date' => '2023-06-05',
                 'content_video_id' => 5, // ID dari content_video

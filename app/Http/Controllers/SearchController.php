@@ -25,20 +25,20 @@ class SearchController extends Controller
         $contentVideoIds = [];
 
         // Search directly in content tables
-        $contentPhotoIds = ContentPhoto::whereRaw("MATCH(title, description, note, alt_text) AGAINST(? IN BOOLEAN MODE)", [$query])
+        $contentPhotoIds = ContentPhoto::whereRaw("MATCH(title, description, tag, alt_text) AGAINST(? IN BOOLEAN MODE)", [$query])
             ->pluck('id')
             ->toArray();
 
-        $contentVideoIds = ContentVideo::whereRaw("MATCH(title, description, note) AGAINST(? IN BOOLEAN MODE)", [$query])
+        $contentVideoIds = ContentVideo::whereRaw("MATCH(title, description, tag) AGAINST(? IN BOOLEAN MODE)", [$query])
             ->pluck('id')
             ->toArray();
 
         // Search in metadata and get related content IDs
-        $metadataPhotoIds = MetadataPhoto::whereRaw("MATCH(location, tag) AGAINST(? IN BOOLEAN MODE)", [$query])
+        $metadataPhotoIds = MetadataPhoto::whereRaw("MATCH(location) AGAINST(? IN BOOLEAN MODE)", [$query])
             ->pluck('content_photo_id')
             ->toArray();
 
-        $metadataVideoIds = MetadataVideo::whereRaw("MATCH(location, tag) AGAINST(? IN BOOLEAN MODE)", [$query])
+        $metadataVideoIds = MetadataVideo::whereRaw("MATCH(location) AGAINST(? IN BOOLEAN MODE)", [$query])
             ->pluck('content_video_id')
             ->toArray();
 

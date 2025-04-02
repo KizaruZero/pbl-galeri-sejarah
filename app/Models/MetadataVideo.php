@@ -20,7 +20,6 @@ class MetadataVideo extends Model
         'resolution',
         'duration',
         'format_file',
-        'tag',
         'codec_video_audio',
         'collection_date',
         'content_video_id',

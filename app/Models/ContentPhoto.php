@@ -28,6 +28,7 @@ class ContentPhoto extends Model
         'source',
         'alt_text',
         'note',
+        'tag',
         'image_url',
         'status',
         'approved_at',

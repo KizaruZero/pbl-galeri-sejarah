@@ -43,8 +43,8 @@ class ContentVideoResource extends Resource
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('note')
-                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('tag')
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('source')
                     ->required()
                     ->maxLength(255),
@@ -93,6 +93,8 @@ class ContentVideoResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('thumbnail')
                     ->disk('public'),
+                Tables\Columns\TextColumn::make('tag')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('link_youtube'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

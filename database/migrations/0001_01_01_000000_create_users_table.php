@@ -11,16 +11,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();  // Tetap gunakan `BIGINT` (untuk kompatibilitas Laravel)
-            $table->string('google_id', 30)->nullable();  // Google ID biasanya 21-30 karakter
-            $table->string('name', 100);  // Nama umumnya <100 karakter
-            $table->string('email', 120)->unique();  // Email maksimal 120 karakter (cukup untuk "nama@domain.xxx")
-            $table->timestamp('email_verified_at')->nullable();  // Tetap pakai `timestamp`
-            $table->string('password', 60);  // Hash password (bcrypt) selalu 60 karakter
+            $table->id();
+            $table->string('google_id', 50)->nullable();
+            $table->string('name', 100);
+            $table->string('email', 120)->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password', 60);
             $table->string('role')->default('member');
-            $table->string('photo_profile', 200)->nullable();  // URL foto biasanya <200 karakter
-            $table->rememberToken();  // Tetap `VARCHAR(100)` (default Laravel)
-            $table->timestamps();  // Tetap pakai `timestamp`
+            $table->string('photo_profile', 200)->nullable();
+            $table->timestamps();
         });
 
 

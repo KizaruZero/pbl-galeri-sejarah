@@ -11,17 +11,17 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('metadata_photo', function (Blueprint $table) {
-            $table->id(); // Kept as BIGINT for compatibility
-            $table->date('collection_date'); // Unchanged - ideal for dates
-            $table->unsignedInteger('file_size'); // Changed from BIGINT to INTEGER (files >4GB rare)
-            $table->string('aperture', 10)->nullable(); // Reduced from 255 to 10 (e.g., "f/2.8")
-            $table->string('tag', 50)->nullable(); // Reduced from 255 to 50 for tags
-            $table->string('location', 100)->nullable(); // Reduced from 255 to 100
-            $table->string('model', 50)->nullable(); // Reduced from 255 to 50 (camera models)
-            $table->string('ISO', 10)->nullable(); // Reduced from 255 to 10 (e.g., "ISO-400")
-            $table->string('dimensions', 12)->nullable(); // Reduced to 12 (e.g., "1920x1080")
-            $table->timestamps(); // Unchanged
-            $table->unsignedBigInteger('content_photo_id'); // Matches content_photo.id
+            $table->id();
+            $table->date('collection_date');
+            $table->unsignedInteger('file_size');
+            $table->string('aperture', 10)->nullable();
+            // $table->string('tag', 50)->nullable();
+            $table->string('location', 100)->nullable();
+            $table->string('model', 50)->nullable();
+            $table->string('ISO', 10)->nullable();
+            $table->string('dimensions', 12)->nullable();
+            $table->timestamps();
+            $table->unsignedBigInteger('content_photo_id');
             $table->foreign('content_photo_id')
                 ->references('id')
                 ->on('content_photo')

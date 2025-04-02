@@ -62,8 +62,8 @@ class ContentPhotoResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('alt_text')
                     ->maxLength(255),
-                Forms\Components\Textarea::make('note')
-                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('tag')
+                    ->maxLength(255),
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
@@ -101,6 +101,8 @@ class ContentPhotoResource extends Resource
                 Tables\Columns\ImageColumn::make('image_url')
                     ->disk('public'),
                 Tables\Columns\TextColumn::make('categoryContents.category.category_name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tag')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_comments') // Accessor
                     ->label('Total Comments')
