@@ -11,11 +11,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('user_comments', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
             $table->text('content');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('content_photo_id')->nullable();
-            $table->unsignedBigInteger('content_video_id')->nullable();
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('content_photo_id')->nullable();
+            $table->unsignedInteger('content_video_id')->nullable();
             $table->enum('status', ['published', 'hidden', 'deleted'])->default('published');
             $table->timestamps();
             $table->foreign('user_id')

@@ -4,18 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('category_content', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('content_photo_id')->nullable();
-            $table->unsignedBigInteger('content_video_id')->nullable();
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT
+            $table->unsignedSmallInteger('category_id');
+            $table->unsignedInteger('content_photo_id')->nullable();
+            $table->unsignedInteger('content_video_id')->nullable();
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

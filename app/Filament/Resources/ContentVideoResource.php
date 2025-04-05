@@ -152,6 +152,7 @@ class ContentVideoResource extends Resource
                         'heroicon-o-check-circle' => 'Approved',
                         'heroicon-o-x-circle' => 'Rejected',
                     ])
+                    ->description(fn(ContentVideo $record): string => $record->note)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('approved_at')
                     ->dateTime()

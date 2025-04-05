@@ -11,11 +11,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('content_reactions', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id'); // Pengguna yang memberikan reaksi
-            $table->unsignedBigInteger('content_photo_id')->nullable();
-            $table->unsignedBigInteger('content_video_id')->nullable();
-            $table->unsignedBigInteger('reaction_type_id'); // Jenis reaksi
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT
+            $table->unsignedInteger('user_id'); // Pengguna yang memberikan reaksi
+            $table->unsignedInteger('content_photo_id')->nullable();
+            $table->unsignedInteger('content_video_id')->nullable();
+            $table->unsignedTinyInteger('reaction_type_id'); // Jenis reaksi
             $table->timestamps();
 
             $table->foreign('content_photo_id')->references('id')->on('content_photo')->onDelete('cascade');

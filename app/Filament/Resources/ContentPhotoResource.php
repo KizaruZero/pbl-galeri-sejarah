@@ -152,6 +152,7 @@ class ContentPhotoResource extends Resource
                         'heroicon-o-check-circle' => 'Approved',
                         'heroicon-o-x-circle' => 'Rejected',
                     ])
+                    ->description(fn(ContentPhoto $record): string => $record->note ?? '')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -189,10 +190,6 @@ class ContentPhotoResource extends Resource
                             ->body('The content has been approved!')
                             ->success()
                             ->sendToDatabase(auth()->user())
-                            ->actions([
-                                Action::make('view')
-                                    ->button()
-                            ])
                             ->send();
                         return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),

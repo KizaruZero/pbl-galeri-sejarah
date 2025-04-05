@@ -11,20 +11,20 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('content_video', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
             $table->string('title', 120);
             $table->string('slug', 130)->unique();
-            $table->string('video_url', 220)->nullable();
-            $table->string('thumbnail', 220);
+            $table->string('video_url', 100)->nullable();
+            $table->string('thumbnail', 100);
             $table->string('link_youtube', 50)->nullable();
-            $table->text('description')->nullable();
-            $table->text('note')->nullable();
+            $table->string('description', 255)->nullable();
+            $table->string('note', 50)->nullable();
             $table->string('source', 50);
-            $table->string('tag', 50)->nullable();
+            $table->string('tag', 75)->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->unsignedInteger('total_views')->default(0);
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedInteger('user_id');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

@@ -11,10 +11,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('user_favorites', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id'); // Matches users.id
-            $table->unsignedBigInteger('content_photo_id')->nullable();
-            $table->unsignedBigInteger('content_video_id')->nullable();
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT
+            $table->unsignedInteger('user_id'); // Matches users.id
+            $table->unsignedInteger('content_photo_id')->nullable();
+            $table->unsignedInteger('content_video_id')->nullable();
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')

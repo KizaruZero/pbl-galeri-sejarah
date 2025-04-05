@@ -11,16 +11,16 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('content_photo', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
             $table->string('title', 150);
             $table->string('slug', 160)->unique();
-            $table->unsignedBigInteger('user_id');
-            $table->string('image_url', 220);
-            $table->text('description')->nullable();
-            $table->string('source', 100);
-            $table->string('alt_text', 120)->nullable();
-            $table->string('tag', 50)->nullable();
-            $table->text('note')->nullable();
+            $table->unsignedInteger('user_id');
+            $table->string('image_url', 100);
+            $table->string('description', 255)->nullable();
+            $table->string('source', 50);
+            $table->string('alt_text', 100)->nullable();
+            $table->string('tag', 75)->nullable();
+            $table->string('note', 50)->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->unsignedInteger('total_views')->default(0);

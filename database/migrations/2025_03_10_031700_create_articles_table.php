@@ -11,17 +11,17 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('articles', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedSmallInteger('id')->autoIncrement()->primary(); // UNSIGNED TINYINT (0-255)
             $table->string('title', 120);
             $table->string('slug', 130)->unique();
             $table->longText('content');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
-            $table->string('image_url', 220)->nullable();
-            $table->string('thumbnail_url', 220)->nullable();
+            $table->string('image_url', 100)->nullable();
+            $table->string('thumbnail_url', 100)->nullable();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->timestamp('published_at')->nullable()->index();
             $table->unsignedInteger('total_views')->default(0);

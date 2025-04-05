@@ -11,14 +11,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
             $table->string('google_id', 50)->nullable();
             $table->string('name', 100);
             $table->string('email', 120)->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password', 60);
-            $table->string('role')->default('member');
-            $table->string('photo_profile', 200)->nullable();
+            $table->string('password', 255);
+            $table->enum('role', ['member', 'author', 'superadmin', 'direktur'])->default('member');
+            $table->string('photo_profile', 100)->nullable();
             $table->timestamps();
         });
 

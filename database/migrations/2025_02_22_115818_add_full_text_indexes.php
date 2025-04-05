@@ -9,10 +9,10 @@ class AddFulltextIndexes extends Migration
     public function up()
     {
         // Tambahkan FULLTEXT indexes untuk kedua tabel
-        DB::statement('ALTER TABLE content_photo ADD FULLTEXT search_index (title, description, note, alt_text)');
-        DB::statement('ALTER TABLE content_video ADD FULLTEXT search_index (title, description, note)');
-        DB::statement('ALTER TABLE metadata_photo ADD FULLTEXT metadata_search_index (location, tag)');
-        DB::statement('ALTER TABLE metadata_video ADD FULLTEXT metadata_search_index (location, tag)');
+        DB::statement('ALTER TABLE content_photo ADD FULLTEXT search_index (title, description, note, alt_text, tag)');
+        DB::statement('ALTER TABLE content_video ADD FULLTEXT search_index (title, description, note, tag)');
+        DB::statement('ALTER TABLE metadata_photo ADD FULLTEXT metadata_search_index (location)');
+        DB::statement('ALTER TABLE metadata_video ADD FULLTEXT metadata_search_index (location)');
         DB::statement('ALTER TABLE user_comments ADD FULLTEXT comment_search_index (content)');
 
     }

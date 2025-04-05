@@ -11,8 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('reactions', function (Blueprint $table) {
-            $table->id();
-            $table->string('react_type', 15); // Nama reaksi (e.g., like, dislike, love)
+            $table->unsignedTinyInteger('id')->autoIncrement()->primary(); // UNSIGNED TINYINT (0-255)
+            $table->string('react_type', 10); // Nama reaksi (e.g., like, dislike, love)
             $table->timestamps();
         });
     }

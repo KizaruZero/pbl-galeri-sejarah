@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,9 +12,9 @@ return new class extends Migration
     {
         Schema::create('user_reactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // Pengguna yang memberikan reaksi
-            $table->unsignedBigInteger('comment_id'); // Komentar yang direaksi
-            $table->unsignedBigInteger('reaction_type_id'); // Jenis reaksi
+            $table->unsignedInteger('user_id'); // Pengguna yang memberikan reaksi
+            $table->unsignedInteger('comment_id'); // Komentar yang direaksi
+            $table->unsignedTinyInteger('reaction_type_id'); // Jenis reaksi
             $table->timestamps();
 
             // Foreign keys

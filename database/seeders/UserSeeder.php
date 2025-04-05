@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
                 'name' => 'kizaru kaede',
                 'email' => 'kizarukaede@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'admin',
+                'role' => '3',
             ],
             [
                 'name' => 'ardya pusaka',
@@ -31,31 +31,31 @@ class UserSeeder extends Seeder
                 'name' => 'kizaru',
                 'email' => 'kizaru@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'member',
+                'role' => '1',
             ],
             [
                 'name' => 'akainu',
                 'email' => 'akainu@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'admin',
+                'role' => '3',
             ],
             [
                 'name' => 'aokiji',
                 'email' => 'aokiji@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'member',
+                'role' => '1',
             ],
             [
                 'name' => 'fujitora',
                 'email' => 'fujitora@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'superadmin',
+                'role' => '2',
             ],
             [
                 'name' => 'ryokugyu',
                 'email' => 'ryokugyu@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'manager',
+                'role' => '4',
             ],
         ];
 
