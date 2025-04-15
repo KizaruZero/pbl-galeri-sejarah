@@ -63,4 +63,4 @@ Route::get('/oauth/google/redirect', [AuthenticatedSessionController::class, 're
     ->name('google.redirect');
 Route::get('/oauth/google/callback', [AuthenticatedSessionController::class, 'handleGoogleCallback'])
     ->name('google.callback');
-
+    
