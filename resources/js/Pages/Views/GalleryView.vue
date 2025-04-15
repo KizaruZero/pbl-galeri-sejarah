@@ -11,9 +11,9 @@
 </template>
 
 <script setup>
-  import MainLayout from '../components/layouts/MainLayout.vue';
-  import HeroSection from '../components/GalleryPage/HeroSection.vue'
-  import ImageGallery from '../components/GalleryPage/ImageGallery.vue'
-  // import TrendingEvents from '../components/BudayaPage/TrendingEvents.vue'
-  import UpcomingEvent from '../components/LandingPage/UpcomingEvent.vue'
+  import MainLayout from '@/Layouts/MainLayout.vue';
+  import HeroSection from '@/Components-landing/GalleryPage/HeroSection.vue'
+  import ImageGallery from '@/Components-landing/GalleryPage/ImageGallery.vue'
+  // import TrendingEvents from '@/Components-landing/BudayaPage/TrendingEvents.vue'
+  import UpcomingEvent from '@/Components-landing/LandingPage/UpcomingEvent.vue'
 </script>

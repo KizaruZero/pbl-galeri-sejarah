@@ -1,8 +1,8 @@
 <template>
     <section class="px-20 pt-11 pb-5 w-full bg-black bg-opacity-70 max-md:px-5 max-md:max-w-full">
         <div class="flex gap-5 max-md:flex-col">
-            <GalleryColumn 
-                v-for="(images, index) in [firstColumnImages, secondColumnImages, thirdColumnImages]" 
+            <GalleryColumn
+                v-for="(images, index) in [firstColumnImages, secondColumnImages, thirdColumnImages]"
                 :key="index"
                 :images="images"
                 class="max-md:w-3/4 max-sm:w-1/2 mx-auto"
