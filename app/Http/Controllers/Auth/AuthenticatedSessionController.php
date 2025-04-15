@@ -81,6 +81,8 @@ class AuthenticatedSessionController extends Controller
 
     public function handleGoogleCallback()
     {
+        try {
+
         $googleUser = Socialite::driver('google')->user();
 
         // First try to find user by google_id
@@ -104,9 +106,16 @@ class AuthenticatedSessionController extends Controller
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
+                'password' => bcrypt(Str::random(16)), // Generate a random password
                 'email_verified_at' => now(),
             ]);
         }
+    } catch (\Exception $e) {
+        \Log::error('Google OAuth Error: ' . $e->getMessage());
+        return redirect()->route('login')->withErrors([
+            'google' => 'Failed to authenticate with Google. Please try again.'
+        ]);
+    }
         Auth::login($user, true);
         return redirect()->intended(route('/'));  // Make sure 'home' is a valid route name
     }

@@ -15,7 +15,7 @@
         "joshembling/image-optimizer": "^1.5",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
-        "laravel/socialite": "^5.18",
+        "laravel/socialite": "^5.19",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "3.5.12",
         "rupadana/filament-api-service": "^3.4",
