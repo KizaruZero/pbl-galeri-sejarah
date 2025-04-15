@@ -1,7 +1,7 @@
 <template>
     <section class="relative flex items-center justify-center w-full h-screen max-sm:h-[500px]">
         <img 
-            src="@/assets/img/budaya/budaya.jpg" 
+            src="@assets/budaya/budaya.jpg" 
             class="absolute top-0 left-0 w-full h-full object-cover" 
             alt="Keraton Solo background image"
         />

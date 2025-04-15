@@ -8,9 +8,9 @@
 </template>
 
 <script setup>
-    import MainLayout from '@/components/layouts/MainLayout.vue'
-    import HeroSection from '@/components/BudayaPage/HeroSection.vue';
-    import ImageGallery from '@/components/BudayaPage/ImageGallery.vue';
-    import TrendingEvents from '@/components/BudayaPage/TrendingEvents.vue';
-    import JoinUs from '@/components/JoinUsSection.vue';
+    import MainLayout from '@/Layouts/MainLayout.vue'
+    import HeroSection from '@/Components-landing/BudayaPage/HeroSection.vue';
+    import ImageGallery from '@/Components-landing/BudayaPage/ImageGallery.vue';
+    import TrendingEvents from '@/Components-landing/BudayaPage/TrendingEvents.vue';
+    import JoinUs from '@/Components-landing/JoinUsSection.vue';
 </script>
