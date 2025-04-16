@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Models\Article;
 
 /**
  * Halaman Utama (Welcome)
@@ -21,10 +22,19 @@ Route::get('/', function () {
  * Routing Vue Pages (non-auth)
  */
 Route::get('/events', fn () => Inertia::render('Views/BudayaView'));
-Route::get('/history', fn () => Inertia::render('Views/SejarahView'));
+Route::get('/article', fn () => Inertia::render('Views/SejarahView'));
 Route::get('/gallery', fn () => Inertia::render('Views/GalleryView'));
 Route::get('/profile-page', fn () => Inertia::render('ProfileView')); // Ganti nama agar tidak bentrok dengan /profile milik auth
-Route::get('/detail/{slug}', fn ($slug) => Inertia::render('DetailSejarah', ['slug' => $slug]));
+// Route::get('/detail/{slug}', fn ($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('article.detail');
+
+
+// TEST
+Route::get('articles/{slug}', function ($slug) {
+    $article = Article::where('slug', $slug)->firstOrFail();
+    return response()->json([
+        'data' => $article
+    ]);
+})->name('article.detail');
 
 /**
  * Routing untuk pengguna terautentikasi

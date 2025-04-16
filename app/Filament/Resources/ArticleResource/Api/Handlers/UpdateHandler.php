@@ -9,6 +9,8 @@ use App\Filament\Resources\ArticleResource\Api\Requests\UpdateArticleRequest;
 class UpdateHandler extends Handlers {
     public static string | null $uri = '/{id}';
     public static string | null $resource = ArticleResource::class;
+    public static bool $public = true;
+
 
     public static function getMethod()
     {

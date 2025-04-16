@@ -9,6 +9,8 @@ use App\Filament\Resources\ArticleResource\Api\Requests\CreateArticleRequest;
 class CreateHandler extends Handlers {
     public static string | null $uri = '/';
     public static string | null $resource = ArticleResource::class;
+    public static bool $public = true;
+
 
     public static function getMethod()
     {
