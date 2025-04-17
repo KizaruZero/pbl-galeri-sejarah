@@ -1,5 +1,5 @@
-<template>
-    <section class="px-20 pt-11 pb-5 w-full bg-black bg-opacity-70 max-md:px-5 max-md:max-w-full">
+<!-- <template>
+    <section class="px-20 pt-11 pb-5 w-full bg-black max-md:px-5 max-md:max-w-full">
         <div class="flex gap-5 max-md:flex-col">
             <GalleryColumn :images="firstColumnImages" />
             <GalleryColumn :images="secondColumnImages" />
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import GalleryColumn from "@/components/GalleryColumn.vue";
+    import GalleryColumn from "@/Components-landing/GalleryColumn.vue";
 
     export default {
         name: "ImageGallery",
@@ -56,4 +56,60 @@
             };
         },
     };
-</script>
+</script> -->
+
+<template>
+    <article
+      class="overflow-hidden bg-black rounded-xl shadow-md cursor-pointer 
+             transition-all duration-300 hover:scale-105 hover:shadow-lg"
+    >
+      <img
+        :src="imageUrl"
+        :alt="title"
+        class="w-full h-[240px] md:h-[280px] lg:h-[320px] object-cover rounded-t-xl"
+      />
+      <div class="p-5 text-center">
+        <h3 class="font-semibold text-white leading-snug" :class="titleClass">
+          {{ title }}
+        </h3>
+        <p class="mt-2 text-sm text-white leading-relaxed">
+          {{ description }}
+        </p>
+      </div>
+    </article>
+  </template>
+  
+  <script setup>
+  import { computed } from "vue";
+  
+  const props = defineProps({
+    imageUrl: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    titleSize: {
+      type: String,
+      default: "lg",
+      validator: (value) => ["xs", "sm", "base", "lg", "xl"].includes(value),
+    },
+  });
+  
+  const titleClass = computed(() => {
+    return {
+      xs: "text-sm",
+      sm: "text-base",
+      base: "text-lg",
+      lg: "text-xl",
+      xl: "text-2xl",
+    }[props.titleSize] || "text-lg";
+  });
+  </script>
+  

@@ -1,8 +1,8 @@
 <template>
-  <footer class="bg-black text-white py-10 px-30 flex flex-wrap justify-between text-center md:text-left">
+  <footer class="bg-black text-white py-10 px-20 flex flex-wrap justify-between text-center md:text-left">
     <!-- Bagian Kiri: Logo -->
-    <div class="md:w-1/3 w-full flex flex-col gap-4 items-center md:items-start">
-      <div class="flex items-center gap-4">
+    <div class="md:w-1/3 w-full flex flex-col gap-2 items-center md:items-start">
+      <div class="flex items-center gap-5">
         <img src="@assets/Logo/LOGO.png" class="object-contain w-16" alt="Kasunanan logo" />
         <div class="flex flex-col">
           <h2 class="text-2xl uppercase font-semibold leading-tight">Kasunanan</h2>
@@ -13,7 +13,7 @@
 
     <!-- Bagian Tengah: Navigasi -->
     <div class="md:w-1/3 w-full flex flex-col items-center md:items-center order-2 md:order-none mt-6 md:mt-0">
-      <nav class="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm uppercase">
+      <nav class="grid grid-cols-2 md:grid-cols-3 gap-10 text-sm uppercase">
         <router-link to="/" class="hover:underline">Home</router-link>
         <router-link to="/member" class="hover:underline">Member</router-link>
         <router-link to="/events" class="hover:underline">Events</router-link>
