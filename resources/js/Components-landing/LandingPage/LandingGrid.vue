@@ -1,28 +1,30 @@
 <template>
-  <div class="relative flex flex-col bg-black px-5">
-    <div class="flex items-center justify-between flex-wrap gap-4">
-      <h1 class="ml-20 text-white text-4xl md:text-5xl font-serif mt-10 text-center relative">
-        <span class="block w-24 h-0.5 bg-white mb-8"></span>
-        Tranding Content
-        <span class="block w-full h-0.5 bg-white mt-8"></span>
-      </h1>
-    </div>
-  </div>
+  <section class="w-full bg-black py-16 px-6 md:px-10">
+    <div class="max-w-[1192px] mx-auto">
+      <!-- Judul -->
+      <div class="flex flex-col items-center text-white mb-12">
+        <span class="w-full h-0.5 bg-white mb-6"></span>
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">
+          Highlight Events
+        </h1>
+        <span class="w-full h-0.5 bg-white mt-6"></span>
+      </div>
 
-<section class="p-10 w-full bg-black">
-  <div
-    class="grid grid-cols-3 gap-14 mx-auto max-w-[1192px] max-md:grid-cols-2 max-sm:grid-cols-1"
-  >
-      <LandingCard
-      v-for="event in events"
-      :key="event.title"
-      :imageUrl="event.imageUrl"
-      :title="event.title"
-      :titleSize="event.titleSize"
-      :description="event.description"
-    />
-  </div>
-</section>
+      <!-- Grid Card -->
+      <div
+        class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        >
+          <LandingCard
+          v-for="event in events"
+          :key="event.title"
+          :imageUrl="event.imageUrl"
+          :title="event.title"
+          :titleSize="event.titleSize"
+          :description="event.description"
+        />
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup>

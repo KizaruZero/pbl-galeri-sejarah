@@ -1,35 +1,38 @@
 <template>
-  <div class="relative flex flex-col bg-black px-5">
-    <div class="flex items-center justify-between flex-wrap gap-4">
-      <h1 class="ml-20 text-white text-4xl md:text-5xl font-serif mt-10 text-center relative">
-        <span class="block w-24 h-0.5 bg-white mb-8"></span>
-        Articles
-        <span class="block w-full h-0.5 bg-white mt-8"></span>
-      </h1>
-    </div>
+  <section class="w-full bg-black py-16 px-6 md:px-10">
+    <div class="max-w-[1192px] mx-auto">
+      <!-- Judul -->
+      <div class="flex flex-col items-center text-white mb-12">
+        <span class="w-full h-0.5 bg-white mb-6"></span>
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">
+         Articles
+        </h1>
+        <span class="w-full h-0.5 bg-white mt-6"></span>
+      </div>
 
-  <div class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-6 bg-black p-4 sm:p-6">
-    <article
-      v-for="(item, index) in articles"
-      :key="index"
-      @click="goToDetail(item)"
-      class="overflow-hidden px-4 pt-4 pb-6 text-white cursor-pointer transition hover:scale-105 
-             w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[470px] text-center"
-        >
-        <img
-          :src="item.image"
-          class="object-cover w-full aspect-[1.38] rounded-t-lg"
-          :alt="item.title"
-        />
-        <h2 class="mt-3 text-base sm:text-lglg:text-2xl font-semibold leading-tight">
-        {{ item.title }}
-        </h2>
-        <p class="mt-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
-        {{ item.content }}
-        </p>
-      </article>
+    <div class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-6 bg-black p-4 sm:p-6">
+      <article
+        v-for="(item, index) in articles"
+        :key="index"
+        @click="goToDetail(item)"
+        class="overflow-hidden px-4 pt-4 pb-6 text-white cursor-pointer transition hover:scale-105 
+              w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[470px] text-center"
+          >
+          <img
+            :src="item.image"
+            class="object-cover w-full aspect-[1.38] rounded-t-lg"
+            :alt="item.title"
+          />
+          <h2 class="mt-3 text-base sm:text-lglg:text-2xl font-semibold leading-tight">
+          {{ item.title }}
+          </h2>
+          <p class="mt-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
+          {{ item.content }}
+          </p>
+        </article>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
