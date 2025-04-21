@@ -4,7 +4,7 @@
             href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
         <link href="https://fonts.googleapis.com/css2?family=Bellefair&family=Poppins:wght@300;400&display=swap"
             rel="stylesheet" />
-        <article class="relative px-5 py-20 mx-auto my-0 max-w-screen-xl">
+        <article class="relative px-5 py-10 mx-auto my-0 max-w-screen-xl">
             <Carousel :value="royalItems" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions" circular
                 :autoplayInterval="5000">
                 <template #item="slotProps">
@@ -16,15 +16,15 @@
                         <!-- Hero Content -->
                         <section class="relative">
                             <h1
-                                class="mb-10 text-8xl text-white uppercase max-w-[764px] max-md:text-7xl max-sm:text-5xl">
+                                class="mb-6 text-5xl text-white uppercase max-w-[600px] max-md:text-4xl max-sm:text-3xl">
                                 {{ slotProps.data.title }}
                             </h1>
                             <p
-                                class="mb-8 text-2xl leading-10 text-white max-w-[442px] max-md:max-w-full max-md:text-2xl max-sm:text-lg">
+                                class="mb-4 text-lg leading-7 text-white max-w-[400px] max-md:max-w-full max-md:text-base max-sm:text-sm">
                                 {{ slotProps.data.description }}
                             </p>
                             <p
-                                class="text-2xl leading-10 text-white max-w-[811px] ml-[466px] max-md:max-w-full max-md:text-xl max-sm:text-base max-md:ml-0 max-md:mt-4">
+                                class="text-lg leading-7 text-white max-w-[600px] ml-[460px] max-md:max-w-full max-md:text-base max-sm:text-sm max-md:ml-0 max-md:mt-4">
                                 {{ slotProps.data.detailedDescription }}
                             </p>
                         </section>

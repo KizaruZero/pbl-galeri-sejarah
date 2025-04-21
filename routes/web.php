@@ -21,20 +21,11 @@ Route::get('/', function () {
 /**
  * Routing Vue Pages (non-auth)
  */
-Route::get('/events', fn () => Inertia::render('Views/BudayaView'));
-Route::get('/article', fn () => Inertia::render('Views/SejarahView'));
+Route::get('/events', fn () => Inertia::render('Views/EventView'));
+Route::get('/article', fn () => Inertia::render('Views/ArticleView'));
 Route::get('/gallery', fn () => Inertia::render('Views/GalleryView'));
 Route::get('/profile-page', fn () => Inertia::render('ProfileView')); // Ganti nama agar tidak bentrok dengan /profile milik auth
-// Route::get('/detail/{slug}', fn ($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('article.detail');
-
-
-// TEST
-Route::get('articles/{slug}', function ($slug) {
-    $article = Article::where('slug', $slug)->firstOrFail();
-    return response()->json([
-        'data' => $article
-    ]);
-})->name('article.detail');
+Route::get('/detail/{slug}', fn ($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug])) -> name('Detail');
 
 /**
  * Routing untuk pengguna terautentikasi
