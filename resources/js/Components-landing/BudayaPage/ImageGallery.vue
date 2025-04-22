@@ -1,8 +1,27 @@
 <template>
     <section class="px-20 pt-11 pb-5 w-full bg-black bg-opacity-70 max-md:px-5 max-md:max-w-full">
-        <div class="flex gap-5 max-md:flex-col">
+        <!-- Loading State -->
+        <div v-if="loading" class="text-center text-white py-10">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+            <p class="mt-2">Memuat galeri...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div v-if="error" class="text-center text-red-400 py-10">
+            <p class="font-medium">Gagal memuat galeri</p>
+            <p class="text-sm">{{ error }}</p>
+            <button 
+                @click="fetchPhotos"
+                class="mt-3 px-4 py-2 bg-white text-black rounded hover:bg-gray-200 transition"
+            >
+                Coba Lagi
+            </button>
+        </div>
+        
+        <!-- Gallery Content -->
+        <div v-if="!loading && !error" class="flex gap-5 max-md:flex-col">
             <GalleryColumn
-                v-for="(images, index) in [firstColumnImages, secondColumnImages, thirdColumnImages]"
+                v-for="(images, index) in columnImages"
                 :key="index"
                 :images="images"
                 class="max-md:w-3/4 max-sm:w-1/2 mx-auto"
@@ -13,62 +32,73 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import axios from "axios";
 import GalleryColumn from "@/Components-landing/GalleryColumn.vue";
 
 const router = useRouter();
+const photos = ref([]);
+const loading = ref(true);
+const error = ref(null);
 
+// Fetch photos from API
+const fetchPhotos = async () => {
+    try {
+        loading.value = true;
+        error.value = null;
+        const response = await axios.get('/api/content-photo');
+        
+        if (!response.data || response.data.length === 0) {
+            throw new Error('Tidak ada foto yang tersedia');
+        }
+        
+        photos.value = response.data;
+    } catch (err) {
+        error.value = err.response?.data?.message || err.message || 'Terjadi kesalahan saat memuat galeri';
+        console.error('Error fetching photos:', err);
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Distribute photos to columns
+const columnImages = computed(() => {
+    if (!photos.value.length) return [[], [], []];
+    
+    const columns = [[], [], []];
+    photos.value.forEach((photo, index) => {
+        const columnIndex = index % 3;
+        
+        columns[columnIndex].push({
+            src: photo.metadata_photo?.photo_url || '/placeholder-image.jpg',
+            aspectRatio: getAspectRatio(photo),
+            marginTop: index > 2 ? 'mt-6' : '',
+            description: photo.description || photo.title || 'Foto budaya',
+            id: photo.id,
+            slug: photo.slug
+        });
+    });
+    
+    return columns;
+});
+
+// Helper function to determine aspect ratio
+const getAspectRatio = (photo) => {
+    // You can customize this based on your needs
+    const ratios = ["aspect-[0.55]", "aspect-[0.76]", "aspect-[1.22]"];
+    return ratios[photo.id % ratios.length] || "aspect-square";
+};
+
+// Navigate to detail page
 const goToDetail = (image) => {
     router.push({
-        name: 'ImageDetail',
-        query: { imageUrl: image.src, description: image.description }
+        name: 'budaya.detail',
+        params: { slug: image.slug }
     });
 };
 
-const firstColumnImages = ref([
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/d7260aac685e61947191f18b4cf411e594f892d9188d25d0fa47b26526c21632?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[0.55]",
-        description: "Gambar pertama di kolom pertama."
-    },
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/243121631cf3be049eec15e3d96b08a1f53a2162ca0ff4fdd82eda8fbd40e220?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[1.35]",
-        marginTop: "mt-6",
-        description: "Gambar kedua di kolom pertama."
-    },
-]);
-
-const secondColumnImages = ref([
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/1599eb55718778980605f80b0e499339a7b43dec1d5d06c7ff07ebd8873dcae7?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[0.76]",
-        description: "Gambar pertama di kolom kedua."
-    },
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/38b70a1f4adba7e23b30f66bac719c6e63de893995deabb794461fcfe3c32265?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[0.79]",
-        marginTop: "mt-3.5",
-        description: "Gambar kedua di kolom kedua."
-    },
-]);
-
-const thirdColumnImages = ref([
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/e500a86a9ee6b3b987abdfdf2529a869eb451fad7cdfc55b13fa0e2ffa1cb10b?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[1.22]",
-        description: "Gambar pertama di kolom ketiga."
-    },
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/487fe555b476520c3867cb24939b559619b95c94cc478aedc00c42f02aa8456b?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[1.22]",
-        description: "Gambar kedua di kolom ketiga."
-    },
-    {
-        src: "https://cdn.builder.io/api/v1/image/assets/79875f50433f4dddb865cc88bfb43a5c/575d9d1d1885c52de693ef10a84fb9f862e3c528a1957bffc9e03ee971cab9ff?placeholderIfAbsent=true",
-        aspectRatio: "aspect-[1.04]",
-        description: "Gambar ketiga di kolom ketiga."
-    },
-]);
+onMounted(() => {
+    fetchPhotos();
+});
 </script>
