@@ -11,62 +11,131 @@
       </div>
 
       <!-- Grid Card -->
-      <div
-        class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-      >
+      <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <EventCard
-          v-for="event in events"
-          :key="event.title"
-          :imageUrl="event.imageUrl"
-          :title="event.title"
-          :titleSize="event.titleSize"
-          :description="event.description"
+          v-for="photo in photos"
+          :key="photo.slug"
+          :imageUrl="photo.imageUrl"
+          :title="photo.title"
+          :description="photo.description || 'No description available'"
+          :titleSize="'lg'"
+          @click="openModal(photo)"
         />
+      </div>
+
+      <!-- Popup Modal -->
+      <div v-if="selectedPhoto" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white bg-opacity-75 rounded-lg max-w-md w-full p-6 relative">
+          <button 
+            @click="closeModal"
+            class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <img 
+            :src="selectedPhoto.imageUrl" 
+            :alt="selectedPhoto.altText" 
+            class="w-full h-48 object-cover rounded-t-lg mb-4"
+          >
+          
+          <h2 class="text-xl font-bold mb-2">{{ selectedPhoto.title }}</h2>
+          
+          <p class="text-gray-600 mb-4">
+            {{ getFirstThreeWords(selectedPhoto.description) }}...
+          </p>
+          
+          <button
+            @click="goToDetailPage(selectedPhoto.slug)"
+            class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+          >
+            View All
+          </button>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import EventCard from "./EventCard.vue";
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import EventCard from './EventCard.vue';
+import axios from 'axios';
 
-const events = ref([
-  {
-    imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/bbce6064e372b518016b5bd89ff3d1e08d9bf725",
-    title: "Kirab Malam Selikuran",
-    titleSize: "xl",
-    description: "Kirab malam selikuran yang merupakan tradisi Keraton Solo pada malam ke-21 Ramadan menjadi AGENDA yang menarik untuk disaksikan di Kota solo malam hari ini",
-  },
-  {
-    imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/d2d9e37b40369f6b616466bc50e1394d5a3d2e42",
-    title: "Siniar Lokananta bersama Ngobryls",
-    titleSize: "sm",
-    description: "Merayakan Hari Musik Nasional, Lokananta Bloc menggelar event live podcast bertajuk Siniar Lokananta #1 di Tribune Undakan Nada, Lokananta.",
-  },
-  {
-    imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/15ffec671add0876b639a0ce0d9b000b76dddac4",
-    title: "Pameran Seni Lukis Imlek",
-    titleSize: "sm",
-    description: "Pameran Seni Lukis Imlek 2025 digelar di lantai II Solo Grand Mall selama lima hari pada 1-5 Februari 2025",
-  },
-  {
-    imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/1ca90f60a4bfd48b46c5bd6ee960cd242b054ec7",
-    title: "Lari Sore di Solo Safari",
-    titleSize: "base",
-    description: "Mau healing sekaligus berolahraga selepas beraktivitas seharian? Lari sore di Solo Safari bisa jadi agenda yang layak dicoba.",
-  },
-  {
-    imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/b87ebeeefa999d6ac1a43b2013f4bba5419d7997",
-    title: "Solopos Youth Forum",
-    titleSize: "base",
-    description: "Solopos Media Group menggelar acara talkshow spektakuler Solopos Youth Forum 2025: Young People and Sustainability, Kreatif Menguasai Teknologi dan Kolaboratif.",
-  },
-  {
-    imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/b682f325f1187b9fdfbeab4a3f38fa218b4554e2",
-    title: "Sendratari Ramayana di Taman Balekambang",
-    titleSize: "sm",
-    description: "Sendratari Candra Purnama Ramayana malam ini menampilkan lakon Sayembara Alengka. Pertunjukan berlangsung di Amphitheater TAMAN BALEKAMBANG.",
-  },
-]);
+const router = useRouter();
+const photos = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const selectedPhoto = ref(null);
+
+const openModal = (photo) => {
+  selectedPhoto.value = photo;
+};
+
+const closeModal = () => {
+  selectedPhoto.value = null;
+};
+
+const getFirstThreeWords = (description) => {
+  if (!description) return '';
+  const words = description.split(' ');
+  return words.slice(0, 3).join(' ');
+};
+
+const goToDetailPage = (slug) => {
+  router.push(`/photo/${slug}`);
+};
+
+onMounted(async () => {
+  const options = {
+    method: 'GET',
+    url: 'http://127.0.0.1:8000/api/content-photos',
+    headers: {
+      Accept: 'application/json',
+      Authorization: 'Bearer 123' // Sesuaikan dengan token sebenarnya jika dibutuhkan
+    }
+  };
+
+  try {
+    const response = await axios.request(options);
+    const photoArray = Array.isArray(response.data)
+      ? response.data
+      : response.data.data || [];
+
+    photos.value = photoArray.map(photo => ({
+      imageUrl: photo.image_url
+        ? (photo.image_url.startsWith('http')
+            ? photo.image_url
+            : `/storage/${photo.image_url.replace(/^public\//, '')}`)
+        : '/default-photo.jpg',
+      title: photo.title || 'Untitled',
+      titleSize: 'base',
+      description: photo.description || 'No description available',
+      slug: photo.slug,
+      altText: photo.alt_text || '',
+      tags: photo.tags || []
+    }));
+  } catch (err) {
+    console.error('Gagal mengambil data photo:', err);
+    error.value = 'Gagal mengambil data';
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
+
+<style scoped>
+/* Tambahan animasi untuk modal */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+</style>
