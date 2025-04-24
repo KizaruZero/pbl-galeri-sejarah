@@ -7,12 +7,9 @@
           Upcoming Events
           <span class="block w-full h-0.5 bg-white mt-6 md:mt-8"></span>
         </h1>
-  
-        <button
-          class="flex items-center justify-center w-[60px] h-[60px] md:w-[70px] md:h-[70px] rounded-full border border-white text-white text-base md:text-lg transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black"
-        >
-          <span class="z-10">View</span>
-        </button>
+        <Link href="/events" class="flex items-center justify-center w-[60px] h-[60px] md:w-[70px] md:h-[70px] rounded-full border border-white text-white text-base md:text-lg transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black"
+        >View All
+        </Link>
       </div>
   
       <!-- Carousel -->
@@ -68,6 +65,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { Link } from '@inertiajs/vue3';
 import KirabImage from "@assets/landing/kirab.png";
 import Wilujengan from "@assets/landing/wilujengan.png";
 import Grebeg from "@assets/landing/grebeg.png";
