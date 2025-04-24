@@ -22,6 +22,11 @@ Route::get('/', function () {
  * Routing Vue Pages (non-auth)
  */
 Route::get('/events', fn () => Inertia::render('Views/EventView'));
+
+Route::get('/photo/{slug}', function () {
+    return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+});
+
 Route::get('/article', fn () => Inertia::render('Views/ArticleView'));
 Route::get('/gallery', fn () => Inertia::render('Views/GalleryView'));
 Route::get('/profile-page', fn () => Inertia::render('ProfileView')); // Ganti nama agar tidak bentrok dengan /profile milik auth
