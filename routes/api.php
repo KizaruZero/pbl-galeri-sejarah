@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\UserController;
 
 
 Route::get('/user', function (Request $request) {
@@ -20,3 +21,11 @@ Route::get('/content-video', [VideoController::class, 'index']);
 Route::get('/content-video/{slug}', [VideoController::class, 'show']);
 Route::get('/article', [ArticleController::class, 'index']);
 Route::get('/article/{slug}', [ArticleController::class, 'show']);
+
+// Route baru untuk user
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{id}', [UserController::class, 'show']);
+Route::get('/content-photo/user/{userId}', [PhotoController::class, 'getPhotoByUser']);
+Route::get('/favorite/user/{userId}', [PhotoController::class, 'getFavoriteByUser']);
+Route::get('/content-video/user/{userId}', [VideoController::class, 'getVideoByUser']);
+Route::get('/favorite/user/{userId}', [VideoController::class, 'getFavoriteByUser']);
