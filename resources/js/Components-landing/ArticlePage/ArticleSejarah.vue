@@ -8,11 +8,11 @@
              w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[470px] text-center"
     >
       <img
-        :src="item.image"
+        :src="item.image_url"
         class="object-cover w-full aspect-[1.38] rounded-t-lg"
         :alt="item.title"
       />
-      <h2 class="mt-3 text-base sm:text-lglg:text-2xl font-semibold leading-tight">
+      <h2 class="mt-3 text-base sm:text-lg lg:text-2xl font-semibold leading-tight">
         {{ item.title }}
       </h2>
       <p class="mt-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
@@ -23,76 +23,28 @@
 </template>
 
 <script setup>
-import { router } from "@inertiajs/vue3";
-import pusakaImage from "@assets/Sejarah/pusaka.png";
-import gerbongImage from "@assets/Sejarah/gerbong.png";
-import latbelImage from "@assets/Sejarah/latbel.png";
-import bregadaImage from "@assets/Sejarah/bregada.png";
-import meriamImage from "@assets/Sejarah/meriam.png";
-import latbel2Image from "@assets/Sejarah/latbel2.png";
-import gangsaImage from "@assets/Sejarah/gangsa.png";
-import sriImage from "@assets/Sejarah/sri.png";
-import jejakImage from "@assets/Sejarah/jejak.png";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { router } from '@inertiajs/vue3';
 
-
-const articles = [
-  {
-    title: "Pusaka - Canthik Kyai Rajamala",
-    content: "Di sebuah negeri yang konon bernama Wirata...",
-    image: pusakaImage,
-    slug: "pusaka-kyai-rajamala",
-  },
-  {
-    title: "Gerbong pesiar Paku Buwana X",
-    content: "Industri kereta api di Surakarta...",
-    image: gerbongImage,
-    slug: "gerbong-pesiar",
-  },
-  {
-    title: "Latar Belakang Berdirinya Keraton Surakarta Hadiningrat",
-    content: "Mataram merupakan sebuah dinasti kerajaan Islam...",
-    image: latbelImage,
-    slug: "latar-belakang-keraton",
-  },
-  {
-    title: "Bregada - Prajurit Karaton Surakarta Hadiningrat",
-    content: "Prajurit keraton Surakarta adalah...",
-    image: bregadaImage,
-    slug: "bregada-keraton",
-  },
-  {
-    title: "Pusaka - Meriam Nyai Setomi",
-    content: "Meriam yang konon ikut serta dalam penggempuran...",
-    image: meriamImage,
-    slug: "meriam-nyai-setomi",
-  },
-  {
-    title: "Latar Belakang Berdirinya Keraton Surakarta Hadiningrat",
-    content: "Penangkapan Pangeran Diponegoro...",
-    image: latbel2Image,
-    slug: "latar-belakang-keraton-2",
-  },
-  {
-    title: "Gangsa Pakurmatan Sekaten",
-    content: "Kehadiran gamelan Sekaten tidak terlepas...",
-    image: gangsaImage,
-    slug: "gangsa-sekaten",
-  },
-  {
-    title: "Sri Susuhunan Pakubuwana XIII",
-    content: "Sinuhun Pakubuwana XIII lahir pada 28 Juni 1948...",
-    image: sriImage,
-    slug: "pakubuwana-xiii",
-  },
-  {
-    title: "Jejak Keberanian Pakubuwana IV - Pakepung",
-    content: "Dominasi kongsi dagang Belanda di Hindia Timur...",
-    image: jejakImage,
-    slug: "pakubuwana-iv-pakepung",
-  },
-];
+const articles = ref([]);
 
 const goToDetail = (item) => {
-  router.visit(route("Detail", { slug: item.slug } ));
+  router.visit(route("Detail", { slug: item.slug }));
 };
+
+onMounted(async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/article");
+    // pastikan image URL-nya sesuai dengan struktur response dari controller
+    articles.value = response.data.map(item => ({
+      ...item,
+      image_url: item.image_url.startsWith('http')
+        ? item.image_url
+        : `/storage/${item.image_url.replace(/^public\//, '')}`
+    }));
+  } catch (error) {
+    console.error("Gagal mengambil data artikel:", error);
+  }
+});
 </script>

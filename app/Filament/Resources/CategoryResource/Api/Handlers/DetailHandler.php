@@ -13,7 +13,6 @@ class DetailHandler extends Handlers
 {
     public static string|null $uri = '/{id}';
     public static string|null $resource = CategoryResource::class;
-    public static bool $public = true;
 
 
     /**

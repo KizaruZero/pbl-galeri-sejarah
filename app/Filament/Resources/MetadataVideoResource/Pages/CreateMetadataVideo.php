@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateMetadataVideo extends CreateRecord
 {
     protected static string $resource = MetadataVideoResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
 }

@@ -6,16 +6,18 @@ use Rupadana\ApiService\Http\Handlers;
 use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\CategoryResource\Api\Requests\CreateCategoryRequest;
 
-class CreateHandler extends Handlers {
-    public static string | null $uri = '/';
-    public static string | null $resource = CategoryResource::class;
+class CreateHandler extends Handlers
+{
+    public static string|null $uri = '/';
+    public static string|null $resource = CategoryResource::class;
 
     public static function getMethod()
     {
         return Handlers::POST;
     }
 
-    public static function getModel() {
+    public static function getModel()
+    {
         return static::$resource::getModel();
     }
 
