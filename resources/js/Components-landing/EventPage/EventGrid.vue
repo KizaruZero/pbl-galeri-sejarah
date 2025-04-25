@@ -48,7 +48,7 @@
           </p>
           
           <button
-            @click="goToDetailPage(selectedPhoto.slug)"
+            @click="getDetailPage(selectedPhoto.slug)"
             class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
           >
             View All
@@ -61,11 +61,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import EventCard from './EventCard.vue';
 import axios from 'axios';
 
-const router = useRouter();
 const photos = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -85,9 +83,10 @@ const getFirstThreeWords = (description) => {
   return words.slice(0, 3).join(' ');
 };
 
-const goToDetailPage = (slug) => {
-  router.push(`/photo/${slug}`);
+const getDetailPage = (slug) => {
+  window.location.href = `/photo/${slug}`;
 };
+
 
 onMounted(async () => {
   const options = {
@@ -95,7 +94,7 @@ onMounted(async () => {
     url: 'http://127.0.0.1:8000/api/content-photos',
     headers: {
       Accept: 'application/json',
-      Authorization: 'Bearer 123' // Sesuaikan dengan token sebenarnya jika dibutuhkan
+      Authorization: 'Bearer 123'
     }
   };
 

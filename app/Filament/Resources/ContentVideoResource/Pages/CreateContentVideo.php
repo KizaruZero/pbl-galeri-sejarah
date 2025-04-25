@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateContentVideo extends CreateRecord
 {
     protected static string $resource = ContentVideoResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
 }

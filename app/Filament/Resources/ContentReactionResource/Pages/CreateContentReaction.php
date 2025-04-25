@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateContentReaction extends CreateRecord
 {
     protected static string $resource = ContentReactionResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
 }

@@ -24,6 +24,11 @@ class CreateCategory extends CreateRecord
             ->send();
 
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
 }
 
 

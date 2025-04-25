@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContentPhoto;
+use App\Models\UserFavorite;
 use Illuminate\Http\Request;
 
 class PhotoController extends Controller
@@ -29,5 +30,26 @@ class PhotoController extends Controller
         }
         $contentPhoto->updateTotalViews();
         return response()->json($contentPhoto);
+    }
+    public function getPhotoByUser($userId)
+    {
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents'])
+            ->where('status', 'approved')
+            ->where('user_id', $userId)
+            ->get();
+        if (!$contentPhoto) {
+            return response()->json(['message' => 'Photo not found'], 404);
+        }
+        $total = $contentPhoto->count();
+        return response()->json($total);
+    }
+
+    public function getFavoriteByUser($userId)
+    {
+        $totalFavorites = UserFavorite::where('user_id', $userId)
+            ->whereNotNull('content_photo_id')
+            ->count();
+
+        return response()->json($totalFavorites);
     }
 }
