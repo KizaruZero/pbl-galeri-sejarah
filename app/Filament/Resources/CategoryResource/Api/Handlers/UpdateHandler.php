@@ -9,6 +9,8 @@ use App\Filament\Resources\CategoryResource\Api\Requests\UpdateCategoryRequest;
 class UpdateHandler extends Handlers {
     public static string | null $uri = '/{id}';
     public static string | null $resource = CategoryResource::class;
+    public static bool $public = true;
+
 
     public static function getMethod()
     {
