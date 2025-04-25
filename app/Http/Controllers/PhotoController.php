@@ -33,15 +33,19 @@ class PhotoController extends Controller
     }
     public function getPhotoByUser($userId)
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents'])
+        $contentPhotos = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents'])
             ->where('status', 'approved')
             ->where('user_id', $userId)
             ->get();
-        if (!$contentPhoto) {
+        
+        if ($contentPhotos->isEmpty()) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
-        $total = $contentPhoto->count();
-        return response()->json($total);
+        
+        return response()->json([
+            'photos' => $contentPhotos,
+            'total' => $contentPhotos->count()
+        ]);
     }
 
     public function getFavoriteByUser($userId)
