@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('categories', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')->autoIncrement()->primary(); // UNSIGNED TINYINT (0-255)
             $table->string('category_name', 50);
+            $table->string('slug', 50)->unique();
             $table->string('category_description', 255)->nullable();
             $table->string('category_image', 50)->nullable();
             $table->timestamps();

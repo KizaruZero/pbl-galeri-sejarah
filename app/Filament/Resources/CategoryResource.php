@@ -28,7 +28,10 @@ class CategoryResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('category_name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required(),
+                Forms\Components\TextInput::make('slug'),
                 Forms\Components\Textarea::make('category_description')
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('category_image')
