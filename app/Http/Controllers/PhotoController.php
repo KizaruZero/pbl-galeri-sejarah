@@ -41,7 +41,10 @@ class PhotoController extends Controller
             return response()->json(['message' => 'Photo not found'], 404);
         }
         $total = $contentPhoto->count();
-        return response()->json($total);
+        return response()->json([
+            'total' => $total,
+            'data' => $contentPhoto,
+        ]);
     }
 
     public function getFavoriteByUser($userId)
@@ -49,7 +52,14 @@ class PhotoController extends Controller
         $totalFavorites = UserFavorite::where('user_id', $userId)
             ->whereNotNull('content_photo_id')
             ->count();
+        $data = UserFavorite::with(['contentPhoto.metadataPhoto', 'contentPhoto.userComments', 'contentPhoto.user', 'contentPhoto.categoryContents'])
+            ->where('user_id', $userId)
+            ->whereNotNull('content_photo_id')
+            ->get();
 
-        return response()->json($totalFavorites);
+        return response()->json([
+            'total' => $totalFavorites,
+            'data' => $data,
+        ]);
     }
 }

@@ -43,7 +43,12 @@ class VideoController extends Controller
             return response()->json(['message' => 'Video not found'], 404);
         }
         $total = $contentVideo->count();
-        return response()->json($total);
+        return response()->json(
+            [
+                'total' => $total,
+                'data' => $contentVideo,
+            ]
+        );
     }
 
     public function getFavoriteByUser($userId)
@@ -52,6 +57,16 @@ class VideoController extends Controller
             ->whereNotNull('content_video_id')
             ->count();
 
-        return response()->json($totalFavorites);
+        $data = UserFavorite::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'contentVideo.categoryContents'])
+            ->where('user_id', $userId)
+            ->whereNotNull('content_video_id')
+            ->get();
+
+        return response()->json(
+            [
+                'total' => $totalFavorites,
+                'data' => $data,
+            ]
+        );
     }
 }
