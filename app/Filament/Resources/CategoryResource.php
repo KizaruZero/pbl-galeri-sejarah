@@ -29,6 +29,15 @@ class CategoryResource extends Resource
                 Forms\Components\TextInput::make('category_name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Textarea::make('category_description')
+                    ->maxLength(255),
+                Forms\Components\FileUpload::make('category_image')
+                    ->image()
+                    ->directory('category')
+                    ->optimize('webp')
+                    ->resize(50)
+                    ->disk('public')
+                    ->maxSize(20000),
             ]);
     }
 
@@ -38,6 +47,12 @@ class CategoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('category_name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('category_description')
+                    ->limit(50)
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\ImageColumn::make('category_image')
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
