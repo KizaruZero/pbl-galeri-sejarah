@@ -42,13 +42,10 @@ class VideoController extends Controller
         if (!$contentVideo) {
             return response()->json(['message' => 'Video not found'], 404);
         }
-        $total = $contentVideo->count();
-        return response()->json(
-            [
-                'total' => $total,
-                'data' => $contentVideo,
-            ]
-        );
+        return response()->json([
+            'videos' => $contentVideo,
+            'total' => $contentVideo->count()
+        ]);
     }
 
     public function getFavoriteByUser($userId)
