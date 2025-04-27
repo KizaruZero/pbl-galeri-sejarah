@@ -32,4 +32,5 @@ Route::get('/content-video/user/{userId}', [VideoController::class, 'getVideoByU
 Route::get('/favorite/user/{userId}', [VideoController::class, 'getFavoriteByUser']);
 
 // Content By Category
-Route::get('/gallery/{slug}', [FrontendController::class, 'ContentByCategory']);
+Route::get('/category-photo/{slug}', [PhotoController::class, 'getPhotoByCategory']);
+Route::get('/category-video/{slug}', [VideoController::class, 'getVideoByCategory']);

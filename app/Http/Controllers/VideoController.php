@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ContentVideo;
 use App\Models\UserFavorite;
+use App\Models\CategoryContent;
 
 class VideoController extends Controller
 {
@@ -65,5 +66,19 @@ class VideoController extends Controller
                 'data' => $data,
             ]
         );
+    }
+
+    public function getVideoByCategory($slug)
+    {
+        $contentVideos = CategoryContent::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'category'])
+            ->whereHas('category', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })
+            ->first();
+
+        if (!$contentVideos) {
+            return response()->json(['message' => 'Content not found'], 404);
+        }
+        return response()->json($contentVideos);
     }
 }

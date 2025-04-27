@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoryContent;
 use App\Models\ContentPhoto;
 use App\Models\UserFavorite;
 use Illuminate\Http\Request;
@@ -62,5 +63,22 @@ class PhotoController extends Controller
             'total' => $totalFavorites,
             'data' => $data,
         ]);
+    }
+
+    public function getPhotoByCategory($slug)
+    {
+        $contentPhotos = CategoryContent::with(['contentPhoto.metadataPhoto', 'contentPhoto.userComments', 'contentPhoto.user', 'category'])
+            ->whereHas('category', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })
+            ->get();
+        if (!$contentPhotos) {
+            return response()->json(['message' => 'Content not found'], 404);
+        }
+        return response()->json(
+            [
+                'photos' => $contentPhotos,
+            ]
+        );
     }
 }
