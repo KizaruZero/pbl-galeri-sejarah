@@ -7,6 +7,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FrontendController;
 
 
 Route::get('/user', function (Request $request) {
@@ -29,3 +30,6 @@ Route::get('/content-photo/user/{userId}', [PhotoController::class, 'getPhotoByU
 Route::get('/favorite/user/{userId}', [PhotoController::class, 'getFavoriteByUser']);
 Route::get('/content-video/user/{userId}', [VideoController::class, 'getVideoByUser']);
 Route::get('/favorite/user/{userId}', [VideoController::class, 'getFavoriteByUser']);
+
+// Content By Category
+Route::get('/gallery/{slug}', [FrontendController::class, 'ContentByCategory']);
