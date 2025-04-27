@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,8 +30,9 @@ Route::get('/photo/{slug}', function () {
 
 Route::get('/article', fn () => Inertia::render('Views/ArticleView'));
 Route::get('/gallery', fn () => Inertia::render('Views/GalleryView'));
-Route::get('/profile-page', fn () => Inertia::render('Views/ProfileView')); // Ganti nama agar tidak bentrok dengan /profile milik auth
 Route::get('/detail/{slug}', fn ($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug])) -> name('Detail');
+
+Route::get('/profile-page', fn () => Inertia::render('Views/ProfileView'))->middleware('auth','role:member');
 
 /**
  * Routing untuk pengguna terautentikasi
