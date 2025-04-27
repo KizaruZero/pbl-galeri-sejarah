@@ -4,7 +4,7 @@
     @click="$emit('click')">
     
     <!-- Image Container -->
-    <div class="relative w-full h-[220px] sm:h-[240px] md:h-[260px] lg:h-[300px]">
+    <div class="card relative w-full h-[220px] sm:h-[240px] md:h-[260px] lg:h-[300px]">
       <img :src="imageUrl" :alt="title"
         class="w-full h-full object-cover rounded-t-xl"
         @error="handleImageError"

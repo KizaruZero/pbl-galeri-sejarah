@@ -3,6 +3,7 @@
     <MainLayout>
       <HeroSection />
       <SearchBar />
+      <CategoryGrid />
       <ImageGrid />
       <!-- <ImageGrid /> -->
       <UpcomingEvent />
@@ -18,4 +19,5 @@
   import ImageGrid from '@/Components-landing/GalleryPage/ImageGrid.vue'
   // import TrendingEvents from '../components/BudayaPage/TrendingEvents.vue'
   import UpcomingEvent from '@/Components-landing/UpcomingEvent.vue'
+  import CategoryGrid from '@/Components-landing/GalleryPage/CategoryGrid.vue';
 </script>
