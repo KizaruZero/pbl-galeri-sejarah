@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\PhotoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,3 +35,6 @@ Route::get('/favorite/user/{userId}', [VideoController::class, 'getFavoriteByUse
 // Content By Category
 Route::get('/category-photo/{slug}', [PhotoController::class, 'getPhotoByCategory']);
 Route::get('/category-video/{slug}', [VideoController::class, 'getVideoByCategory']);
+
+// Company Profile
+Route::get('/company-profile', [CompanyProfileController::class, 'index']);

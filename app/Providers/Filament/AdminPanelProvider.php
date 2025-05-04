@@ -20,6 +20,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Rupadana\ApiService\ApiServicePlugin;
+use App\Filament\Pages\CompanyProfileSettings;
+
 
 
 class AdminPanelProvider extends PanelProvider
@@ -32,11 +34,13 @@ class AdminPanelProvider extends PanelProvider
             ->path('dashboard')
             ->login()
             ->brandName('KASUNANAN')
+
             ->colors([
                 'primary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+
             // ->pages([
             //     Pages\Dashboard::class,
             // ])
@@ -55,6 +59,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->pages([
+                CompanyProfileSettings::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
