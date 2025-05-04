@@ -2,7 +2,7 @@
     <MainLayout>
         <div class="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8 mt-12">
             <div class="max-w-4xl mx-auto mt-6">
-                <!-- Tombol kembali -->
+                <!-- Back button -->
                 <button @click="$router.go(-1)" class="mb-6 flex items-center text-gray-600 hover:text-blue-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                         fill="currentColor">
@@ -13,16 +13,26 @@
                     Back
                 </button>
 
-                <!-- Foto utama -->
-                <div class="card">
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                        <img :src="photo.imageUrl" :alt="photo.altText"
-                        class="w-full h-auto max-h-[70vh] rounded-image object-contain mt-6">
+                <!-- Loading state -->
+                <div v-if="loading" class="text-center text-white">
+                    Loading event details...
+                </div>
 
-                        <!-- Info foto -->
+                <!-- Error state -->
+                <div v-else-if="error" class="text-center text-red-500">
+                    {{ error }}
+                </div>
+
+                <!-- Content -->
+                <div v-else class="card">
+                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                        <!-- Event Image -->
+                        <img :src="event.imageUrl" :alt="event.title" class="w-full h-auto max-h-[70vh] rounded-image object-contain mt-6">
+
+                        <!-- Event Info -->
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-4">
-                                <h1 class="text-2xl font-bold text-black">{{ photo.title }}</h1>
+                                <h1 class="text-2xl font-bold text-white">{{ event.title }}</h1>
                                 <div class="flex space-x-4">
                                     <!-- Like Button -->
                                     <button @click="toggleLike"
@@ -34,7 +44,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
-                                        <span>{{ likeCount }}</span>
+                                        <span class="text-white">{{ likeCount }}</span>
                                     </button>
 
                                     <!-- Bookmark Button -->
@@ -51,24 +61,39 @@
                                 </div>
                             </div>
 
-                            <p class="text-gray-200 mb-6">{{ photo.description }}</p>
-
-                            <!-- Tags -->
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span v-for="tag in photo.tags" :key="tag"
-                                    class="px-3 py-1 bg-gray-200 text-black rounded-full text-sm">
-                                    {{ tag }}
-                                </span>
+                            <!-- Event Date -->
+                            <div class="flex items-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-gray-300">{{ formatDate(event.date) }}</span>
                             </div>
 
-                            <!-- Komentar -->
-                            <div class="border-t border-gray-200 pt-6">
-                                <h2 class="text-xl font-semibold mb-4">Comments ({{ comments.length }})</h2>
+                            <!-- Event Location -->
+                            <div class="flex items-center mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="text-gray-300">{{ event.location }}</span>
+                            </div>
 
-                                <!-- Form komentar baru -->
+                            <!-- Event Description -->
+                            <p class="text-gray-200 mb-6 whitespace-pre-line">{{ event.description }}</p>
+
+                            <!-- Comments Section -->
+                            <div class="border-t border-gray-700 pt-6">
+                                <h2 class="text-xl font-semibold text-white mb-4">Comments ({{ comments.length }})</h2>
+
+                                <!-- New Comment Form -->
                                 <div class="mb-6">
                                     <textarea v-model="newComment" placeholder="Add a comment..."
-                                        class="w-full px-4 py-2 bg-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         rows="3"></textarea>
                                     <button @click="addComment" :disabled="!newComment.trim()"
                                         class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300">
@@ -76,13 +101,13 @@
                                     </button>
                                 </div>
 
-                                <!-- Daftar komentar -->
+                                <!-- Comments List -->
                                 <div class="space-y-4">
                                     <div v-for="comment in comments" :key="comment.id"
                                         class="bg-gray-700 p-4 rounded-lg">
                                         <div class="flex justify-between items-start">
                                             <div>
-                                                <p class="font-semibold text-gray-900">{{ comment.user }}</p>
+                                                <p class="font-semibold text-white">{{ comment.user }}</p>
                                                 <p class="text-gray-400 text-sm">{{ formatDate(comment.date) }}</p>
                                             </div>
                                             <button v-if="comment.canDelete" @click="deleteComment(comment.id)"
@@ -113,24 +138,37 @@
         ref,
         onMounted
     } from 'vue';
+    import {
+        useRoute
+    } from 'vue-router';
     import axios from 'axios';
 
-    const photo = ref({});
+    const route = useRoute();
+    const event = ref({
+        title: '',
+        description: '',
+        date: '',
+        location: '',
+        imageUrl: ''
+    });
     const loading = ref(true);
+    const error = ref(null);
     const isLiked = ref(false);
     const likeCount = ref(0);
     const isBookmarked = ref(false);
     const comments = ref([]);
     const newComment = ref('');
-
     const slug = window.location.pathname.split('/').pop(); // ambil slug dari URL
-
-    // Format tanggal
+    // Format date
     const formatDate = (dateString) => {
+        if (!dateString) return 'No date specified';
+
         const options = {
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         };
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
@@ -146,7 +184,7 @@
         isBookmarked.value = !isBookmarked.value;
     };
 
-    // Tambah komentar
+    // Add comment
     const addComment = () => {
         if (newComment.value.trim()) {
             comments.value.unshift({
@@ -160,16 +198,16 @@
         }
     };
 
-    // Hapus komentar
+    // Delete comment
     const deleteComment = (id) => {
         comments.value = comments.value.filter(comment => comment.id !== id);
     };
 
-    // Ambil data foto
+    // Fetch event data
     onMounted(async () => {
         try {
             const response = await axios.get(
-                `http://127.0.0.1:8000/api/content-photo/${slug}`, {
+                `http://127.0.0.1:8000/api/events/${slug}`, {
                     headers: {
                         Accept: 'application/json',
                         Authorization: 'Bearer 123'
@@ -177,41 +215,45 @@
                 }
             );
 
+            const eventData = response.data.data || response.data;
 
-            photo.value = {
-                ...response.data,
-                imageUrl: response.data.image_url ?
-                    (response.data.image_url.startsWith('http') ?
-                        response.data.image_url :
-                        `/storage/${response.data.image_url.replace(/^public\//, '')}`) :
-                    '/default-photo.jpg',
-                altText: response.data.alt_text || '',
-                tags: response.data.tags || []
+            // Map the API response to our component's expected structure
+            event.value = {
+                title: eventData.title || 'Untitled Event',
+                description: eventData.description || 'No description available',
+                date: eventData.date || null,
+                location: eventData.location || 'Location not specified',
+                imageUrl: eventData.image_url ?
+                    (eventData.image_url.startsWith('http') ?
+                        eventData.image_url :
+                        `/storage/${eventData.image_url.replace(/^public\//, '')}`) :
+                    '/default-event.jpg'
             };
 
-            // Set dummy data untuk demo
+            // Set dummy data for demo
             likeCount.value = Math.floor(Math.random() * 100);
             isLiked.value = Math.random() > 0.5;
             isBookmarked.value = Math.random() > 0.5;
 
-            // Set dummy komentar
+            // Set dummy comments
             comments.value = [{
                     id: 1,
-                    user: 'John Doe',
-                    text: 'This is an amazing photo! The colors are fantastic.',
+                    user: 'Event Attendee',
+                    text: 'This was an amazing event! The organization was perfect.',
                     date: '2023-05-15T10:30:00Z',
                     canDelete: false
                 },
                 {
                     id: 2,
-                    user: 'Jane Smith',
-                    text: 'Great composition and lighting!',
+                    user: 'Another Guest',
+                    text: 'Looking forward to the next edition of this event!',
                     date: '2023-05-14T16:45:00Z',
                     canDelete: false
                 }
             ];
-        } catch (error) {
-            console.error('Error fetching photo:', error);
+        } catch (err) {
+            console.error('Error fetching event:', err);
+            error.value = 'Failed to load event details. Please try again later.';
         } finally {
             loading.value = false;
         }
@@ -220,10 +262,16 @@
 </script>
 
 <style scoped>
-    /* Animasi untuk tombol like */
+    /* Animations for buttons */
     button:active svg {
         transform: scale(1.2);
         transition: transform 0.2s ease;
+    }
+
+    /* Ensure images don't overflow */
+    img {
+        max-width: 100%;
+        height: auto;
     }
     .rounded-image {
         width: 100%;

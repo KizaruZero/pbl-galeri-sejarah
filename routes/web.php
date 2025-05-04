@@ -22,16 +22,17 @@ Route::get('/', function () {
 /**
  * Routing Vue Pages (non-auth)
  */
-Route::get('/events', fn() => Inertia::render('Views/EventView'));
 
-Route::get('/gallery/{slug1}/{slug}', function () {
-    return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
-});
 
 Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
+Route::get('/events', fn() => Inertia::render('Views/EventView'));
+Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
 Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
 Route::get('/gallery/{slug}', function ($slug) {
     return Inertia::render('Views/ListGallery');
+});
+Route::get('/gallery/{slug1}/{slug}', function () {
+    return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
 });
 Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 
