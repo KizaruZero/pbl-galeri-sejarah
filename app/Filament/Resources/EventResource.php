@@ -11,10 +11,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Filament\Forms\Set;
-
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EventResource extends Resource
 {
@@ -30,18 +29,34 @@ class EventResource extends Resource
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->required()
-                    ->maxLength(255),
+                ->maxLength(255),
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\TextInput::make('description')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('date')
+                Forms\Components\DatePicker::make('date_start')
                     ->required(),
+                Forms\Components\DatePicker::make('date_end')
+                    ->required(),
+                Forms\Components\TextInput::make('instagram_url')
+                    ->nullable()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('youtube_url')
+                    ->nullable()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('website_url')
+                    ->nullable()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('contact_person')
+                    ->nullable()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('location')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('google_maps_url')
+                    ->nullable()
+                    ->maxLength(255),
                 Forms\Components\FileUpload::make('image_url')
-                    ->directory('event')
                     ->image(),
             ]);
     }
@@ -52,13 +67,27 @@ class EventResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('slug'),
+                Tables\Columns\TextColumn::make('slug')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('date')
+                Tables\Columns\TextColumn::make('date_start')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('date_end')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('instagram_url')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('youtube_url')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('website_url')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('contact_person')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('location')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('google_maps_url')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url'),
                 Tables\Columns\TextColumn::make('created_at')

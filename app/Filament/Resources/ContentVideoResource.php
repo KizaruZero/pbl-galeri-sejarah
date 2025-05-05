@@ -56,6 +56,10 @@ class ContentVideoResource extends Resource
                     ->resize(50)
                     ->disk('public')
                     ->nullable()
+                    ->hint('Max file size: 20MB. Allowed formats: MP4, MOV, AVI.') // Helper text
+                    ->hintIcon('heroicon-o-information-circle') // Optional icon
+                    ->hintColor('warning') // Optional color (danger, warning, success, etc.)
+                    ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo']) // MIME types
                     ->requiredWithout('video_url,link_youtube')
                     ->maxSize(20000),
                 Forms\Components\TextInput::make('link_youtube')
@@ -63,10 +67,13 @@ class ContentVideoResource extends Resource
                 Forms\Components\FileUpload::make('thumbnail')
                     ->image()
                     ->optimize('webp')
+                    ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.') // Helper text
+                    ->hintIcon('heroicon-o-information-circle') // Optional icon
+                    ->hintColor('warning') // Optional color (danger, warning, success, etc.)
                     ->directory('thumbnail_video')
                     ->resize(50)
                     ->disk('public')
-                    ->maxSize(20000),
+                    ->maxSize(10000),
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',

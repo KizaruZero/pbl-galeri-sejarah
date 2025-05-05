@@ -6,20 +6,18 @@ use Rupadana\ApiService\Http\Handlers;
 use App\Filament\Resources\EventResource;
 use App\Filament\Resources\EventResource\Api\Requests\CreateEventRequest;
 
-class CreateHandler extends Handlers
-{
-    public static string|null $uri = '/';
-    public static string|null $resource = EventResource::class;
-    public static bool $public = true;
+class CreateHandler extends Handlers {
+    public static string | null $uri = '/';
+    public static string | null $resource = EventResource::class;
 
+    public static bool $public = true;
 
     public static function getMethod()
     {
         return Handlers::POST;
     }
 
-    public static function getModel()
-    {
+    public static function getModel() {
         return static::$resource::getModel();
     }
 

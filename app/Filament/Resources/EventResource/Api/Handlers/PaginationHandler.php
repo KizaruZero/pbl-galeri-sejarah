@@ -7,11 +7,12 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Filament\Resources\EventResource;
 use App\Filament\Resources\EventResource\Api\Transformers\EventTransformer;
 
-class PaginationHandler extends Handlers
-{
-    public static string|null $uri = '/';
-    public static string|null $resource = EventResource::class;
+class PaginationHandler extends Handlers {
+    public static string | null $uri = '/';
+    public static string | null $resource = EventResource::class;
     public static bool $public = true;
+
+
 
     /**
      * List of Event
@@ -24,12 +25,12 @@ class PaginationHandler extends Handlers
         $query = static::getEloquentQuery();
 
         $query = QueryBuilder::for($query)
-            ->allowedFields($this->getAllowedFields() ?? [])
-            ->allowedSorts($this->getAllowedSorts() ?? [])
-            ->allowedFilters($this->getAllowedFilters() ?? [])
-            ->allowedIncludes($this->getAllowedIncludes() ?? [])
-            ->paginate(request()->query('per_page'))
-            ->appends(request()->query());
+        ->allowedFields($this->getAllowedFields() ?? [])
+        ->allowedSorts($this->getAllowedSorts() ?? [])
+        ->allowedFilters($this->getAllowedFilters() ?? [])
+        ->allowedIncludes($this->getAllowedIncludes() ?? [])
+        ->paginate(request()->query('per_page'))
+        ->appends(request()->query());
 
         return EventTransformer::collection($query);
     }

@@ -22,11 +22,12 @@ class CreateEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'date' => 'required|date',
-            'location' => 'required|string',
-            'image_url' => 'required|string'
-        ];
+			'title' => 'required|string',
+			'slug' => 'required|string',
+			'description' => 'required|string',
+			'date' => 'required|date',
+			'location' => 'required|string',
+			'image_url' => 'required|string'
+		];
     }
 }

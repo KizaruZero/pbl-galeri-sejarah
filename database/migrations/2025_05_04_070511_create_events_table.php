@@ -15,8 +15,14 @@ return new class extends Migration {
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('description');
-            $table->date('date');
+            $table->date('date_start');
+            $table->date('date_end');
+            $table->string('instagram_url')->nullable();
+            $table->string('youtube_url')->nullable();
+            $table->string('website_url')->nullable();
+            $table->string('contact_person')->nullable();
             $table->string('location');
+            $table->string('google_maps_url')->nullable();
             $table->string('image_url')->nullable();
             $table->timestamps();
         });

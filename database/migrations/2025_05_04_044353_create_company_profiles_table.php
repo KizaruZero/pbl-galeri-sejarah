@@ -12,10 +12,18 @@ return new class extends Migration {
     {
         Schema::create('company_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('bg_home')->nullable()->comment('Background image for home section');
-            $table->string('bg_events')->nullable()->comment('Background image for events section');
-            $table->string('bg_gallery')->nullable()->comment('Background image for gallery section');
-            $table->string('bg_article')->nullable()->comment('Background image for article section');
+            $table->string('bg_home_1')->nullable()->comment('Background image for home section');
+            $table->string('bg_home_2')->nullable()->comment('Background image for home section');
+            $table->string('bg_home_3')->nullable()->comment('Background image for home section');
+            $table->string('bg_events_1')->nullable()->comment('Background image for events section');
+            $table->string('bg_events_2')->nullable()->comment('Background image for events section');
+            $table->string('bg_events_3')->nullable()->comment('Background image for events section');
+            $table->string('bg_gallery_1')->nullable()->comment('Background image for gallery section');
+            $table->string('bg_gallery_2')->nullable()->comment('Background image for gallery section');
+            $table->string('bg_gallery_3')->nullable()->comment('Background image for gallery section');
+            $table->string('bg_article_1')->nullable()->comment('Background image for article section');
+            $table->string('bg_article_2')->nullable()->comment('Background image for article section');
+            $table->string('bg_article_3')->nullable()->comment('Background image for article section');
             $table->string('logo')->nullable()->comment('Company logo');
             $table->string('cms_name')->nullable()->comment('CMS name displayed in hero section');
             $table->text('events_text')->nullable()->comment('Text for events section');
