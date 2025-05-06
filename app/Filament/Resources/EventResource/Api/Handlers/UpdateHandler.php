@@ -6,20 +6,16 @@ use Rupadana\ApiService\Http\Handlers;
 use App\Filament\Resources\EventResource;
 use App\Filament\Resources\EventResource\Api\Requests\UpdateEventRequest;
 
-class UpdateHandler extends Handlers
-{
-    public static string|null $uri = '/{id}';
-    public static string|null $resource = EventResource::class;
-    public static bool $public = true;
-
+class UpdateHandler extends Handlers {
+    public static string | null $uri = '/{id}';
+    public static string | null $resource = EventResource::class;
 
     public static function getMethod()
     {
         return Handlers::PUT;
     }
 
-    public static function getModel()
-    {
+    public static function getModel() {
         return static::$resource::getModel();
     }
 
@@ -36,8 +32,7 @@ class UpdateHandler extends Handlers
 
         $model = static::getModel()::find($id);
 
-        if (!$model)
-            return static::sendNotFoundResponse();
+        if (!$model) return static::sendNotFoundResponse();
 
         $model->fill($request->all());
 

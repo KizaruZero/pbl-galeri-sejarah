@@ -22,6 +22,18 @@
       <p v-else class="text-sm text-gray-400 italic">
         No description available
       </p>
+      <p v-if="date" class="text-sm text-white leading-relaxed line-clamp-2">
+        {{ date }}
+      </p>
+      <p v-else class="text-sm text-gray-400 italic">
+        No date available
+      </p>
+      <p v-if="location" class="text-sm text-white leading-relaxed line-clamp-2">
+        {{ location }}
+      </p>
+      <p v-else class="text-sm text-gray-400 italic">
+        No location available
+      </p>
     </div>
   </article>
 </template>
@@ -39,6 +51,14 @@ const props = defineProps({
             required: true,
         },
         description: {
+            type: String,
+            required: true,
+        },
+        date: {
+            type: String,
+            required: true,
+        },
+        location: {
             type: String,
             required: true,
         },

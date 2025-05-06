@@ -53,8 +53,11 @@ class ContentPhotoResource extends Resource
                     ->directory('foto_content')
                     ->optimize('webp')
                     ->resize(50)
+                    ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.') // Helper text
+                    ->hintIcon('heroicon-o-information-circle') // Optional icon
+                    ->hintColor('warning') // Optional color (danger, warning, success, etc.)
                     ->disk('public')
-                    ->maxSize(20000),
+                    ->maxSize(10000),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('source')

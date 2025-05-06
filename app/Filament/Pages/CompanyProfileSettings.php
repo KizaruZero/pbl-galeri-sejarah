@@ -55,23 +55,55 @@ class CompanyProfileSettings extends Page implements HasForms
 
                 Section::make('Background Images')
                     ->schema([
-                        FileUpload::make('bg_home')
-                            ->label('Home Background')
+                        FileUpload::make('bg_home_1')
+                            ->label('Home Background Slide 1')
                             ->image()
                             ->directory('company-profile/backgrounds'),
-                        FileUpload::make('bg_events')
-                            ->label('Events Background')
+                        FileUpload::make('bg_home_2')
+                            ->label('Home Background Slide 2')
                             ->image()
                             ->directory('company-profile/backgrounds'),
-                        FileUpload::make('bg_gallery')
-                            ->label('Gallery Background')
+                        FileUpload::make('bg_home_3')
+                            ->label('Home Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
-                        FileUpload::make('bg_article')
-                            ->label('Article Background')
+                        FileUpload::make('bg_events_1')
+                            ->label('Events Background Slide 1')
                             ->image()
                             ->directory('company-profile/backgrounds'),
-                    ])->columns(2),
+                        FileUpload::make('bg_events_2')
+                            ->label('Events Background Slide 2')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_events_3')
+                            ->label('Events Background Slide 3')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_gallery_1')
+                            ->label('Gallery Background Slide 1')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_gallery_2')
+                            ->label('Gallery Background Slide 2')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_gallery_3')
+                            ->label('Gallery Background Slide 3')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_article_1')
+                            ->label('Article Background Slide 1')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_article_2')
+                            ->label('Article Background Slide 2')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_article_3')
+                            ->label('Article Background Slide 3')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                    ])->columns(3),
 
                 Section::make('Content')
                     ->schema([

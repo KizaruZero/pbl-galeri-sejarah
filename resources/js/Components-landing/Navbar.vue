@@ -10,7 +10,7 @@
                             d="M4 6h16M4 12h16m-7 6h7" />
                     </svg>
                 </button>
-                <img src="@assets/Logo/LOGO.png" alt="Logo" class="w-10 h-auto object-contain" />
+                <img :src="companyProfile?.logo_url" alt="Logo" class="w-10 h-auto object-contain" />
             </div>
 
             <!-- Desktop: Menu Kiri -->
@@ -32,7 +32,7 @@
 
             <!-- Desktop: Logo Tengah -->
             <div class="hidden lg:block mx-6">
-                <img src="@assets/Logo/LOGO.png" alt="Logo" class="w-[50px] h-auto object-contain" />
+                <img :src="companyProfile?.logo_url" alt="Logo" class="w-[50px] h-auto object-contain" />
             </div>
 
             <!-- Desktop: Menu Kanan -->
@@ -97,23 +97,36 @@
         usePage,
         Link
     } from '@inertiajs/vue3';
+    import axios from 'axios';
 
     const dropdownRef = ref(null);
+    const menuOpen = ref(false);
+    const dropdownOpen = ref(false);
+    const companyProfile = ref(null);
     const handleClickOutside = (event) => {
         if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
             dropdownOpen.value = false;
         }
     };
 
+    // Fungsi untuk mengambil data company profile
+    const fetchCompanyProfile = async () => {
+        try {
+            const response = await axios.get('/api/company-profile');
+            companyProfile.value = response.data.data;
+        } catch (error) {
+            console.error('Error fetching company profile:', error);
+        }
+    };
+
     onMounted(() => {
         document.addEventListener('click', handleClickOutside);
+        fetchCompanyProfile();
     });
 
     onBeforeUnmount(() => {
         document.removeEventListener('click', handleClickOutside);
     });
-    const menuOpen = ref(false);
-    const dropdownOpen = ref(false);
 
     const toggleMenu = () => {
         menuOpen.value = !menuOpen.value;

@@ -131,7 +131,7 @@
         response.data.photos : 
         response.data.photos.data || [];
     
-
+        
 
     photos.value = photoArray.map(item => {
         const photo = item.content_photo;

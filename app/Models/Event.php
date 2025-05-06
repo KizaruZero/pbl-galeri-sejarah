@@ -11,8 +11,14 @@ class Event extends Model
         'title',
         'slug',
         'description',
-        'date',
+        'date_start',
+        'date_end',
+        'instagram_url',
+        'youtube_url',
+        'website_url',
+        'contact_person',
         'location',
+        'google_maps_url',
         'image_url',
     ];
 }

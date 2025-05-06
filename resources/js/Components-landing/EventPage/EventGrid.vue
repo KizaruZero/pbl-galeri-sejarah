@@ -109,13 +109,13 @@
     };
 
     const getDetailPage = (slug) => {
-        window.location.href = `/photo/${slug}`;
+        window.location.href = `/events/${slug}`;
     };
 
     onMounted(async () => {
         const options = {
             method: 'GET',
-            url: 'http://127.0.0.1:8000/api/content-photos',
+            url: 'http://127.0.0.1:8000/api/events',
             headers: {
                 Accept: 'application/json',
                 Authorization: 'Bearer 123'

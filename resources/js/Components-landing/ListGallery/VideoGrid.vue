@@ -12,10 +12,10 @@
 
             <!-- Grid Card -->
             <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                <VideoCard 
-                    v-for="video in videos" 
+                <VideoCard
+                    v-for="video in videos"
                     :key="video.id"
-                    :video_url="video.video_url" 
+                    :video_url="video.video_url"
                     :thumbnailUrl="video.thumbnailUrl"
                     :title="video.title"
                     :description="video.description"
@@ -38,7 +38,7 @@
                     </button>
 
                     <div class="aspect-w-16 aspect-h-9 mb-4">
-                        <video 
+                        <video
                             controls
                             :poster="selectedVideo.thumbnailUrl"
                             class="w-full h-full object-cover rounded-t-lg">
@@ -46,7 +46,7 @@
                             Your browser does not support the video tag.
                         </video>
                     </div>
-                    
+
                     <div class="flex items-center space-x-4 mb-3">
                         <button @click="toggleLike"
                             class="focus:outline-none transition-transform duration-200 active:scale-125"
@@ -137,37 +137,49 @@ onMounted(async () => {
             Authorization: 'Bearer 123'
         }
     };
-    
+
     try {
         const response = await axios.request(options);
         console.log('API Response:', response.data); // Debug response
-        
+
         // Handle single video object response
         const videoData = response.data.content_video || response.data;
-        
+
         // Create array even if single video
         const videoArray = videoData ? [videoData] : [];
-        
+
         console.log('Video array:', videoArray);
 
         videos.value = videoArray.map(video => ({
-            id: video.id,
-            title: video.title || 'Untitled Video',
-            description: video.description || 'No description available',
-            slug: video.slug,
-            video_url: video.link_youtube || '',
-            thumbnailUrl: video.thumbnail 
-                ? `/storage/${video.thumbnail.replace(/^public\//, '')}`
-                : '/default-thumbnail.jpg',
-            duration: video.metadata_video?.duration || '00:00',
-            views: video.total_views || 0,
-            tags: video.tag ? video.tag.split(/,\s*/) : [],
-            category: response.data.category || {},
-            metadata: video.metadata_video || {}
-        }));
+    id: video.id,
+    title: video.title || 'Untitled Video',
+    description: video.description || 'No description available',
+    slug: video.slug,
+    video_url: video.video_url // Gunakan video lokal sebagai prioritas
+        ? `/storage/${video.video_url.replace(/^public\//, '')}`
+        : convertToEmbedUrl(video.link_youtube) || '', // Fallback ke YouTube
+    thumbnailUrl: video.thumbnail
+        ? `/storage/${video.thumbnail.replace(/^public\//, '')}`
+        : '/default-thumbnail.jpg',
+    duration: video.metadata_video?.duration || '00:00',
+    views: video.total_views || 0,
+    tags: video.tag ? video.tag.split(/,\s*/) : [],
+    category: video.category || {},
+    metadata: video.metadata_video || {}
+}));
+
+// Helper function untuk YouTube (sebagai fallback)
+function convertToEmbedUrl(url) {
+    if (!url) return null;
+    if (url.includes('youtube.com/watch')) {
+        const videoId = url.split('v=')[1]?.split('&')[0];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    }
+    return url;
+}
 
         console.log('Processed videos:', videos.value);
-        
+
     } catch (err) {
         console.error('Failed to fetch videos:', err);
         if (err.response) {
