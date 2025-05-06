@@ -209,9 +209,14 @@ onMounted(async () => {
         }, 0)
 
         // 4. Get favorites count
-        const { data: favoriteCount } = await axios.get(`/api/favorite/user/${userId}`)
-        totalFavorites.value = favoriteCount || 0
+        const { data: favoritesResponse } = await axios.get(`/api/favorite/user/${userId}`)
 
+// Mengolah response sesuai struktur yang diberikan
+totalFavorites.value = favoritesResponse?.total || 0
+// favoriteItems.value = favoritesResponse?.data || [] // Jika ingin menyimpan data favorit
+
+console.log('Total favorites:', totalFavorites.value)
+// console.log('Favorite items:', favoriteItems.value)
         // 5. Get user videos
         const { data: videosResponse } = await axios.get(`/api/content-video/user/${userId}`)
         userVideos.value = Array.isArray(videosResponse?.videos)
