@@ -37,7 +37,7 @@ class EventSeeder extends Seeder
 
             $events[] = [
                 'title' => $title,
-                'slug' => Str::slug($title),
+                'slug' => Str::slug($title) . '-' . Str::random(5),
                 'description' => $faker->paragraph(3),
                 'date_start' => Carbon::parse($dateStart)->format('Y-m-d'),
                 'date_end' => Carbon::parse($dateEnd)->format('Y-m-d'),
