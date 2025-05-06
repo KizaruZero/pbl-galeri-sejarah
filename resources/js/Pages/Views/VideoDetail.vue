@@ -173,17 +173,7 @@
     const route = useRoute();
     const router = useRouter();
 
-    const video = ref({
-        title: '',
-        description: '',
-        video_url: '',
-        thumbnailUrl: '',
-        duration: '00:00',
-        views: 0,
-        tags: [],
-        user: null,
-        created_at: null
-    });
+    const video = ref({});
 
     const isLiked = ref(false);
     const likeCount = ref(0);
@@ -198,10 +188,6 @@
         avatar: ''
     });
 
-    const isLocalVideo = computed(() => {
-        return !video.value.video_url.includes('youtube.com') &&
-            !video.value.video_url.includes('vimeo.com');
-    });
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -278,11 +264,13 @@
 
             const videoData = response.data;
 
+
             video.value = {
                 ...videoData,
                 video_url: videoData.video_url ?
-                    `/storage/${videoData.video_url.replace(/^public\//, '')}` :
-                    convertToEmbedUrl(videoData.link_youtube) || '',
+    `/storage/${videoData.video_url.replace(/^public\//, '')}` :
+    convertToEmbedUrl(videoData.link_youtube) || '',
+
                 thumbnailUrl: videoData.thumbnail ?
                     `/storage/${videoData.thumbnail.replace(/^public\//, '')}` :
                     '/default-thumbnail.jpg',
@@ -320,7 +308,7 @@
                     canDelete: false
                 }
             ];
-
+        console.log('Final video URL:', video.value.video_url);
         } catch (error) {
             console.error('Error fetching video:', error);
             router.push('/404');
