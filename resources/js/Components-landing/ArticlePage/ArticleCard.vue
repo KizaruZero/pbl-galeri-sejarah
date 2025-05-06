@@ -4,9 +4,7 @@
 
         <!-- Image Container -->
         <div class="card relative w-full h-[220px] sm:h-[240px] md:h-[260px] lg:h-[300px]">
-            <img :src="thumbnailUrl" :alt="title" class="w-full h-full object-cover rounded-t-xl"
-                @error="handleImageError" />
-            <img :src="imageUrl" :alt="title" class="w-full h-full object-cover rounded-t-xl"
+            <img :src="image_url" :alt="title" class="w-full h-full object-cover rounded-t-xl"
                 @error="handleImageError" />
         </div>
 
@@ -15,69 +13,72 @@
             <h3 class="font-semibold text-white leading-snug mb-2" :class="titleClass">
                 {{ title || 'Untitled' }}
             </h3>
-            <p v-if="description" class="text-sm text-white leading-relaxed line-clamp-2">
-                {{ description }}
+            <p v-if="content" class="text-sm text-white leading-relaxed line-clamp-2">
+                {{ content }}
             </p>
             <p v-else class="text-sm text-gray-400 italic">
-                No description available
+                No content available
             </p>
-            <p v-if="date" class="text-sm text-white leading-relaxed line-clamp-2">
-                {{ date }}
-            </p>
-            <p v-else class="text-sm text-gray-400 italic">
-                No date available
-            </p>
-            <p v-if="location" class="text-sm text-white leading-relaxed line-clamp-2">
-                {{ location }}
-            </p>
-            <p v-else class="text-sm text-gray-400 italic">
-                No location available
+            <p class="text-sm text-gray-300">
+                Views: {{ total_views || 0 }}
             </p>
         </div>
     </article>
 </template>
 
 <script setup>
-    import {
-        computed
-    } from "vue";
+import { computed } from "vue";
 
-    const props = defineProps({
-        imageUrl: {
-            type: String,
-            required: true,
-        },
-        thumbnailUrl: {
-            type: String,
-            required: true,
-        },
-        title: {
-            type: String,
-            required: true,
-        },
-        content: {
-            type: String,
-            required: true,
-        },
-        date: {
-            type: String,
-            required: true,
-        },
-        titleSize: {
-            type: String,
-            default: "lg",
-            validator: (value) => ["xs", "sm", "base", "lg", "xl"].includes(value),
-        },
-    });
+const props = defineProps({
+    id: {
+        type: Number,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    content: {
+        type: String,
+        required: true
+    },
+    image_url: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        required: false
+    },
+    total_views: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    titleSize: {
+        type: String,
+        default: "lg",
+        validator: (value) => ["xs", "sm", "base", "lg", "xl"].includes(value),
+    },
+});
 
-    const titleClass = computed(() => {
-        return {
-            xs: "text-sm",
-            sm: "text-base",
-            base: "text-lg",
-            lg: "text-xl",
-            xl: "text-2xl",
-        } [props.titleSize] || "text-lg";
-    });
+const titleClass = computed(() => {
+    return {
+        xs: "text-sm",
+        sm: "text-base",
+        base: "text-lg",
+        lg: "text-xl",
+        xl: "text-2xl",
+    }[props.titleSize] || "text-lg";
+});
 
+const handleImageError = (e) => {
+    e.target.style.display = 'none';
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+};
 </script>
