@@ -42,7 +42,7 @@
                 <span
                     class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                 </Link>
-                <Link href="/contact" class="relative group py-1">Contact
+                <Link href="/member" class="relative group py-1">Member
                 <span
                     class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                 </Link>

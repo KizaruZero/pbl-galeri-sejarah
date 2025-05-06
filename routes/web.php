@@ -29,6 +29,7 @@ Route::get('/gallery/{slug1}/{slug}', function () {
 });
 
 Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
+Route::get('/member', fn() => Inertia::render('Views/MemberView'));
 Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
 Route::get('/gallery/{slug}', function ($slug) {
     return Inertia::render('Views/ListGallery');
