@@ -36,8 +36,11 @@ Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
 Route::get('/gallery/{slug}', function ($slug) {
     return Inertia::render('Views/ListGallery');
 });
-Route::get('/gallery/{slug1}/{slug}', function () {
+Route::get('/gallery-photo/{slug1}/{slug}', function () {
     return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+});
+Route::get('/gallery-video/{slug1}/{slug}', function () {
+    return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
 });
 Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 

@@ -21,75 +21,8 @@
                     :description="video.description"
                     :duration="video.duration"
                     :views="video.views"
-                    @click="openModal(video)"
+                    @click="getDetailPage(video.slug)"
                 />
-            </div>
-
-            <!-- Popup Modal -->
-            <div v-if="selectedVideo"
-                class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                <div class="bg-white rounded-lg max-w-4xl w-full p-6 relative">
-                    <button @click="closeModal" class="absolute -top-10 right-0 text-white text-2xl p-2 hover:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-
-                    <div class="aspect-w-16 aspect-h-9 mb-4">
-                        <video
-                            controls
-                            :poster="selectedVideo.thumbnailUrl"
-                            class="w-full h-full object-cover rounded-t-lg">
-                            <source :src="selectedVideo.video_url" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-
-                    <div class="flex items-center space-x-4 mb-3">
-                        <button @click="toggleLike"
-                            class="focus:outline-none transition-transform duration-200 active:scale-125"
-                            :class="{ 'text-red-500': isLiked }">
-                            <svg v-if="isLiked" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                        </button>
-
-                        <button @click="toggleSave"
-                            class="focus:outline-none transition-transform duration-200 active:scale-125"
-                            :class="{ 'text-yellow-500': isSaved }">
-                            <svg v-if="isSaved" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                            </svg>
-                        </button>
-
-                        <button @click="getDetailPage(selectedVideo.slug)"
-                            class="absolute right-6 text-black hover:underline focus:outline-none transition-transform duration-200 active:scale-105 flex items-center">
-                            view more <span class="ml-1">&gt;</span>
-                        </button>
-                    </div>
-                    <h2 class="text-xl font-bold mb-2">{{ selectedVideo.title }}</h2>
-
-                    <p class="text-gray-600 mb-4">
-                        {{ getFirstThreeWords(selectedVideo.description) }}...
-                    </p>
-
-                </div>
             </div>
         </div>
     </section>
@@ -110,22 +43,8 @@ const likeCount = ref(Math.floor(Math.random() * 100) + 5);
 const slug = window.location.pathname.split('/').pop(); // ambil slug dari URL
 const slug1 = window.location.pathname.split('/').pop(); // ambil slug dari URL
 
-const openModal = (video) => {
-    selectedVideo.value = video;
-};
-
-const closeModal = () => {
-    selectedVideo.value = null;
-};
-
-const getFirstThreeWords = (description) => {
-    if (!description) return '';
-    const words = description.split(' ');
-    return words.slice(0, 10).join(' ');
-};
-
 const getDetailPage = (slug) => {
-        window.location.href = `/gallery/${slug1}/${slug}`;
+        window.location.href = `/gallery-video/${slug1}/${slug}`;
     };
 
 onMounted(async () => {

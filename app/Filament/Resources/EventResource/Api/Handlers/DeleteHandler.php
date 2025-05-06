@@ -6,7 +6,7 @@ use Rupadana\ApiService\Http\Handlers;
 use App\Filament\Resources\EventResource;
 
 class DeleteHandler extends Handlers {
-    public static string | null $uri = '/{id}';
+    public static string | null $uri = '/{slug}';
     public static string | null $resource = EventResource::class;
 
     public static bool $public = true;
@@ -29,9 +29,9 @@ class DeleteHandler extends Handlers {
      */
     public function handler(Request $request)
     {
-        $id = $request->route('id');
+        $slug = $request->route('slug');
 
-        $model = static::getModel()::find($id);
+        $model = static::getModel()::find($slug);
 
         if (!$model) return static::sendNotFoundResponse();
 

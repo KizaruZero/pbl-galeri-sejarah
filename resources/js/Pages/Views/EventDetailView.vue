@@ -27,7 +27,9 @@
                 <div v-else class="card">
                     <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                         <!-- Event Image -->
-                        <img :src="event.imageUrl" :alt="event.title" class="w-full h-auto max-h-[70vh] rounded-image object-contain mt-6">
+                        <img :src="event.imageUrl" :alt="event.title"
+                            class="w-full h-auto max-h-[70vh] rounded-image object-contain mt-6"
+                            @error="handleImageError">
 
                         <!-- Event Info -->
                         <div class="p-6">
@@ -61,18 +63,21 @@
                                 </div>
                             </div>
 
-                            <!-- Event Date -->
+                            <!-- Event Dates -->
                             <div class="flex items-center mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <span class="text-gray-300">{{ formatDate(event.date) }}</span>
+                                <span class="text-gray-300">
+                                    {{ formatDate(event.date_start) }}
+                                    <span v-if="event.date_end"> - {{ formatDate(event.date_end) }}</span>
+                                </span>
                             </div>
 
                             <!-- Event Location -->
-                            <div class="flex items-center mb-6">
+                            <div class="flex items-center mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -81,6 +86,50 @@
                                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 <span class="text-gray-300">{{ event.location }}</span>
+                                <a v-if="event.googleMapsUrl" :href="event.googleMapsUrl" target="_blank"
+                                    class="ml-2 text-blue-400 hover:underline">
+                                    (View on Map)
+                                </a>
+                            </div>
+
+                            <!-- Contact Person -->
+                            <div v-if="event.contactPerson" class="flex items-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="text-gray-300">Contact: {{ event.contactPerson }}</span>
+                            </div>
+
+                            <!-- Social Links -->
+                            <div v-if="event.instagramUrl || event.youtubeUrl || event.websiteUrl"
+                                class="flex flex-wrap gap-4 mb-6">
+                                <a v-if="event.instagramUrl" :href="event.instagramUrl" target="_blank"
+                                    class="flex items-center text-pink-500 hover:text-pink-400">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                                    </svg>
+                                    Instagram
+                                </a>
+                                <a v-if="event.youtubeUrl" :href="event.youtubeUrl" target="_blank"
+                                    class="flex items-center text-red-500 hover:text-red-400">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                                    </svg>
+                                    YouTube
+                                </a>
+                                <a v-if="event.websiteUrl" :href="event.websiteUrl" target="_blank"
+                                    class="flex items-center text-blue-400 hover:text-blue-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                    Website
+                                </a>
                             </div>
 
                             <!-- Event Description -->
@@ -138,27 +187,33 @@
         ref,
         onMounted
     } from 'vue';
-    import {
-        useRoute
-    } from 'vue-router';
     import axios from 'axios';
 
-    const route = useRoute();
     const event = ref({
         title: '',
         description: '',
-        date: '',
+        date_start: '',
+        date_end: '',
         location: '',
-        imageUrl: ''
+        imageUrl: '',
+        instagramUrl: '',
+        youtubeUrl: '',
+        websiteUrl: '',
+        contactPerson: '',
+        googleMapsUrl: ''
     });
     const loading = ref(true);
+    const handleImageError = (e) => {
+        e.target.src = '/default-event.jpg'; // Path ke gambar default
+    };
     const error = ref(null);
     const isLiked = ref(false);
     const likeCount = ref(0);
     const isBookmarked = ref(false);
     const comments = ref([]);
     const newComment = ref('');
-    const slug = window.location.pathname.split('/').pop(); // ambil slug dari URL
+    const slug = window.location.pathname.split('/').pop();
+
     // Format date
     const formatDate = (dateString) => {
         if (!dateString) return 'No date specified';
@@ -206,6 +261,7 @@
     // Fetch event data
     onMounted(async () => {
         try {
+            console.log('Fetching event with slug:', slug);
             const response = await axios.get(
                 `http://127.0.0.1:8000/api/events/${slug}`, {
                     headers: {
@@ -221,13 +277,19 @@
             event.value = {
                 title: eventData.title || 'Untitled Event',
                 description: eventData.description || 'No description available',
-                date: eventData.date || null,
+                date_start: eventData.date_start || null,
+                date_end: eventData.date_end || null,
                 location: eventData.location || 'Location not specified',
                 imageUrl: eventData.image_url ?
                     (eventData.image_url.startsWith('http') ?
                         eventData.image_url :
                         `/storage/${eventData.image_url.replace(/^public\//, '')}`) :
-                    '/default-event.jpg'
+                    '/default-event.jpg',
+                instagramUrl: eventData.instagram_url || '',
+                youtubeUrl: eventData.youtube_url || '',
+                websiteUrl: eventData.website_url || '',
+                contactPerson: eventData.contact_person || '',
+                googleMapsUrl: eventData.google_maps_url || ''
             };
 
             // Set dummy data for demo
@@ -273,6 +335,7 @@
         max-width: 100%;
         height: auto;
     }
+
     .rounded-image {
         width: 100%;
         height: auto;
@@ -280,4 +343,14 @@
         object-fit: contain;
         border-radius: 15px;
     }
+
+    /* Style for social links */
+    .social-link {
+        transition: all 0.2s ease;
+    }
+
+    .social-link:hover {
+        transform: translateY(-1px);
+    }
+
 </style>
