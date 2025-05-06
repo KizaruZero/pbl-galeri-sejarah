@@ -42,7 +42,7 @@ const startSlideshow = () => {
         if (eventImages.value.length > 0) {
             currentSlideIndex.value = (currentSlideIndex.value + 1) % eventImages.value.length;
         }
-    }, 5000); // Ganti gambar setiap 5 detik
+    }, 7000); // Ganti gambar setiap 5 detik
 };
 
 const stopSlideshow = () => {
