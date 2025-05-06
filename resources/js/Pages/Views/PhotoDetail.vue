@@ -483,7 +483,6 @@ onMounted(async () => {
     } catch (error) {
         console.error("Error fetching photo:", error);
         // Redirect to 404 page if photo not found
-        router.push("/404");
     } finally {
         loading.value = false;
     }
