@@ -49,12 +49,12 @@ class Article extends Model
         $this->save();
     }
 
-    protected static function booted()
-    {
-        static::created(function ($article) {
-            app()->call([Article::class, 'getHourlyUploadedContent']);
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::created(function ($article) {
+    //         app()->call([Article::class, 'getHourlyUploadedContent']);
+    //     });
+    // }
 
 
 }
