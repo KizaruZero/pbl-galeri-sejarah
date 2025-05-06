@@ -10,12 +10,6 @@ import Carousel from 'primevue/carousel'
 
 import { LoopingRhombusesSpinner } from 'epic-spinners'
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons' // Solid icons
-import { far } from '@fortawesome/free-regular-svg-icons' // Regular icons
-import { fab } from '@fortawesome/free-brands-svg-icons' // Brand icons
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 createInertiaApp({
@@ -27,7 +21,6 @@ createInertiaApp({
     return page
   },
   setup({ el, App, props, plugin }) {
-    library.add(fas, far, fab)
     const vueApp = createApp({ render: () => h(App, props) })
 
     return vueApp
@@ -36,7 +29,6 @@ createInertiaApp({
       .use(PrimeVue)
       .component('Carousel', Carousel)
       .component('LoopingRhombusesSpinner', LoopingRhombusesSpinner) // Register global spinner
-      .component('font-awesome-icon', FontAwesomeIcon)
       .mount(el)
   },
   progress: {
