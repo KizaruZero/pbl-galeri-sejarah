@@ -384,15 +384,12 @@ const deleteComment = (id) => {
 onMounted(async () => {
     try {
         const slug = window.location.pathname.split("/").pop();
-        const response = await axios.get(
-            `http://127.0.0.1:8000/api/content-video/${slug}`,
-            {
-                headers: {
-                    Accept: "application/json",
-                    Authorization: "Bearer 123",
-                },
-            }
-        );
+        const response = await axios.get(`/api/content-video/${slug}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: "Bearer 123",
+            },
+        });
 
         const videoData = response.data;
 
