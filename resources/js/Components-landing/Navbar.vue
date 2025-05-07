@@ -137,48 +137,13 @@
             class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex"
         >
             <div class="w-64 bg-black h-full p-6 flex flex-col gap-6">
-                <button
-                    @click="toggleMenu"
-                    class="text-white self-end text-2xl"
-                >
-                    ✕
-                </button>
-                <Link
-                    href="/"
-                    class="text-white text-lg py-1"
-                    @click="toggleMenu"
-                    >Home</Link
-                >
-                <Link
-                    href="/events"
-                    class="text-white text-lg py-1"
-                    @click="toggleMenu"
-                    >Events</Link
-                >
-                <Link
-                    href="/gallery"
-                    class="text-white text-lg py-1"
-                    @click="toggleMenu"
-                    >Gallery</Link
-                >
-                <Link
-                    href="/article"
-                    class="text-white text-lg py-1"
-                    @click="toggleMenu"
-                    >Article</Link
-                >
-                <Link
-                    href="/contact"
-                    class="text-white text-lg py-1"
-                    @click="toggleMenu"
-                    >Contact</Link
-                >
-                <Link
-                    href="/login"
-                    class="text-white text-lg py-1"
-                    @click="toggleMenu"
-                    >Login</Link
-                >
+                <button @click="toggleMenu" class="text-white self-end text-2xl">✕</button>
+                <Link href="/" class="text-white text-lg py-1" @click="toggleMenu">Home</Link>
+                <Link href="/events" class="text-white text-lg py-1" @click="toggleMenu">Events</Link>
+                <Link href="/gallery" class="text-white text-lg py-1" @click="toggleMenu">Gallery</Link>
+                <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu">Article</Link>
+                <Link href="/member" class="text-white text-lg py-1" @click="toggleMenu">Member</Link>
+                <Link href="/login" class="text-white text-lg py-1" @click="toggleMenu">Login</Link>
             </div>
             <div class="flex-1" @click="toggleMenu"></div>
         </div>
