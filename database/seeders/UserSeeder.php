@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
                 'name' => 'ardya pusaka',
                 'email' => 'ardyapusaka@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => 'direktur',
+                'role' => '1',
             ],
             [
                 'name' => 'kizaru',
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
                 'name' => 'akainu',
                 'email' => 'akainu@gmail.com',
                 'password' => bcrypt('password'),
-                'role' => '3',
+                'role' => '1',
             ],
             [
                 'name' => 'aokiji',

@@ -1,7 +1,7 @@
 <template>
     <MainLayout>
-        <div class="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8 mt-12">
-            <div class="max-w-4xl mx-auto mt-6">
+        <div class="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
                 <!-- Back Button -->
                 <button
                     @click="$router.go(-1)"
@@ -22,70 +22,49 @@
                     Back to Gallery
                 </button>
 
-                <!-- Main Photo Card -->
+                <!-- Main Video Container -->
                 <div
                     class="bg-gray-900 rounded-lg shadow-xl overflow-hidden border border-gray-800"
                 >
-                    <!-- Photo with User Info -->
-                    <div class="relative">
-                        <img
-                            :src="photo.imageUrl"
-                            :alt="photo.altText"
-                            class="w-full h-auto max-h-[70vh] object-contain bg-gray-950"
-                        />
-
-                        <!-- User Info Overlay -->
-                        <div
-                            class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent"
+                    <!-- Video Player -->
+                    <div class="relative pt-[56.25%] bg-black">
+                        <video
+                            v-if="isLocalVideo"
+                            controls
+                            :poster="video.thumbnailUrl"
+                            class="absolute inset-0 w-full h-full object-contain"
                         >
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20"
-                                >
-                                    <img
-                                        :src="
-                                            photo.user?.avatar ||
-                                            '/default-avatar.jpg'
-                                        "
-                                        :alt="photo.user?.name"
-                                        class="w-full h-full object-cover"
-                                        @error="handleAvatarError"
-                                    />
-                                </div>
-                                <div>
-                                    <p class="text-white font-medium">
-                                        {{
-                                            photo.user?.name ||
-                                            "Unknown Photographer"
-                                        }}
-                                    </p>
-                                    <p
-                                        class="text-gray-300 text-xs"
-                                        v-if="photo.created_at"
-                                    >
-                                        Uploaded
-                                        {{
-                                            formatRelativeDate(photo.created_at)
-                                        }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                            <source :src="video.video_url" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <iframe
+                            v-else
+                            class="absolute inset-0 w-full h-full"
+                            :src="video.video_url"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                        >
+                        </iframe>
                     </div>
 
-                    <!-- Photo Details -->
+                    <!-- Video Info Section -->
                     <div class="p-6">
+                        <!-- Title and Actions -->
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <h1 class="text-2xl font-bold text-white">
-                                    {{ photo.title }}
+                                    {{ video.title }}
                                 </h1>
-                                <p
-                                    v-if="photo.source"
-                                    class="text-gray-400 text-sm mt-1"
+                                <div
+                                    class="flex items-center mt-2 space-x-4 text-sm text-gray-400"
                                 >
-                                    Source: {{ photo.source }}
-                                </p>
+                                    <span>{{ video.views }} views</span>
+                                    <span>{{
+                                        formatDate(video.created_at)
+                                    }}</span>
+                                </div>
                             </div>
                             <div class="flex space-x-4">
                                 <!-- Like Button -->
@@ -157,70 +136,52 @@
                             </div>
                         </div>
 
+                        <!-- Creator Info -->
+                        <div
+                            class="flex items-center gap-3 mb-6 p-3 bg-gray-800 rounded-lg"
+                        >
+                            <div
+                                class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20"
+                            >
+                                <img
+                                    :src="video.user?.avatar"
+                                    :alt="video.user?.name"
+                                    class="w-full h-full object-cover"
+                                />
+                                <p class="text-white font-medium">
+                                    {{ video.user?.name || "Unknown Creator" }}
+                                </p>
+                                <p class="text-gray-300 text-xs">
+                                    Content Creator
+                                </p>
+                            </div>
+                            <button
+                                class="ml-auto px-4 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                            >
+                                Follow
+                            </button>
+                        </div>
+
                         <!-- Description -->
-                        <p class="text-gray-300 mb-6 whitespace-pre-line">
-                            {{ photo.description }}
-                        </p>
+                        <div class="mb-6">
+                            <p class="text-gray-300 whitespace-pre-line">
+                                {{ video.description }}
+                            </p>
+                        </div>
 
                         <!-- Tags -->
                         <div
                             class="flex flex-wrap gap-2 mb-6"
-                            v-if="photo.tags && photo.tags.length"
+                            v-if="video.tags && video.tags.length"
                         >
                             <router-link
-                                v-for="tag in photo.tags"
+                                v-for="tag in video.tags"
                                 :key="tag"
                                 :to="`/tags/${tag.toLowerCase()}`"
                                 class="px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-full text-sm transition-colors"
                             >
                                 #{{ tag }}
                             </router-link>
-                        </div>
-
-                        <!-- Photo Stats -->
-                        <div
-                            class="flex items-center gap-4 text-sm text-gray-400 mb-6"
-                        >
-                            <div class="flex items-center gap-1">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                    />
-                                </svg>
-                                <span>{{ photo.total_views || 0 }} views</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                                    />
-                                </svg>
-                                <span>{{ comments.length }} comments</span>
-                            </div>
                         </div>
 
                         <!-- Comments Section -->
@@ -330,35 +291,38 @@
 
 <script setup>
 import MainLayout from "@/Layouts/MainLayout.vue";
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
+const route = useRoute();
 const router = useRouter();
-const photo = ref({
-    title: "",
-    description: "",
-    imageUrl: "",
-    altText: "",
-    tags: [],
-    user: null,
-    created_at: null,
-});
-const loading = ref(true);
+
+const video = ref({});
+
 const isLiked = ref(false);
 const likeCount = ref(0);
 const isBookmarked = ref(false);
 const comments = ref([]);
 const newComment = ref("");
+const loading = ref(true);
+
 const currentUser = ref({
     id: 1,
     name: "You",
-    avatar: "/default-avatar.jpg",
+    avatar: "",
 });
 
-const slug = window.location.pathname.split("/").pop();
+const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+};
 
-// Format date to relative time (e.g. "2 days ago")
 const formatRelativeDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -389,28 +353,22 @@ const formatRelativeDate = (dateString) => {
     );
 };
 
-// Handle avatar image error
-const handleAvatarError = (e) => {
-    e.target.src = "/default-avatar.jpg";
-};
-
-// Toggle like
 const toggleLike = () => {
     isLiked.value = !isLiked.value;
     likeCount.value += isLiked.value ? 1 : -1;
 };
 
-// Toggle bookmark
 const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
 };
 
-// Add comment
 const addComment = () => {
     if (newComment.value.trim()) {
         comments.value.unshift({
             id: Date.now(),
-            user: { ...currentUser.value },
+            user: {
+                ...currentUser.value,
+            },
             text: newComment.value,
             date: new Date().toISOString(),
             canDelete: true,
@@ -419,38 +377,40 @@ const addComment = () => {
     }
 };
 
-// Delete comment
 const deleteComment = (id) => {
     comments.value = comments.value.filter((comment) => comment.id !== id);
 };
 
-// Fetch photo data
 onMounted(async () => {
     try {
-        const response = await axios.get(`/api/content-photo/${slug}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: "Bearer 123",
-            },
-        });
+        const slug = window.location.pathname.split("/").pop();
+        const response = await axios.get(
+            `http://127.0.0.1:8000/api/content-video/${slug}`,
+            {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: "Bearer 123",
+                },
+            }
+        );
 
-        photo.value = {
-            ...response.data,
-            imageUrl: response.data.image_url
-                ? response.data.image_url.startsWith("http")
-                    ? response.data.image_url
-                    : `/storage/${response.data.image_url.replace(
-                          /^public\//,
-                          ""
-                      )}`
-                : "/default-photo.jpg",
-            altText: response.data.alt_text || response.data.title || "",
-            tags: response.data.tag ? response.data.tag.split(", ") : [],
-            user: response.data.user || null,
-            created_at: response.data.created_at,
+        const videoData = response.data;
+
+        video.value = {
+            ...videoData,
+            video_url: videoData.video_url
+                ? `/storage/${videoData.video_url.replace(/^public\//, "")}`
+                : convertToEmbedUrl(videoData.link_youtube) || "",
+
+            thumbnailUrl: videoData.thumbnail
+                ? `/storage/${videoData.thumbnail.replace(/^public\//, "")}`
+                : "/default-thumbnail.jpg",
+            tags: videoData.tag ? videoData.tag.split(/,\s*/) : [],
+            user: videoData.user || null,
+            created_at: videoData.created_at,
         };
 
-        // Set dummy data for demo
+        // Set dummy data
         likeCount.value = Math.floor(Math.random() * 100);
         isLiked.value = Math.random() > 0.5;
         isBookmarked.value = Math.random() > 0.5;
@@ -464,7 +424,7 @@ onMounted(async () => {
                     name: "John Doe",
                     avatar: "/default-avatar.jpg",
                 },
-                text: "This is an amazing photo! The colors are fantastic.",
+                text: "This is an amazing video! The editing is fantastic.",
                 date: "2023-05-15T10:30:00Z",
                 canDelete: false,
             },
@@ -475,25 +435,31 @@ onMounted(async () => {
                     name: "Jane Smith",
                     avatar: "/default-avatar.jpg",
                 },
-                text: "Great composition and lighting!",
+                text: "Great content and production quality!",
                 date: "2023-05-14T16:45:00Z",
                 canDelete: false,
             },
         ];
+        console.log("Final video URL:", video.value.video_url);
     } catch (error) {
-        console.error("Error fetching photo:", error);
-        // Redirect to 404 page if photo not found
+        console.error("Error fetching video:", error);
+        router.push("/404");
     } finally {
         loading.value = false;
     }
 });
+
+function convertToEmbedUrl(url) {
+    if (!url) return null;
+    if (url.includes("youtube.com/watch")) {
+        const videoId = url.split("v=")[1]?.split("&")[0];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    }
+    return url;
+}
 </script>
 
 <style scoped>
-.rounded-image {
-    border-radius: 0.5rem;
-}
-
 /* Smooth transitions for interactive elements */
 button {
     transition: all 0.2s ease;

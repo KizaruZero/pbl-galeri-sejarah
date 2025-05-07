@@ -18,9 +18,9 @@ class ContentVideoSeeder extends Seeder
         $videos = [
             [
                 'title' => 'Exploring the Mountains',
-                'video_url' => 'https://example.com/mountain_video.mp4',
+                'video_url' => 'video_content/mongkrang.mp4',
                 'link_youtube' => 'https://www.youtube.com/watch?v=12345',
-                'thumbnail' => 'https://example.com/mountain_thumbnail.jpg',
+                'thumbnail' => 'thumbnail_video/nature.png',
                 'description' => 'A breathtaking journey through the mountains.',
                 'note' => 'Filmed with a drone.',
                 'source' => 'User Upload',

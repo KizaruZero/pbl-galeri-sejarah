@@ -11,7 +11,7 @@ use App\Filament\Resources\EventResource\Api\Transformers\EventTransformer;
 
 class DetailHandler extends Handlers
 {
-    public static string | null $uri = '/{id}';
+    public static string | null $uri = '/{slug}';
     public static string | null $resource = EventResource::class;
     public static bool $public = true;
 
@@ -25,12 +25,12 @@ class DetailHandler extends Handlers
      */
     public function handler(Request $request)
     {
-        $id = $request->route('id');
+        $slug = $request->route('slug');
         
         $query = static::getEloquentQuery();
 
         $query = QueryBuilder::for(
-            $query->where(static::getKeyName(), $id)
+            $query->where('slug', $slug) // Ganti getKeyName() dengan 'slug'
         )
             ->first();
 

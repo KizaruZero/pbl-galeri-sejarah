@@ -33,7 +33,7 @@ class ContentPhotoSeeder extends Seeder
             [
                 'title' => 'Mountain Hike',
                 'user_id' => 2,
-                'image_url' => 'https://example.com/mountain.jpg',
+                'image_url' => 'foto_content/nature.png',
                 'description' => 'A scenic view from the top of the mountain.',
                 'source' => 'User Upload',
                 'alt_text' => 'Mountain hike view',

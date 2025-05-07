@@ -15,10 +15,18 @@ class CompanyProfile extends Model
      * @var array
      */
     protected $fillable = [
-        'bg_home',
-        'bg_events',
-        'bg_gallery',
-        'bg_article',
+        'bg_home_1',
+        'bg_home_2',
+        'bg_home_3',
+        'bg_events_1',
+        'bg_events_2',
+        'bg_events_3',
+        'bg_gallery_1',
+        'bg_gallery_2',
+        'bg_gallery_3',
+        'bg_article_1',
+        'bg_article_2',
+        'bg_article_3',
         'logo',
         'cms_name',
         'events_text',

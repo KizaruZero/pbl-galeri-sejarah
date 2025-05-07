@@ -67,18 +67,26 @@ class PhotoController extends Controller
 
     public function getPhotoByCategory($slug)
     {
-        $contentPhotos = CategoryContent::with(['contentPhoto.metadataPhoto', 'contentPhoto.userComments', 'contentPhoto.user', 'category'])
+        $contentPhotos = CategoryContent::with([
+            'contentPhoto.metadataPhoto',
+            'contentPhoto.userComments',
+            'contentPhoto.user',
+            'category'
+        ])
             ->whereHas('category', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })
+            ->whereHas('contentPhoto', function ($query) {
+                $query->where('status', 'approved'); // Ensure the PHOTO is approved
+            })
             ->get();
-        if (!$contentPhotos) {
-            return response()->json(['message' => 'Content not found'], 404);
+
+        if ($contentPhotos->isEmpty()) {
+            return response()->json(['message' => 'No approved photos found for this category'], 404);
         }
-        return response()->json(
-            [
-                'photos' => $contentPhotos,
-            ]
-        );
+
+        return response()->json([
+            'photos' => $contentPhotos,
+        ]);
     }
 }

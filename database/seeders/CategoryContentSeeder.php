@@ -18,22 +18,22 @@ class CategoryContentSeeder extends Seeder
             // Content Photo 1 memiliki 2 kategori
             [
                 'category_id' => 1, // Kategori 1
-                'content_photo_id' => 1, // Content Photo 1
-                'content_video_id' => null,
+                'content_photo_id' => 2, // Content Photo 1
+                'content_video_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'category_id' => 2, // Kategori 2
                 'content_photo_id' => 1, // Content Photo 1
-                'content_video_id' => null,
+                'content_video_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             // Content Video 1 memiliki 2 kategori
             [
                 'category_id' => 3, // Kategori 3
-                'content_photo_id' => null,
+                'content_photo_id' => 1,
                 'content_video_id' => 1, // Content Video 1
                 'created_at' => now(),
                 'updated_at' => now(),

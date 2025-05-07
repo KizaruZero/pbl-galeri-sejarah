@@ -1,50 +1,133 @@
 <template>
-  <div class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-6 bg-black p-4 sm:p-6">
-    <article
-      v-for="(item, index) in articles"
-      :key="index"
-      @click="goToDetail(item)"
-      class="overflow-hidden px-4 pt-4 pb-6 text-white cursor-pointer transition hover:scale-105 
-             w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[470px] text-center"
-    >
-      <img
-        :src="item.image_url"
-        class="object-cover w-full aspect-[1.38] rounded-t-lg"
-        :alt="item.title"
-      />
-      <h2 class="mt-3 text-base sm:text-lg lg:text-2xl font-semibold leading-tight">
-        {{ item.title }}
-      </h2>
-      <p class="mt-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
-        {{ item.content }}
-      </p>
-    </article>
-  </div>
+    <section class="w-full bg-black py-16 px-6 md:px-10">
+        <div class="max-w-[1192px] mx-auto">
+            <!-- Judul -->
+            <div class="flex flex-col items-center text-white mb-12">
+                <span class="w-full h-0.5 bg-white mb-6"></span>
+                <h1
+                    class="text-3xl md:text-4xl lg:text-5xl font-serif text-center"
+                >
+                    Article
+                </h1>
+                <span class="w-full h-0.5 bg-white mt-6"></span>
+            </div>
+
+            <!-- Loading State -->
+            <div v-if="loading" class="text-center text-white">
+                Loading articles...
+            </div>
+
+            <!-- Error State -->
+            <div v-if="error" class="text-center text-red-500">
+                {{ error }}
+            </div>
+
+            <!-- Grid Card -->
+            <div
+                class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            >
+                <ArticleCard
+                    v-for="article in articles"
+                    :key="article.id"
+                    :id="article.id"
+                    :title="article.title"
+                    :slug="article.slug"
+                    :content="article.content"
+                    :user_id="article.user_id"
+                    :image_url="
+                        article.image_url
+                            ? article.image_url.startsWith('http')
+                                ? article.image_url
+                                : `/storage/${article.image_url.replace(
+                                      /^public\//,
+                                      ''
+                                  )}`
+                            : '/default-article.jpg'
+                    "
+                    :status="article.status"
+                    :total_views="article.total_views"
+                    @click="getDetailPage(article.slug)"
+                />
+            </div>
+        </div>
+    </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { router } from '@inertiajs/vue3';
+import { ref, onMounted } from "vue";
+import ArticleCard from "./ArticleCard.vue";
+import axios from "axios";
 
 const articles = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const isLiked = ref(false);
+const isSaved = ref(false);
+const likeCount = ref(Math.floor(Math.random() * 100) + 5);
 
-const goToDetail = (item) => {
-  router.visit(route("Detail", { slug: item.slug }));
+const getDetailPage = (slug) => {
+    window.location.href = `/articles/${slug}`;
 };
 
 onMounted(async () => {
-  try {
-    const response = await axios.get("http://127.0.0.1:8000/api/article");
-    // pastikan image URL-nya sesuai dengan struktur response dari controller
-    articles.value = response.data.map(item => ({
-      ...item,
-      image_url: item.image_url.startsWith('http')
-        ? item.image_url
-        : `/storage/${item.image_url.replace(/^public\//, '')}`
-    }));
-  } catch (error) {
-    console.error("Gagal mengambil data artikel:", error);
-  }
+    try {
+        const options = {
+            method: "GET",
+            url: "/api/articles/",
+            headers: {
+                Accept: "application/json",
+                Authorization: "Bearer 123",
+            },
+        };
+
+        const response = await axios.request(options);
+
+        // Handle both array and paginated responses
+        articles.value = Array.isArray(response.data)
+            ? response.data
+            : response.data.data || [];
+
+        // Ensure all articles have required fields
+        articles.value = articles.value.map((article) => ({
+            ...article,
+            title: article.title || "Untitled",
+            content: article.content || "No content available",
+            image_url: article.image_url || "",
+            thumbnail_url: article.thumbnail_url || "",
+            total_views: article.total_views || 0,
+        }));
+    } catch (err) {
+        error.value = "Failed to load articles";
+        console.error("Error fetching articles:", err);
+    } finally {
+        loading.value = false;
+    }
 });
+
+// Toggle like status
+const toggleLike = () => {
+    if (isLiked.value) {
+        likeCount.value--;
+    } else {
+        likeCount.value++;
+    }
+    isLiked.value = !isLiked.value;
+};
+
+// Toggle save status
+const toggleSave = () => {
+    isSaved.value = !isSaved.value;
+};
 </script>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+</style>

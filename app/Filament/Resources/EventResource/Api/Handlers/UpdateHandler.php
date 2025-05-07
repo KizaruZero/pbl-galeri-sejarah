@@ -7,7 +7,7 @@ use App\Filament\Resources\EventResource;
 use App\Filament\Resources\EventResource\Api\Requests\UpdateEventRequest;
 
 class UpdateHandler extends Handlers {
-    public static string | null $uri = '/{id}';
+    public static string | null $uri = '/{slug}';
     public static string | null $resource = EventResource::class;
 
     public static function getMethod()
@@ -28,9 +28,9 @@ class UpdateHandler extends Handlers {
      */
     public function handler(UpdateEventRequest $request)
     {
-        $id = $request->route('id');
+        $slug = $request->route('slug');
 
-        $model = static::getModel()::find($id);
+        $model = static::getModel()::find($slug);
 
         if (!$model) return static::sendNotFoundResponse();
 

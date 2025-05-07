@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             UserCommentSeeder::class,
             UserReactionSeeder::class,
             CategoryContentSeeder::class,
+            ComproSeeder::class,
+            ArticleSeeder::class,
+            EventSeeder::class,
         ]);
     }
 }
