@@ -25,6 +25,7 @@ Route::get('/', function () {
 
 
 Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
+Route::get('/member', fn() => Inertia::render('Views/MemberView'));
 Route::get('/events', fn() => Inertia::render('Views/EventView'));
 Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
 Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));

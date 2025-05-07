@@ -78,7 +78,7 @@
                 <Link href="/events" class="text-white text-lg py-1" @click="toggleMenu">Events</Link>
                 <Link href="/gallery" class="text-white text-lg py-1" @click="toggleMenu">Gallery</Link>
                 <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu">Article</Link>
-                <Link href="/contact" class="text-white text-lg py-1" @click="toggleMenu">Contact</Link>
+                <Link href="/member" class="text-white text-lg py-1" @click="toggleMenu">Member</Link>
                 <Link href="/login" class="text-white text-lg py-1" @click="toggleMenu">Login</Link>
             </div>
             <div class="flex-1" @click="toggleMenu"></div>
