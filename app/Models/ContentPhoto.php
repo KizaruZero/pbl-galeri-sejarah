@@ -40,6 +40,21 @@ class ContentPhoto extends Model
         static::created(function ($contentPhoto) {
             app()->call([ContentPhotoResource::class, 'getHourlyUploadedContent']);
         });
+
+        static::saved(function ($contentPhoto) {
+            if (request()->has('categories')) {
+                // Delete existing category relationships
+                $contentPhoto->categoryContents()->delete();
+                
+                // Create new category relationships
+                foreach (request()->input('categories') as $categoryId) {
+                    $contentPhoto->categoryContents()->create([
+                        'category_id' => $categoryId,
+                        'content_photo_id' => $contentPhoto->id
+                    ]);
+                }
+            }
+        });
     }
     public function category()
     {
@@ -85,7 +100,7 @@ class ContentPhoto extends Model
     }
     public function categoryContents()
     {
-        return $this->hasMany(CategoryContent::class, 'content_photo_id');
+        return $this->hasMany(CategoryContent::class);
     }
     public function updateTotalViews()
     {

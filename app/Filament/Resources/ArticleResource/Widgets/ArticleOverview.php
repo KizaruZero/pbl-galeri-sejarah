@@ -1,5 +1,5 @@
 <?php
-namespace App\Filament\Resources\ContentPhotoResource\Widgets;
+namespace App\Filament\Resources\ArticleResource\Widgets;
 
 use App\Models\Article;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;

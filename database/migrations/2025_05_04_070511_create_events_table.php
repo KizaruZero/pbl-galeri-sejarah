@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('description');
-            $table->date('date_start');
-            $table->date('date_end');
+            $table->datetime('date_start');
+            $table->datetime('date_end');
             $table->string('instagram_url')->nullable();
             $table->string('youtube_url')->nullable();
             $table->string('website_url')->nullable();

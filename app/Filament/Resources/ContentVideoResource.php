@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ContentPhotoResource\Widgets\ContentVideoOverview;
+use App\Filament\Resources\ContentVideoResource\Widgets\ContentVideoOverview;
 use App\Filament\Resources\ContentVideoResource\Pages;
 use App\Filament\Resources\ContentVideoResource\RelationManagers;
 use App\Models\ContentVideo;
@@ -51,6 +51,51 @@ class ContentVideoResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
+                    Forms\Components\Select::make('categories')
+                    ->relationship('categoryContents.category', 'category_name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('category_name')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('category_description')
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('category_image')
+                            ->image()
+                            ->directory('category_images')
+                            ->disk('public'),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        $category = \App\Models\Category::create([
+                            'category_name' => $data['category_name'],
+                            'slug' => $data['slug'],
+                            'category_description' => $data['category_description'] ?? null,
+                            'category_image' => $data['category_image'] ?? null,
+                        ]);
+                        return $category->id;
+                    })
+                    ->required()
+                    ->afterStateUpdated(function ($state, $record) {
+                        if ($record) {
+                            // Delete existing category relationships
+                            $record->categoryContents()->delete();
+                            
+                            // Create new category relationships
+                            foreach ($state as $categoryId) {
+                                $record->categoryContents()->create([
+                                    'category_id' => $categoryId,
+                                    'content_video_id' => $record->id
+                                ]);
+                            }
+                        }
+                    }),
                 Forms\Components\FileUpload::make('video_url')
                     ->directory('video_content')
                     ->resize(50)

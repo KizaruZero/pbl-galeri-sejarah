@@ -34,10 +34,16 @@ class EventResource extends Resource
                 Forms\Components\TextInput::make('description')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('date_start')
-                    ->required(),
-                Forms\Components\DatePicker::make('date_end')
-                    ->required(),
+                Forms\Components\DateTimePicker::make('date_start')
+                    ->required()
+                    ->seconds(false)
+                    ->displayFormat('d M Y H:i')
+                    ->native(false),
+                Forms\Components\DateTimePicker::make('date_end')
+                    ->required()
+                    ->seconds(false)
+                    ->displayFormat('d M Y H:i')
+                    ->native(false),
                 Forms\Components\TextInput::make('instagram_url')
                     ->nullable()
                     ->maxLength(255),

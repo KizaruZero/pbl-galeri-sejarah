@@ -1,5 +1,5 @@
 <?php
-namespace App\Filament\Resources\ContentPhotoResource\Widgets;
+namespace App\Filament\Resources\ContentVideoResource\Widgets;
 
 use App\Models\ContentVideo;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;

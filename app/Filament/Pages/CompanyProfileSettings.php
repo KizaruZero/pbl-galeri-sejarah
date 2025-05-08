@@ -25,7 +25,7 @@ class CompanyProfileSettings extends Page implements HasForms
 
     protected static string $view = 'filament.pages.company-profile-settings';
     protected static ?string $navigationIcon = 'heroicon-o-cog';
-    protected static ?string $navigationLabel = 'Company Profile';
+    protected static ?string $navigationLabel = 'Settings';
     protected static ?string $title = 'Company Profile Settings';
 
     public User $loggedInUser;
@@ -44,16 +44,21 @@ class CompanyProfileSettings extends Page implements HasForms
         return $form
             ->schema([
                 Section::make('General Information')
+                    ->description('These are the general information for the company. You can change the name of the company and the logo.')
                     ->schema([
                         TextInput::make('cms_name')
                             ->label('CMS Name')
                             ->required(),
                         FileUpload::make('logo')
+                            ->label('Logo')
+                            ->hint('Recommended image size: 100x100 pixels with a transparent background (png).')   
+                            ->hintColor('warning')
                             ->image()
                             ->directory('company-profile'),
                     ])->columns(2),
 
                 Section::make('Background Images')
+                    ->description('These images will be used as background images for the home, events, gallery, and article sections. Recommended image size: 16:9 aspect ratio (e.g. 1920x1080 pixels)')
                     ->schema([
                         FileUpload::make('bg_home_1')
                             ->label('Home Background Slide 1')
@@ -106,6 +111,7 @@ class CompanyProfileSettings extends Page implements HasForms
                     ])->columns(3),
 
                 Section::make('Content')
+                    ->description('These are the text for the home, events, gallery, and article sections. You can change the text to your own content.')
                     ->schema([
                         Textarea::make('events_text')
                             ->label('Events Text')
