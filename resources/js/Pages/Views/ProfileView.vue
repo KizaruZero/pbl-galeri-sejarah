@@ -28,15 +28,18 @@
                         <div class="flex col-span-2 justify-center md:align-left items-center">
                             <div class="flex flex-wrap justify-around gap-4 sm:gap-8 md:gap-12 lg:mb-20">
                                 <div class="flex flex-col items-center">
-                                    <span class="text-white text-xl sm:text-2xl md:text-3xl font-semibold">{{ totalPost }}</span>
+                                    <span
+                                        class="text-white text-xl sm:text-2xl md:text-3xl font-semibold">{{ totalPost }}</span>
                                     <span class="text-white text-xs sm:text-sm md:text-base">POSTINGAN</span>
                                 </div>
                                 <div class="flex flex-col items-center">
-                                    <span class="text-white text-xl sm:text-2xl md:text-3xl font-semibold">{{ totalLikes }}</span>
+                                    <span
+                                        class="text-white text-xl sm:text-2xl md:text-3xl font-semibold">{{ totalLikes }}</span>
                                     <span class="text-white text-xs sm:text-sm md:text-base">LIKE</span>
                                 </div>
                                 <div class="flex flex-col items-center">
-                                    <span class="text-white text-xl sm:text-2xl md:text-3xl font-semibold">{{ totalFavorites }}</span>
+                                    <span
+                                        class="text-white text-xl sm:text-2xl md:text-3xl font-semibold">{{ totalFavorites }}</span>
                                     <span class="text-white text-xs sm:text-sm md:text-base">FAVORITE</span>
                                 </div>
                             </div>
@@ -105,7 +108,7 @@
                         </div>
 
                         <!-- video -->
-                        <div v-if="activeTab === 'video'" 
+                        <div v-if="activeTab === 'video'"
                             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 md:gap-4">
                             <div v-for="video in userVideos" :key="'video-' + video.id"
                                 class="aspect-square overflow-hidden relative rounded-md sm:rounded-lg shadow-md cursor-pointer">
@@ -127,130 +130,211 @@
                             <div class="text-sm sm:text-base md:text-lg">Konten yang ditandai akan tampil di sini.</div>
                         </div>
                     </div>
+                    <div class="bg-[#0d0d0d] min-h-screen w-full">
+                        <!-- Floating Add Button di Pojok Kanan Bawah -->
+                        <button @click="showModal = true"
+                            class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                class="w-8 h-8">
+                                <path fill-rule="evenodd"
+                                    d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <!-- Modal -->
+                        <div v-if="showModal"
+                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                            <div class="bg-[#1e1e1e] rounded-lg p-6 w-full max-w-md">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-semibold text-white">Upload Media</h2>
+                                    <button @click="showModal = false" class="text-gray-400 hover:text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button @click="visitUploadPhoto"
+                                        class="flex flex-col items-center justify-center p-4 bg-[#2a2a2a] rounded-lg hover:bg-[#3a3a3a] transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400 mb-2"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span class="text-white">Foto</span>
+                                    </button>
+
+                                    <button @click="visitUploadVideo"
+                                        class="flex flex-col items-center justify-center p-4 bg-[#2a2a2a] rounded-lg hover:bg-[#3a3a3a] transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-400 mb-2"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 10l4.553-2.276A1 1 0 01221 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        <span class="text-white">Video</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="max-w-7xl mx-auto px-4 py-8 mt-14 sm:py-12 lg:py-16">
+                            <!-- Konten yang sudah ada... -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
     </MainLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { usePage } from '@inertiajs/vue3'
-import axios from 'axios'
-import MainLayout from '@/Layouts/MainLayout.vue'
+    import {
+        ref,
+        onMounted
+    } from 'vue'
+    import {
+        usePage,
+        router,
+    } from '@inertiajs/vue3'
+    import axios from 'axios'
+    import MainLayout from '@/Layouts/MainLayout.vue'
 
-// Get authenticated user from Inertia
-const page = usePage()
-const authUser = ref(page.props.auth.user)
+    const showModal = ref(false)
 
-const activeTab = ref('photo')
-const userData = ref(null)
-const profilePhoto = ref('/default-profile.jpg') // Default fallback image
+    // Get authenticated user from Inertia
+    const page = usePage()
+    const authUser = ref(page.props.auth.user)
 
-const totalPost = ref(0)
-const totalLikes = ref(0)
-const totalFavorites = ref(0)
+    const activeTab = ref('photo')
+    const userData = ref(null)
+    const profilePhoto = ref('/default-profile.jpg') // Default fallback image
 
-const userPhotos = ref([])
-const userVideos = ref([])
+    const totalPost = ref(0)
+    const totalLikes = ref(0)
+    const totalFavorites = ref(0)
 
-// Improved media URL handler
-const getMediaUrl = (url) => {
-    if (!url) return '/default-post.jpg';
-    
-    // Jika sudah URL lengkap, langsung return
-    if (url.startsWith('http')) return url;
-    
-    // Normalisasi path secara menyeluruh
-    const cleanPath = url
-        .replace(/^storage\//, '')     // Hapus awalan storage/
-        .replace(/^public\//, '')      // Hapus awalan public/
-        .replace(/^\//, '')            // Hapus slash di awal
-        .replace(/^storage\//, '');    // Hapus storage/ lagi jika masih ada
-    
-    // Pastikan tidak ada path kosong
-    if (!cleanPath) return '/default-post.jpg';
-    
-    return `/storage/${cleanPath}`;
-}
+    const userPhotos = ref([])
+    const userVideos = ref([])
 
-onMounted(async () => {
-    try {
-        if (!authUser.value?.id) {
-            console.error('No authenticated user found')
-            return
-        }
-        
-        const userId = authUser.value.id
-        console.log('Loading profile data for user:', userId)
+    // Improved media URL handler
+    const getMediaUrl = (url) => {
+        if (!url) return '/default-post.jpg';
 
-        // 1. Get user details with profile photo
-        const { data: userDataResponse } = await axios.get(`/api/users/${userId}`)
-        userData.value = userDataResponse
-        
-        // Set profile photo with proper URL handling
-        profilePhoto.value = userDataResponse.profile_photo_url 
-            ? getMediaUrl(userDataResponse.profile_photo_url)
-            : '/default-profile.jpg'
+        // Jika sudah URL lengkap, langsung return
+        if (url.startsWith('http')) return url;
 
-        // 2. Get user photos
-        const { data: photosResponse } = await axios.get(`/api/content-photo/user/${userId}`)
-        userPhotos.value = Array.isArray(photosResponse?.photos) 
-            ? photosResponse.photos.map(photo => ({
-                ...photo,
-                image_url: getMediaUrl(photo.image_url)
-            }))
-            : []
-        
-        // 3. Calculate photo likes
-        const photoLikes = userPhotos.value.reduce((sum, photo) => {
-            return sum + (photo.user_comments?.reduce((cSum, comment) => 
-                cSum + (comment.user_reactions?.length || 0), 0) || 0)
-        }, 0)
+        // Normalisasi path secara menyeluruh
+        const cleanPath = url
+            .replace(/^storage\//, '') // Hapus awalan storage/
+            .replace(/^public\//, '') // Hapus awalan public/
+            .replace(/^\//, '') // Hapus slash di awal
+            .replace(/^storage\//, ''); // Hapus storage/ lagi jika masih ada
 
-        // 4. Get favorites count
-        const { data: favoritesResponse } = await axios.get(`/api/favorite/user/${userId}`)
+        // Pastikan tidak ada path kosong
+        if (!cleanPath) return '/default-post.jpg';
 
-// Mengolah response sesuai struktur yang diberikan
-totalFavorites.value = favoritesResponse?.total || 0
-// favoriteItems.value = favoritesResponse?.data || [] // Jika ingin menyimpan data favorit
-
-console.log('Total favorites:', totalFavorites.value)
-// console.log('Favorite items:', favoriteItems.value)
-        // 5. Get user videos
-        const { data: videosResponse } = await axios.get(`/api/content-video/user/${userId}`)
-        userVideos.value = Array.isArray(videosResponse?.videos)
-            ? videosResponse.videos.map(video => ({
-                ...video,
-                thumbnail: getMediaUrl(video.thumbnail),
-                video_url: getMediaUrl(video.video_url)
-            }))
-            : []
-        
-        // 6. Calculate video likes (if available)
-        const videoLikes = userVideos.value.reduce((sum, video) => {
-            return sum + (video.user_comments?.reduce((cSum, comment) => 
-                cSum + (comment.user_reactions?.length || 0), 0) || 0)
-        }, 0)
-
-        // 7. Calculate totals
-        totalPost.value = userPhotos.value.length + userVideos.value.length
-        totalLikes.value = photoLikes + videoLikes
-
-        console.log('Profile data loaded successfully:', {
-            user: userData.value,
-            photos: userPhotos.value.length,
-            videos: userVideos.value.length,
-            likes: totalLikes.value,
-            favorites: totalFavorites.value
-        })
-
-    } catch (error) {
-        console.error('Error loading profile data:', {
-            message: error.message,
-            response: error.response?.data,
-            stack: error.stack
-        })
+        return `/storage/${cleanPath}`;
     }
-})
+
+    const visitUploadPhoto = () => {
+        showModal.value = false
+        router.visit('/upload-photo')
+    }
+
+    const visitUploadVideo = () => {
+        showModal.value = false
+        router.visit('/upload-video')
+    }
+
+    onMounted(async () => {
+        try {
+            if (!authUser.value ?.id) {
+                console.error('No authenticated user found')
+                return
+            }
+
+            const userId = authUser.value.id
+            console.log('Loading profile data for user:', userId)
+
+            // 1. Get user details with profile photo
+            const {
+                data: userDataResponse
+            } = await axios.get(`/api/users/${userId}`)
+            userData.value = userDataResponse
+
+            // Set profile photo with proper URL handling
+            profilePhoto.value = userDataResponse.profile_photo_url ?
+                getMediaUrl(userDataResponse.profile_photo_url) :
+                '/default-profile.jpg'
+
+            // 2. Get user photos
+            const {
+                data: photosResponse
+            } = await axios.get(`/api/content-photo/user/${userId}`)
+            userPhotos.value = Array.isArray(photosResponse ?.photos) ?
+                photosResponse.photos.map(photo => ({
+                    ...photo,
+                    image_url: getMediaUrl(photo.image_url)
+                })) : []
+
+            // 3. Calculate photo likes
+            const photoLikes = userPhotos.value.reduce((sum, photo) => {
+                return sum + (photo.user_comments ?.reduce((cSum, comment) =>
+                    cSum + (comment.user_reactions ?.length || 0), 0) || 0)
+            }, 0)
+
+            // 4. Get favorites count
+            const {
+                data: favoritesResponse
+            } = await axios.get(`/api/favorite/user/${userId}`)
+
+            // Mengolah response sesuai struktur yang diberikan
+            totalFavorites.value = favoritesResponse ?.total || 0
+            // favoriteItems.value = favoritesResponse?.data || [] // Jika ingin menyimpan data favorit
+
+            console.log('Total favorites:', totalFavorites.value)
+            // console.log('Favorite items:', favoriteItems.value)
+            // 5. Get user videos
+            const {
+                data: videosResponse
+            } = await axios.get(`/api/content-video/user/${userId}`)
+            userVideos.value = Array.isArray(videosResponse ?.videos) ?
+                videosResponse.videos.map(video => ({
+                    ...video,
+                    thumbnail: getMediaUrl(video.thumbnail),
+                    video_url: getMediaUrl(video.video_url)
+                })) : []
+
+            // 6. Calculate video likes (if available)
+            const videoLikes = userVideos.value.reduce((sum, video) => {
+                return sum + (video.user_comments ?.reduce((cSum, comment) =>
+                    cSum + (comment.user_reactions ?.length || 0), 0) || 0)
+            }, 0)
+
+            // 7. Calculate totals
+            totalPost.value = userPhotos.value.length + userVideos.value.length
+            totalLikes.value = photoLikes + videoLikes
+
+            console.log('Profile data loaded successfully:', {
+                user: userData.value,
+                photos: userPhotos.value.length,
+                videos: userVideos.value.length,
+                likes: totalLikes.value,
+                favorites: totalFavorites.value
+            })
+
+        } catch (error) {
+            console.error('Error loading profile data:', {
+                message: error.message,
+                response: error.response ?.data,
+                stack: error.stack
+            })
+        }
+    })
+
 </script>

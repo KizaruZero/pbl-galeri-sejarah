@@ -26,6 +26,8 @@ Route::get('/', function () {
 
 Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
 Route::get('/member', fn() => Inertia::render('Views/MemberView'));
+Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
+Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
 Route::get('/events', fn() => Inertia::render('Views/EventView'));
 Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
 Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
@@ -40,7 +42,9 @@ Route::get('/gallery-video/{slug1}/{slug}', function () {
 });
 Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 
-Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))->middleware('auth', 'role:member');
+Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
+// ->middleware('auth', 'role:member')
+;
 
 /**
  * Routing untuk pengguna terautentikasi
