@@ -11,95 +11,73 @@
         >View All
         </Link>
       </div>
-  
+
       <!-- Carousel -->
       <div class="mt-16 pb-20">
         <Carousel
+          v-if="!loading && slides.length > 0"
           :value="slides"
           :numVisible="3"
           :numScroll="1"
           :responsiveOptions="responsiveOptions"
           circular
           :autoplayInterval="3000"
+          
+          class="events-carousel"
         >
           <template #item="slotProps">
-            <div
-              class="relative mx-4 md:mx-10 bg-zinc-900 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-[1.01] flex flex-col"
+            <div 
+              class="relative mx-4 bg-zinc-900 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-[1.02] flex flex-col h-[450px] cursor-pointer" 
+              @click="getDetailPage(slotProps.data.slug)"
             >
-              <!-- Gambar -->
-              <div class="relative w-full h-[200px] sm:h-[250px] md:h-[500px] bg-black">
+              <!-- Image section (60%) -->
+              <div class="relative w-full h-[300px] bg-black">
                 <img
-                  :src="slotProps.data.image"
-                  :alt="slotProps.data.title"
+                  :src="slotProps.data.imageUrl"
+                  :alt="slotProps.data.altText || slotProps.data.title"
                   class="object-cover w-full h-full transition-opacity duration-300"
                 />
                 <div class="absolute inset-0 bg-black bg-opacity-60"></div>
               </div>
-  
-              <!-- Konten -->
-              <div class="p-4 sm:p-6 md:p-10 flex flex-col gap-2 sm:gap-3 max-[375px]:p-3">
-                <div class="text-xl sm:text-2xl md:text-4xl text-neutral-200">
-                  {{ String(slides.indexOf(slotProps.data) + 1).padStart(2, "0") }}
-                </div>
-                <h2 class="text-lg sm:text-xl md:text-3xl font-bold uppercase">
+
+              <!-- Content section (40%) -->
+              <div class="px-4 mt-4 flex flex-col gap-2 h-[150px]">
+                <h2 class="text-base font-bold uppercase line-clamp-1">
                   {{ slotProps.data.title }}
                 </h2>
                 <time class="text-xs uppercase">
-                  {{ slotProps.data.startTime }}
+                  {{ formatDate(slotProps.data.date_start) }}
                 </time>
-                <p
-                  class="text-xs sm:text-sm md:text-base font-light tracking-wide leading-snug text-justify"
-                >
-                  {{ slotProps.data.description }}
+                <p class="text-xs font-light tracking-wide leading-snug text-justify line-clamp-2">
+                  {{ slotProps.data.description || "No description available" }}
                 </p>
               </div>
             </div>
           </template>
         </Carousel>
+
+        <!-- Loading state -->
+        <div v-if="loading" class="flex justify-center items-center h-64">
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div v-if="!loading && slides.length === 0" class="text-center py-20">
+          <p class="text-xl">No upcoming events found</p>
+        </div>
       </div>
     </main>
 </template>
-  
-  
-  
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { Link } from '@inertiajs/vue3';
-import KirabImage from "@assets/landing/kirab.png";
-import Wilujengan from "@assets/landing/wilujengan.png";
-import Grebeg from "@assets/landing/grebeg.png";
+import axios from "axios";
 
-const slides = ref([
-  {
-    image: KirabImage,
-    title: "Kirab Malem 1 Suro",
-    startTime: "Start on : 08:00 GTS . Monday",
-    description:
-      "Kirab malem 1 Suro adalah tradisi turun temurun dari Karaton Surakarta Hadiningrat yang dilakukan untuk memperingati datangnya Tahun Baru Jawa.",
-  },
-  {
-    image: Wilujengan,
-    title: "Cultural Festival",
-    startTime: "Start on : 10:00 GTS . Wednesday",
-    description:
-      "Join us for a celebration of diverse cultures featuring traditional performances, authentic cuisine, and interactive workshops showcasing heritage from around the world.",
-  },
-  {
-    image: Grebeg,
-    title: "Cultural Festival",
-    startTime: "Start on : 10:00 GTS . Wednesday",
-    description:
-      "Join us for a celebration of diverse cultures featuring traditional performances, authentic cuisine, and interactive workshops showcasing heritage from around the world.",
-  },
-  {
-    image: "https://picsum.photos/800/600?random=2",
-    title: "Music Concert",
-    startTime: "Start on : 19:30 GTS . Friday",
-    description:
-      "Experience an unforgettable night of live music featuring acclaimed artists performing a mix of contemporary hits and classical favorites in our state-of-the-art venue.",
-  },
-]);
+const slides = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
 
 const responsiveOptions = ref([
   { breakpoint: "1400px", numVisible: 2, numScroll: 1 },
@@ -107,8 +85,81 @@ const responsiveOptions = ref([
   { breakpoint: "768px", numVisible: 1, numScroll: 1 },
   { breakpoint: "576px", numVisible: 1, numScroll: 1 },
 ]);
-</script>
 
+const formatDate = (dateString) => {
+  if (!dateString) return "Date not specified";
+
+  const options = {
+    hour: '2-digit',
+    minute: '2-digit',
+    weekday: 'long',
+    timeZone: 'UTC'
+  };
+
+  try {
+    const date = new Date(dateString);
+    return `Start on: ${date.toLocaleTimeString('en-US', options)}`;
+  } catch (e) {
+    return dateString;
+  }
+};
+
+const getDetailPage = (slug) => {
+    window.location.href = `/events/${slug}`;
+};
+
+onMounted(async () => {
+    const options = {
+        method: "GET",
+        url: "/api/events",
+        headers: {
+            Accept: "application/json",
+            Authorization: "Bearer 123",
+        },
+    };
+
+    try {
+        const response = await axios.request(options);
+        const photoArray = Array.isArray(response.data)
+            ? response.data
+            : response.data.data || [];
+
+        // Get current date (without time)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        slides.value = photoArray
+            .map((photo) => ({
+                imageUrl: photo.image_url
+                    ? photo.image_url.startsWith("http")
+                        ? photo.image_url
+                        : `/storage/${photo.image_url.replace(/^public\//, "")}`
+                    : "/default-photo.jpg",
+                title: photo.title || "Untitled Event",
+                description: photo.description || "No description available",
+                date_start: photo.date_start,
+                date_end: photo.date_end,
+                altText: photo.alt_text || photo.title || "Event image",
+                slug: photo.slug,
+            }))
+            // Filter events that are today or in the future
+            .filter(event => {
+                const eventDate = new Date(event.date_start);
+                eventDate.setHours(0, 0, 0, 0);
+                return eventDate >= today;
+            })
+            // Sort by date (soonest first)
+            .sort((a, b) => new Date(a.date_start) - new Date(b.date_start));
+
+        console.log("Filtered Slides:", slides.value);
+    } catch (err) {
+        console.error("Failed to fetch events:", err);
+        error.value = "Failed to load events";
+    } finally {
+        loading.value = false;
+    }
+});
+</script>
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Bellefair&family=Poppins:wght@300;400&display=swap");
