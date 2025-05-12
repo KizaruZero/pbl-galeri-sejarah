@@ -9,6 +9,7 @@ use App\Models\MetadataPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Auth;
 
 class PhotoController extends Controller
 {
@@ -42,20 +43,26 @@ class PhotoController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|exists:categories,id',
             'source' => 'nullable|string|max:255',
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
             'tag' => 'nullable|string|max:255',
         ]);
 
+        $userId = Auth::user()->id;
+        if (!$userId) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+
         // Handle file upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            // Store file in the specified directory
-            $path = $file->storeAs('public/foto_content', $filename);
+            $path = $file->storeAs('foto_content', $filename, 'public');
+
+            // Save only the relative path (without 'public/') to DB
+            $imageUrl = 'foto_content/' . $filename;
 
             // Create slug from title
             $slug = Str::slug($request->title);
@@ -64,14 +71,13 @@ class PhotoController extends Controller
             $photo = ContentPhoto::create([
                 'title' => $request->title,
                 'slug' => $slug,
-                'category_id' => $request->category_id,
-                'user_id' => auth()->id(),
+                'user_id' => $userId,
                 'description' => $request->description,
                 'source' => $request->source,
                 'alt_text' => $request->alt_text,
                 'note' => $request->note,
                 'tag' => $request->tag,
-                'image_url' => $path,
+                'image_url' => $imageUrl,
                 'status' => 'pending',
             ]);
 

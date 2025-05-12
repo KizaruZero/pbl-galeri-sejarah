@@ -6,7 +6,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Article;
-
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\VideoController;
 /**
  * Halaman Utama (Welcome)
  */
@@ -43,7 +44,7 @@ Route::get('/gallery-video/{slug1}/{slug}', function () {
 Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 
 Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
-// ->middleware('auth', 'role:member')
+    // ->middleware('auth', 'role:member')
 ;
 
 /**
@@ -55,6 +56,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// user post
+Route::post('/api/content-photo', [PhotoController::class, 'store']);
+Route::post('/api/content-video', [VideoController::class, 'store']);
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/api.php';

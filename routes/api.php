@@ -19,7 +19,6 @@ Route::get('/user', function (Request $request) {
 Route::get('/search', [SearchController::class, 'search']);
 Route::get('/content-photo', [PhotoController::class, 'index']);
 Route::get('/content-photo/{slug}', [PhotoController::class, 'show']);
-Route::post('/content-photo', [PhotoController::class, 'store']);
 Route::get('/content-photo/user/{userId}', [PhotoController::class, 'getPhotoByUser']);
 
 

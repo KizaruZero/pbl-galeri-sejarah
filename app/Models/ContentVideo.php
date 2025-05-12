@@ -25,7 +25,6 @@ class ContentVideo extends Model
         'note',
         'source',
         'tag',
-        'category_id',
         'user_id',
         'video_url',
         'link_youtube',
@@ -45,7 +44,7 @@ class ContentVideo extends Model
             if (request()->has('categories')) {
                 // Delete existing category relationships
                 $contentVideo->categoryContents()->delete();
-                
+
                 // Create new category relationships
                 foreach (request()->input('categories') as $categoryId) {
                     $contentVideo->categoryContents()->create([

@@ -22,7 +22,6 @@ class ContentPhoto extends Model
     protected $fillable = [
         'title',
         'slug',
-        'category_id',
         'user_id',
         'description',
         'source',
@@ -45,7 +44,7 @@ class ContentPhoto extends Model
             if (request()->has('categories')) {
                 // Delete existing category relationships
                 $contentPhoto->categoryContents()->delete();
-                
+
                 // Create new category relationships
                 foreach (request()->input('categories') as $categoryId) {
                     $contentPhoto->categoryContents()->create([

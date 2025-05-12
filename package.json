@@ -24,6 +24,7 @@
         "epic-spinners": "^2.0.0",
         "primevue": "^4.3.3",
         "router-link": "^0.0.4",
+        "sweetalert2": "^11.21.0",
         "vue-router": "^4.5.0"
     }
 }

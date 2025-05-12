@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('metadata_photo', function (Blueprint $table) {
             $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
-            $table->date('collection_date');
-            $table->string('file_size', 10);
+            $table->date('collection_date')->nullable();
+            $table->string('file_size', 10)->nullable();
             $table->string('aperture', 8)->nullable();
             // $table->string('tag', 50)->nullable();
             $table->string('location', 75)->nullable();

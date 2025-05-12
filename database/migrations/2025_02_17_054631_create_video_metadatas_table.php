@@ -13,14 +13,14 @@ return new class extends Migration {
         Schema::create('metadata_video', function (Blueprint $table) {
             $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
             $table->string('location', 75)->nullable();
-            $table->string('file_size', 10);
+            $table->string('file_size', 10)->nullable();
             $table->string('frame_rate', 6)->nullable();
             $table->string('resolution', 12)->nullable();
             $table->string('duration', 8)->nullable();
             $table->string('format_file', 5)->nullable();
             // $table->string('tag', 50)->nullable();
             $table->string('codec_video_audio', 20)->nullable();
-            $table->date('collection_date');
+            $table->date('collection_date')->nullable();
             $table->timestamps();
             $table->unsignedInteger('content_video_id');
             $table->foreign('content_video_id')
