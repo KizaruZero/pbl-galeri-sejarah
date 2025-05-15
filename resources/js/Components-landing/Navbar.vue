@@ -137,13 +137,48 @@
             class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex"
         >
             <div class="w-64 bg-black h-full p-6 flex flex-col gap-6">
-                <button @click="toggleMenu" class="text-white self-end text-2xl">✕</button>
-                <Link href="/" class="text-white text-lg py-1" @click="toggleMenu">Home</Link>
-                <Link href="/events" class="text-white text-lg py-1" @click="toggleMenu">Events</Link>
-                <Link href="/gallery" class="text-white text-lg py-1" @click="toggleMenu">Gallery</Link>
-                <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu">Article</Link>
-                <Link href="/member" class="text-white text-lg py-1" @click="toggleMenu">Member</Link>
-                <Link href="/login" class="text-white text-lg py-1" @click="toggleMenu">Login</Link>
+                <button
+                    @click="toggleMenu"
+                    class="text-white self-end text-2xl"
+                >
+                    ✕
+                </button>
+                <Link
+                    href="/"
+                    class="text-white text-lg py-1"
+                    @click="toggleMenu"
+                    >Home</Link
+                >
+                <Link
+                    href="/events"
+                    class="text-white text-lg py-1"
+                    @click="toggleMenu"
+                    >Events</Link
+                >
+                <Link
+                    href="/gallery"
+                    class="text-white text-lg py-1"
+                    @click="toggleMenu"
+                    >Gallery</Link
+                >
+                <Link
+                    href="/article"
+                    class="text-white text-lg py-1"
+                    @click="toggleMenu"
+                    >Article</Link
+                >
+                <Link
+                    href="/member"
+                    class="text-white text-lg py-1"
+                    @click="toggleMenu"
+                    >Member</Link
+                >
+                <Link
+                    href="/login"
+                    class="text-white text-lg py-1"
+                    @click="toggleMenu"
+                    >Login</Link
+                >
             </div>
             <div class="flex-1" @click="toggleMenu"></div>
         </div>
@@ -171,25 +206,14 @@ const goToDashboard = () => {
 
 const roles = computed(() => {
     const user = usePage().props.auth.user;
-
     if (!user) return [];
 
-    // Check if roles is an array of objects (Spatie)
+    // Check if roles is an array
     if (Array.isArray(user.roles)) {
-        return user.roles.map((role) => role?.name || "");
+        return user.roles;
     }
 
-    // Check if role_names exists (Shield might use this)
-    if (Array.isArray(user.role_names)) {
-        return user.role_names;
-    }
-
-    // Fallback for single role if using Shield's default
-    if (user.role) {
-        return [user.role];
-    }
-
-    return user.roles || [];
+    return [];
 });
 
 // Fungsi untuk mengambil data company profile

@@ -16,7 +16,8 @@ use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Hash;
 use Filament\Pages\CreateRecord;
 use Filament\Pages\Page;
-
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\Action;
 
 class UserResource extends Resource
 {
@@ -70,13 +71,14 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->icon('heroicon-m-envelope')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->dateTime()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('photo_profile')
+                Tables\Columns\ImageColumn::make('photo_profile')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -89,8 +91,24 @@ class UserResource extends Resource
             ])
             ->filters([
                 //
+                SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload(),
             ])
             ->actions([
+                Action::make('Set Role')
+                    ->icon('heroicon-m-adjustments-vertical')
+                    ->form([
+                        Select::make('role')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->optionsLimit(10)
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->name),
+                    ]),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

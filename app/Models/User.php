@@ -10,6 +10,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Support\Facades\Auth;
 use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role;
 // use filament notifications
 
 
@@ -27,7 +28,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'name',
         'email',
         'password',
-        'role',
         'photo_profile',
         'google_id',
     ];
@@ -56,6 +56,13 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         $allowedRoles = ['super_admin', 'direktur', 'author']; // Roles yang diizinkan
         return $this->roles->pluck('name')->intersect($allowedRoles)->isNotEmpty();
     }
+
+    // roles
+    // public function role()
+    // {
+    //     return $this->belongsToMany(Role::class);
+    // }
+
 
     // notifiable_type
 

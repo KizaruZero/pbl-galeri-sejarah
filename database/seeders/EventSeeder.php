@@ -19,14 +19,27 @@ class EventSeeder extends Seeder
 
         $events = [];
         $eventTypes = [
-            'Tech Conference', 'Art Exhibition', 'Charity Run',
-            'Startup Pitch', 'Music Festival', 'Food Fair',
-            'Workshop', 'Seminar', 'Product Launch'
+            'Tech Conference',
+            'Art Exhibition',
+            'Charity Run',
+            'Startup Pitch',
+            'Music Festival',
+            'Food Fair',
+            'Workshop',
+            'Seminar',
+            'Product Launch'
         ];
 
         $imageThemes = [
-            'business', 'tech', 'people', 'nature', 'fashion',
-            'food', 'sports', 'architecture', 'animals'
+            'business',
+            'tech',
+            'people',
+            'nature',
+            'fashion',
+            'food',
+            'sports',
+            'architecture',
+            'animals'
         ];
 
         for ($i = 0; $i < 10; $i++) {
@@ -37,17 +50,17 @@ class EventSeeder extends Seeder
 
             $events[] = [
                 'title' => $title,
-                'slug' => Str::slug($title) . '-' . Str::random(5),
-                'description' => $faker->paragraph(3),
+                'slug' => Str::slug($title) . '-' . Str::random(3),
+                'description' => $faker->paragraph(2),
                 'date_start' => Carbon::parse($dateStart)->format('Y-m-d'),
                 'date_end' => Carbon::parse($dateEnd)->format('Y-m-d'),
-                'instagram_url' => $faker->boolean(70) ? 'https://instagram.com/'.Str::slug($title) : null,
-                'youtube_url' => $faker->boolean(50) ? 'https://youtube.com/'.Str::slug($title) : null,
-                'website_url' => $faker->boolean(60) ? 'https://'.Str::slug($title).'.com' : null,
+                'instagram_url' => $faker->boolean(70) ? 'https://instagram.com/' . Str::slug($title) : null,
+                'youtube_url' => $faker->boolean(50) ? 'https://youtube.com/' . Str::slug($title) : null,
+                'website_url' => $faker->boolean(60) ? 'https://' . Str::slug($title) . '.com' : null,
                 'contact_person' => $faker->name . ' (' . $faker->phoneNumber . ')',
                 'location' => $faker->city . ', ' . $faker->streetAddress,
-                'google_maps_url' => $faker->boolean(80) ? 'https://goo.gl/maps/'.$faker->bothify('??????##') : null,
-                'image_url' => 'https://source.unsplash.com/800x600/?'.$theme.','.Str::slug($title),
+                'google_maps_url' => $faker->boolean(80) ? 'https://goo.gl/maps/' . $faker->bothify('??????##') : null,
+                'image_url' => 'https://source.unsplash.com/800x600/?' . $theme . ',' . Str::slug($title),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
