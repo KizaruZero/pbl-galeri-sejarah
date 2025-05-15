@@ -25,11 +25,15 @@
                         />
                     </svg>
                 </button>
-                <img
-                    :src="companyProfile?.logo_url"
-                    alt="Logo"
-                    class="w-10 h-auto object-contain"
-                />
+                <div class="w-10 h-10 flex items-center justify-center">
+                    <img
+                        v-if="!isLoading && companyProfile?.logo_url"
+                        :src="companyProfile.logo_url"
+                        alt="Logo"
+                        class="w-10 h-auto object-contain"
+                    />
+                    <div v-else class="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                </div>
             </div>
 
             <!-- Desktop: Menu Kiri -->
@@ -57,12 +61,14 @@
             </div>
 
             <!-- Desktop: Logo Tengah -->
-            <div class="hidden lg:block mx-6">
+            <div class="hidden lg:block mx-6 w-[50px] h-[60px] flex items-center justify-center">
                 <img
-                    :src="companyProfile?.logo_url"
+                    v-if="!isLoading && companyProfile?.logo_url"
+                    :src="companyProfile.logo_url"
                     alt="Logo"
                     class="w-[50px] h-auto object-contain"
                 />
+                <div v-else class="mt-6 w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
             </div>
 
             <!-- Desktop: Menu Kanan -->
@@ -199,6 +205,7 @@ const handleClickOutside = (event) => {
         dropdownOpen.value = false;
     }
 };
+const isLoading = ref(true);
 
 const goToDashboard = () => {
     window.location.replace("/dashboard");
@@ -219,10 +226,13 @@ const roles = computed(() => {
 // Fungsi untuk mengambil data company profile
 const fetchCompanyProfile = async () => {
     try {
+        isLoading.value = true;
         const response = await axios.get("/api/company-profile");
         companyProfile.value = response.data.data;
     } catch (error) {
         console.error("Error fetching company profile:", error);
+    } finally {
+        isLoading.value = false;
     }
 };
 

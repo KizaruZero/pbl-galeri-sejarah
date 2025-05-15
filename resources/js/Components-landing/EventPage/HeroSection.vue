@@ -1,8 +1,16 @@
 <template>
-    <section class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+    <!-- Spinner Loading -->
+    <section v-if="isLoading"
+        class="flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] bg-black">
+        <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+    </section>
+
+    <!-- Slideshow -->
+    <section v-else
+        class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+
         <!-- Slideshow Container -->
         <div class="relative w-full h-full">
-            <!-- Slideshow Image with slide transition -->
             <transition-group name="slide" tag="div" class="w-full h-full">
                 <img
                     v-for="(image, index) in eventImages"
@@ -35,6 +43,7 @@ import axios from 'axios';
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
 const eventImages = ref([]);
+const isLoading = ref(true); // ✅ Tambahan: loading state
 let slideInterval = null;
 
 const startSlideshow = () => {
@@ -42,7 +51,7 @@ const startSlideshow = () => {
         if (eventImages.value.length > 0) {
             currentSlideIndex.value = (currentSlideIndex.value + 1) % eventImages.value.length;
         }
-    }, 7000); // Ganti gambar setiap 5 detik
+    }, 7000); // Ganti gambar setiap 7 detik
 };
 
 const stopSlideshow = () => {
@@ -55,17 +64,19 @@ const fetchCompanyProfile = async () => {
         const data = response.data.data;
         console.log('Company profile response:', data);
 
-        // Buat array gambar event
+        // ✅ Hanya masukkan gambar yang tidak null
         eventImages.value = [
-            `/storage/${data.bg_events_1}`,
-            `/storage/${data.bg_events_2}`,
-            `/storage/${data.bg_events_3}`,
-        ];
+            data.bg_events_1 && `/storage/${data.bg_events_1}`,
+            data.bg_events_2 && `/storage/${data.bg_events_2}`,
+            data.bg_events_3 && `/storage/${data.bg_events_3}`,
+        ].filter(Boolean); // filter null/undefined
 
         companyProfile.value = data;
         startSlideshow();
     } catch (error) {
         console.error('Error fetching company profile:', error);
+    } finally {
+        isLoading.value = false; // ✅ Set selesai loading
     }
 };
 
@@ -104,5 +115,15 @@ const user = computed(() => page.props.auth?.user || null);
 }
 .slide-leave-to {
     transform: translateX(-100%);
+}
+
+/* Spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.animate-spin {
+    animation: spin 1s linear infinite;
 }
 </style>

@@ -1,8 +1,15 @@
 <template>
-    <section class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+    <!-- Loading Spinner -->
+    <section v-if="isLoading"
+        class="flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] bg-black">
+        <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+    </section>
+
+    <!-- Slideshow -->
+    <section v-else
+        class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
         <!-- Slideshow Container -->
         <div class="relative w-full h-full">
-            <!-- Slideshow Image with slide transition -->
             <transition-group name="slide" tag="div" class="w-full h-full">
                 <img
                     v-for="(image, index) in companyProfile?.bg_home_urls"
@@ -17,7 +24,7 @@
         <!-- Overlay Hitam -->
         <div class="absolute inset-0 bg-black bg-opacity-60"></div>
 
-        <!-- Teks Tengah - Diubah untuk posisi yang lebih presisi -->
+        <!-- Teks Tengah -->
         <div class="absolute inset-0 flex items-center justify-center z-10">
             <h1 class="text-center text-white uppercase font-bellefair
                 text-6xl max-md:text-4xl max-sm:text-2xl px-5 leading-tight"
@@ -27,6 +34,7 @@
     </section>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { usePage } from '@inertiajs/vue3';
@@ -34,6 +42,7 @@ import axios from 'axios';
 
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
+const isLoading = ref(true);
 let slideInterval = null;
 
 const startSlideshow = () => {
@@ -52,9 +61,7 @@ const fetchCompanyProfile = async () => {
     try {
         const response = await axios.get('/api/company-profile');
         const data = response.data.data;
-        console.log('Company profile response:', data);
 
-        // Buat array gambar dari 3 field
         data.bg_home_urls = [
             `/storage/${data.bg_home_1}`,
             `/storage/${data.bg_home_2}`,
@@ -65,6 +72,8 @@ const fetchCompanyProfile = async () => {
         startSlideshow();
     } catch (error) {
         console.error('Error fetching company profile:', error);
+    } finally {
+        isLoading.value = false;
     }
 };
 
