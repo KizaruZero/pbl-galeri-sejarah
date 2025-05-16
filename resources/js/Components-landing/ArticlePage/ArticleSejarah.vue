@@ -66,7 +66,7 @@ const isSaved = ref(false);
 const likeCount = ref(Math.floor(Math.random() * 100) + 5);
 
 const getDetailPage = (slug) => {
-    window.location.href = `/articles/${slug}`;
+    window.location.href = `/article/${slug}`;
 };
 
 onMounted(async () => {

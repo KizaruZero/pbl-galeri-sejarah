@@ -4,7 +4,7 @@
       <HeroSection />
       <SearchBar />
       <CategoryGrid />
-      <ImageGrid />
+      
       <!-- <ImageGrid /> -->
       <UpcomingEvent />
       <!-- <TrendingEvents /> -->
