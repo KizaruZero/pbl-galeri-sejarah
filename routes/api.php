@@ -25,8 +25,8 @@ Route::get('/content-photo/user/{userId}', [PhotoController::class, 'getPhotoByU
 
 Route::get('/content-video', [VideoController::class, 'index']);
 Route::get('/content-video/{slug}', [VideoController::class, 'show']);
-Route::get('/article', [ArticleController::class, 'index']);
-Route::get('/article/{slug}', [ArticleController::class, 'show']);
+Route::get('/articles', [ArticleController::class, 'index']);
+Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 
 // Route baru untuk user
 Route::get('/users', [UserController::class, 'index']);

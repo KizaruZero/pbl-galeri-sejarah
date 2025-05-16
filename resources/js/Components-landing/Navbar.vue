@@ -32,7 +32,10 @@
                         alt="Logo"
                         class="w-10 h-auto object-contain"
                     />
-                    <div v-else class="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                    <div
+                        v-else
+                        class="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"
+                    ></div>
                 </div>
             </div>
 
@@ -61,14 +64,19 @@
             </div>
 
             <!-- Desktop: Logo Tengah -->
-            <div class="hidden lg:block mx-6 w-[50px] h-[60px] flex items-center justify-center">
+            <div
+                class="hidden lg:block mx-6 w-[50px] h-[60px] flex items-center justify-center"
+            >
                 <img
                     v-if="!isLoading && companyProfile?.logo_url"
                     :src="companyProfile.logo_url"
                     alt="Logo"
                     class="w-[50px] h-auto object-contain"
                 />
-                <div v-else class="mt-6 w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                <div
+                    v-else
+                    class="mt-6 w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"
+                ></div>
             </div>
 
             <!-- Desktop: Menu Kanan -->
