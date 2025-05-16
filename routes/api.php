@@ -16,7 +16,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // routes/api.php
-Route::get('/search', [SearchController::class, 'search']);
+Route::get('/search', [App\Http\Controllers\SearchController::class, 'search']);
 Route::get('/content-photo', [PhotoController::class, 'index']);
 Route::get('/content-photo/{slug}', [PhotoController::class, 'show']);
 Route::get('/content-photo/user/{userId}', [PhotoController::class, 'getPhotoByUser']);
