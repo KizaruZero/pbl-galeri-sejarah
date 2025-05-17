@@ -302,7 +302,6 @@ const submitForm = async () => {
 
     // Show loading state
     loading.value = true;
-    w;
 
     // Send POST request to upload photo
     const response = await axios.post("/api/content-photo", formData, {
