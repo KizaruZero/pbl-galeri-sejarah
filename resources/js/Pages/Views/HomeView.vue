@@ -19,4 +19,5 @@
   import UpcomingEvent from '@/Components-landing/UpcomingEvent.vue'
   import Article from '@/Components-landing/LandingPage/ArticleLanding.vue'
   import JoinUs from '@/Components-landing/JoinUsSection.vue'
+  
 </script>

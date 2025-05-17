@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Article;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\SearchController;
 /**
  * Halaman Utama (Welcome)
  */
@@ -23,9 +24,8 @@ Route::get('/', function () {
 /**
  * Routing Vue Pages (non-auth)
  */
-
-
 Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
+Route::get('/article/{slug}', fn() => Inertia::render('Views/ArticleDetailView'));
 Route::get('/member', fn() => Inertia::render('Views/MemberView'));
 Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
 Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
@@ -35,6 +35,10 @@ Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
 Route::get('/gallery/{slug}', function ($slug) {
     return Inertia::render('Views/ListGallery');
 });
+Route::get('/search', [SearchController::class, 'search'])->name('search');
+Route::get('/photo/{slug}', [PhotoController::class, 'show'])->name('photo.show');
+Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');
+
 Route::get('/gallery-photo/{slug1}/{slug}', function () {
     return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
 });
