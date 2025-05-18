@@ -167,22 +167,6 @@ class PhotoController extends Controller
         ]);
     }
 
-    public function getFavoriteByUser($userId)
-    {
-        $totalFavorites = UserFavorite::where('user_id', $userId)
-            ->whereNotNull('content_photo_id')
-            ->count();
-        $data = UserFavorite::with(['contentPhoto.metadataPhoto', 'contentPhoto.userComments', 'contentPhoto.user', 'contentPhoto.categoryContents'])
-            ->where('user_id', $userId)
-            ->whereNotNull('content_photo_id')
-            ->get();
-
-        return response()->json([
-            'total' => $totalFavorites,
-            'data' => $data,
-        ]);
-    }
-
     public function getPhotoByCategory($slug)
     {
         $contentPhotos = CategoryContent::with([

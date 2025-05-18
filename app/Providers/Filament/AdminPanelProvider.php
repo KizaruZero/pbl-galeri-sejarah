@@ -21,6 +21,7 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Rupadana\ApiService\ApiServicePlugin;
 use App\Filament\Pages\CompanyProfileSettings;
+use BezhanSalleh\FilamentGoogleAnalytics\FilamentGoogleAnalyticsPlugin;
 
 
 
@@ -78,7 +79,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications(true)
             ->plugins([
                 ApiServicePlugin::make(),
-                \BezhanSalleh\FilamentGoogleAnalytics\FilamentGoogleAnalyticsPlugin::make()
+                FilamentGoogleAnalyticsPlugin::make()
             ]);
     }
 }

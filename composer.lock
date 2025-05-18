@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e79f52123966989379746aff69df9bc6",
+    "content-hash": "376a74abf70b1b1fe1541c8684a30517",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -6987,16 +6987,16 @@
         },
         {
             "name": "spatie/laravel-analytics",
-            "version": "5.5.3",
+            "version": "5.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-analytics.git",
-                "reference": "0d0931404ef4aa43cee88e7c129ad5a229bcbdb0"
+                "reference": "c58ab4dd5eb1759fc7df1cdbaa461357570ab916"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-analytics/zipball/0d0931404ef4aa43cee88e7c129ad5a229bcbdb0",
-                "reference": "0d0931404ef4aa43cee88e7c129ad5a229bcbdb0",
+                "url": "https://api.github.com/repos/spatie/laravel-analytics/zipball/c58ab4dd5eb1759fc7df1cdbaa461357570ab916",
+                "reference": "c58ab4dd5eb1759fc7df1cdbaa461357570ab916",
                 "shasum": ""
             },
             "require": {
@@ -7053,7 +7053,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-analytics/tree/5.5.3"
+                "source": "https://github.com/spatie/laravel-analytics/tree/5.6.0"
             },
             "funding": [
                 {
@@ -7061,7 +7061,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-02-20T10:26:54+00:00"
+            "time": "2025-04-28T14:10:31+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",

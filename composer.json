@@ -20,6 +20,7 @@
         "livewire/livewire": "3.5.12",
         "plutuss/getid3-laravel": "^1.1",
         "rupadana/filament-api-service": "^3.4",
+        "spatie/laravel-analytics": "^5.6",
         "spatie/laravel-sitemap": "^7.3",
         "tightenco/ziggy": "^2.0"
     },
