@@ -51,7 +51,7 @@ class ContentVideoResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                    Forms\Components\Select::make('categories')
+                Forms\Components\Select::make('categories')
                     ->relationship('categoryContents.category', 'category_name')
                     ->multiple()
                     ->preload()
@@ -81,21 +81,7 @@ class ContentVideoResource extends Resource
                         ]);
                         return $category->id;
                     })
-                    ->required()
-                    ->afterStateUpdated(function ($state, $record) {
-                        if ($record) {
-                            // Delete existing category relationships
-                            $record->categoryContents()->delete();
-                            
-                            // Create new category relationships
-                            foreach ($state as $categoryId) {
-                                $record->categoryContents()->create([
-                                    'category_id' => $categoryId,
-                                    'content_video_id' => $record->id
-                                ]);
-                            }
-                        }
-                    }),
+                    ->required(), 
                 Forms\Components\FileUpload::make('video_url')
                     ->directory('video_content')
                     ->resize(50)
@@ -304,5 +290,21 @@ class ContentVideoResource extends Resource
             'create' => Pages\CreateContentVideo::route('/create'),
             'edit' => Pages\EditContentVideo::route('/{record}/edit'),
         ];
+    }
+
+    public static function handleCategoryRelationships(ContentVideo $record, array $data): void
+    {
+        if (isset($data['categories'])) {
+            // Delete existing category relationships
+            $record->categoryContents()->delete();
+            
+            // Create new category relationships
+            foreach ($data['categories'] as $categoryId) {
+                $record->categoryContents()->create([
+                    'category_id' => $categoryId,
+                    'content_video_id' => $record->id
+                ]);
+            }
+        }
     }
 }

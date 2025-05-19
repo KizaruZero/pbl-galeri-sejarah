@@ -78,21 +78,7 @@ class ContentPhotoResource extends Resource
                         ]);
                         return $category->id;
                     })
-                    ->required()
-                    ->afterStateUpdated(function ($state, $record) {
-                        if ($record) {
-                            // Delete existing category relationships
-                            $record->categoryContents()->delete();
-                            
-                            // Create new category relationships
-                            foreach ($state as $categoryId) {
-                                $record->categoryContents()->create([
-                                    'category_id' => $categoryId,
-                                    'content_photo_id' => $record->id
-                                ]);
-                            }
-                        }
-                    }),
+                    ->required(),   
                 Forms\Components\FileUpload::make('image_url')
                     ->image()
                     ->directory('foto_content')
@@ -339,6 +325,22 @@ class ContentPhotoResource extends Resource
                 ->body("There are {$newContent} new content photo uploaded in the last hour.")
                 ->sendToDatabase(auth()->user())
                 ->send();
+        }
+    }
+
+    public static function handleCategoryRelationships(ContentPhoto $record, array $data): void
+    {
+        if (isset($data['categories'])) {
+            // Delete existing category relationships
+            $record->categoryContents()->delete();
+            
+            // Create new category relationships
+            foreach ($data['categories'] as $categoryId) {
+                $record->categoryContents()->create([
+                    'category_id' => $categoryId,
+                    'content_photo_id' => $record->id
+                ]);
+            }
         }
     }
 }

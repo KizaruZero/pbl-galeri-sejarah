@@ -14,4 +14,15 @@ class CreateContentPhoto extends CreateRecord
     {
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
+
+    protected function afterCreate(): void
+    {
+        // Handle category relationships after creation
+        ContentPhotoResource::handleCategoryRelationships(
+            $this->record,
+            $this->data
+        );
+    }
 }
+
+
