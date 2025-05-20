@@ -3,13 +3,13 @@
     <div v-if="!isAuthenticated">
       <div class="border-t border-gray-700 my-10"></div>
       <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">FORM MEMBERSHIP</h2>
-      <form @submit.prevent="submitForm" class="max-w-xl mx-auto space-y-6">
+      <form @submit.prevent="submit" class="max-w-xl mx-auto space-y-6">
         <div>
-          <label for="nama" class="block mb-2">Nama</label>
+          <label for="name" class="block mb-2">Nama</label>
           <input
             type="text"
-            id="nama"
-            v-model="form.nama"
+            id="name"
+            v-model="form.name"
             class="w-full py-3 px-4 bg-gray-200 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
             required
           />
@@ -38,11 +38,13 @@
         </div>
 
         <div>
-          <label for="konfirmasi_password" class="block mb-2">Konfirmasi Password</label>
+          <label for="password_confirmation" class="block mb-2"
+            >Konfirmasi Password</label
+          >
           <input
             type="password"
-            id="konfirmasi_password"
-            v-model="form.konfirmasi_password"
+            id="password_confirmation"
+            v-model="form.password_confirmation"
             class="w-full py-3 px-4 bg-gray-200 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
             required
           />
@@ -52,13 +54,15 @@
           <button
             type="submit"
             class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition duration-300 border border-gray-700"
+            :disabled="processing"
           >
-            Submit
+            {{ processing ? "Processing..." : "Register" }}
           </button>
           <button
             type="button"
             @click="resetForm"
             class="w-full py-3 bg-black hover:bg-gray-900 text-white rounded-md transition duration-300 border border-red-700"
+            :disabled="processing"
           >
             Reset
           </button>
@@ -73,7 +77,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from "vue";
+import { useForm } from "@inertiajs/vue3";
+import { defineProps } from "vue";
 
 const props = defineProps({
   isAuthenticated: {
@@ -82,30 +87,24 @@ const props = defineProps({
   },
 });
 
-const form = ref({
-  nama: "",
+const form = useForm({
+  name: "",
   email: "",
   password: "",
-  konfirmasi_password: "",
+  password_confirmation: "",
 });
 
-const emit = defineEmits(["submit", "reset"]);
+const processing = form.processing;
 
-const submitForm = () => {
-  if (form.value.password !== form.value.konfirmasi_password) {
-    alert("Password dan konfirmasi password tidak cocok!");
-    return;
-  }
-  emit("submit", form.value);
+const submit = () => {
+  form.post(route("register"), {
+    onSuccess: () => {
+      form.reset();
+    },
+  });
 };
 
 const resetForm = () => {
-  form.value = {
-    nama: "",
-    email: "",
-    password: "",
-    konfirmasi_password: "",
-  };
-  emit("reset");
+  form.reset();
 };
 </script>

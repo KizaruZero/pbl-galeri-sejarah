@@ -2,14 +2,26 @@
   <div>
     <!-- Benefits Section -->
     <div>
-      <h2 class="text-2xl md:text-3xl font-bold mb-6">
-        JADILAH MEMBER DAN DAPATKAN AKSES EKSKLUSIF!
-      </h2>
-      <p class="text-gray-300 mb-8">
-        Dengan bergabung sebagai member, kamu bisa menikmati fitur penuh aplikasi: unggah
-        gambar, unggah video, dan berikan komentar pada berbagai konten menarik.
-        Ekspresikan dirimu dan jadi bagian dari komunitas kami!
-      </p>
+      <template v-if="!isAuthenticated">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          JADILAH MEMBER DAN DAPATKAN AKSES EKSKLUSIF!
+        </h2>
+        <p class="text-gray-300 mb-8">
+          Dengan bergabung sebagai member, kamu bisa menikmati fitur penuh aplikasi:
+          unggah gambar, unggah video, dan berikan komentar pada berbagai konten menarik.
+          Ekspresikan dirimu dan jadi bagian dari komunitas kami!
+        </p>
+      </template>
+      <template v-else>
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          Selamat datang kembali, {{ username }}!
+        </h2>
+        <p class="text-gray-300 mb-8">
+          Terima kasih telah bergabung sebagai member. Nikmati akses penuh ke konten
+          premium, fitur eksklusif, dan berbagai keuntungan lainnya yang hanya tersedia
+          untuk anggota seperti Anda.
+        </p>
+      </template>
       <div class="border-t border-gray-700 my-10"></div>
     </div>
 
@@ -85,5 +97,20 @@
 </template>
 
 <script setup>
-// Tidak perlu props atau data khusus untuk komponen ini
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+// Define props
+const props = defineProps({
+  isAuthenticated: {
+    type: Boolean,
+    required: true
+  }
+});
+
+// Get user data from Inertia page props
+const username = computed(() => {
+  const user = usePage().props.auth.user;
+  return user ? user.name : 'Member';
+});
 </script>
