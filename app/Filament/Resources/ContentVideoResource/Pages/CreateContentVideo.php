@@ -14,10 +14,10 @@ class CreateContentVideo extends CreateRecord
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
+    protected function afterCreate(): void
     {
-        // Handle category relationships after save
-        ContentPhotoResource::handleCategoryRelationships(
+        // Handle category relationships after creation
+        ContentVideoResource::handleCategoryRelationships(
             $this->record,
             $this->data
         );

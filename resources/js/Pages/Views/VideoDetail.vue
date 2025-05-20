@@ -1,10 +1,9 @@
 <template>
     <MainLayout>
         <div class="min-h-screen bg-black mt-12">
-            <div class="min-h-screen bg-black text-white">
                 <!-- Back Button -->
                 <button @click="router.go(-1)"
-                    class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-14">
+                    class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-20">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -17,7 +16,7 @@
                     <!-- Video Player -->
                     <div class="relative pt-[56.25%] bg-black">
                         <video v-if="isLocalVideo" controls :poster="video.thumbnailUrl"
-                            class="absolute inset-0 w-full h-full object-contain">
+                            class="w-full h-auto max-h-[70vh] object-contain bg-gray-950">
                             <source :src="video.video_url" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
@@ -218,7 +217,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </MainLayout>
 </template>
 

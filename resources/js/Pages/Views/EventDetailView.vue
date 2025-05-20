@@ -1,7 +1,6 @@
 <template>
     <MainLayout>
         <div class="min-h-screen bg-black mt-8">
-            <div class="min-h-screen bg-black text-white">
 
                 <!-- Loading state -->
                 <div v-if="loading" class="text-center text-white">
@@ -15,10 +14,8 @@
 
                 <!-- Content -->
                 <div v-else class="card">
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                    </div>
-                    <div class="w-full">
-                        <div class="relative w-full">
+                    <div class="max-w-full mx-auto">
+                        <div class="relative">
                             <!-- Back Button -->
                             <button @click="router.go(-1)"
                                 class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-8">
@@ -30,13 +27,13 @@
                             </button>
 
                             <img :src="event.imageUrl" :alt="event.altText"
-                                class="w-full h-auto max-h-[calc(100vh-80px)] object-cover bg-gray-950 mt-14" />
+                                class="w-full h-auto max-h-[70vh] object-contain bg-gray-950" />
                         </div>
                     </div>
                 </div>
 
                 <!-- Event Info -->
-                <div class="p-6">
+                <div class="p-6 ml-24 mr-24">
                     <div class="flex justify-between items-start mb-4">
                         <h1 class="text-2xl font-bold text-white">
                             {{ event.title }}
@@ -157,7 +154,6 @@
                     </p>
                 </div>
             </div>
-        </div>
     </MainLayout>
 </template>
 

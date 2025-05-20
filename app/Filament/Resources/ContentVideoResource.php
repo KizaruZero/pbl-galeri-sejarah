@@ -81,7 +81,7 @@ class ContentVideoResource extends Resource
                         ]);
                         return $category->id;
                     })
-                    ->required(), 
+                    ->required(),
                 Forms\Components\FileUpload::make('video_url')
                     ->directory('video_content')
                     ->resize(50)
@@ -297,7 +297,7 @@ class ContentVideoResource extends Resource
         if (isset($data['categories'])) {
             // Delete existing category relationships
             $record->categoryContents()->delete();
-            
+
             // Create new category relationships
             foreach ($data['categories'] as $categoryId) {
                 $record->categoryContents()->create([
