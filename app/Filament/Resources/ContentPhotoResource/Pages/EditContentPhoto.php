@@ -22,6 +22,19 @@ class EditContentPhoto extends EditRecord
         ];
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Ambil ID kategori yang terhubung dengan content photo ini
+        $categoryIds = $this->record->categoryContents()
+            ->pluck('category_id')
+            ->toArray();
+
+        // Isi field categories dengan ID kategori yang sudah ada
+        $data['categories'] = $categoryIds;
+
+        return $data;
+    }
+
     protected function afterSave(): void
     {
         // Handle category relationships after save

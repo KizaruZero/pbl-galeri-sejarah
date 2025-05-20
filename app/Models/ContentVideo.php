@@ -36,23 +36,8 @@ class ContentVideo extends Model
 
     protected static function booted()
     {
-        static::created(function ($contentPhoto) {
+        static::created(function ($contentVideo) {
             app()->call([ContentVideoResource::class, 'getHourlyUploadedContent']);
-        });
-
-        static::saved(function ($contentVideo) {
-            if (request()->has('categories')) {
-                // Delete existing category relationships
-                $contentVideo->categoryContents()->delete();
-
-                // Create new category relationships
-                foreach (request()->input('categories') as $categoryId) {
-                    $contentVideo->categoryContents()->create([
-                        'category_id' => $categoryId,
-                        'content_photo_id' => $contentVideo->id
-                    ]);
-                }
-            }
         });
     }
     protected $attributes = [
@@ -66,7 +51,7 @@ class ContentVideo extends Model
 
     public function categoryContents()
     {
-        return $this->hasMany(CategoryContent::class, 'content_video_id');
+        return $this->hasMany(CategoryContent::class);
     }
 
     public function metadataVideo()
@@ -81,7 +66,7 @@ class ContentVideo extends Model
 
     public function userComments()
     {
-        return $this->hasMany(UserComment::class, 'content_photo_id')
+        return $this->hasMany(UserComment::class, 'content_video_id')
             ->where('status', 'published');
     }
     public function contentReactions()

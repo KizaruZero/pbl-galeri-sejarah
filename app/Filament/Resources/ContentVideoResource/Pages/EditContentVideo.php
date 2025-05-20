@@ -22,10 +22,23 @@ class EditContentVideo extends EditRecord
         ];
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Ambil ID kategori yang terhubung dengan content video ini
+        $categoryIds = $this->record->categoryContents()
+            ->pluck('category_id')
+            ->toArray();
+
+        // Isi field categories dengan ID kategori yang sudah ada
+        $data['categories'] = $categoryIds;
+
+        return $data;
+    }
+
     protected function afterSave(): void
     {
         // Handle category relationships after save
-        ContentPhotoResource::handleCategoryRelationships(
+        ContentVideoResource::handleCategoryRelationships(
             $this->record,
             $this->data
         );
