@@ -51,7 +51,9 @@ Route::delete('/user-favorite/video', [UserFavoriteController::class, 'DeleteVid
 
 // Comment
 Route::post('/comment/photo/{id}', [CommentController::class, 'storePhotoComment']);
+Route::get('/comment/photo/{id}', [CommentController::class, 'getCommentByContentPhoto']);
 Route::post('/comment/video/{id}', [CommentController::class, 'storeVideoComment']);
+Route::get('/comment/video/{id}', [CommentController::class, 'getCommentByContentVideo']);
 
 // Reaction
 Route::post('/reaction/photo/{id}', [ContentReactionController::class, 'storePhotoReaction']);

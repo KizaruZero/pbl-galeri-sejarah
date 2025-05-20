@@ -38,7 +38,9 @@ Route::get('/gallery/{slug}', function ($slug) {
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/photo/{slug}', [PhotoController::class, 'show'])->name('photo.show');
 Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');
-
+Route::get('/gallery-photo/{slug}', function () {
+    return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+});
 Route::get('/gallery-photo/{slug1}/{slug}', function () {
     return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
 });

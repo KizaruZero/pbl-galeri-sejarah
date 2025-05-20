@@ -83,7 +83,10 @@ class SearchController extends Controller
                 'description' => $photo->description,
                 'image_url' => asset('storage/' . $photo->image_url),
                 'url' => route('photo.show', $photo->slug),
-                'category' => $photo->categoryContents->isEmpty() ? 'Uncategorized' : $photo->categoryContents->first()->category->category_name
+                'slug' => $photo->slug,
+                'category' => $photo->categoryContents->isEmpty() ? 'Uncategorized' : $photo->categoryContents->first()->category->category_name,
+                'category_slug' => $photo->categoryContents->isEmpty() ? 'Uncategorized' : $photo->categoryContents->first()->category->slug
+
             ];
         }
 
@@ -95,7 +98,9 @@ class SearchController extends Controller
                 'description' => $video->description,
                 'image_url' => asset('storage/' . $video->thumbnail),
                 'url' => route('video.show', $video->slug),
-                'category' => $video->categoryContents->isEmpty() ? 'Uncategorized' : $video->categoryContents->first()->category->category_name
+                'slug' => $video->slug,
+                'category' => $video->categoryContents->isEmpty() ? 'Uncategorized' : $video->categoryContents->first()->category->category_name,
+                'category_slug' => $video->categoryContents->isEmpty() ? 'Uncategorized' : $video->categoryContents->first()->category->slug
             ];
         }
 
