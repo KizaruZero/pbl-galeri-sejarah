@@ -1,9 +1,8 @@
 <template>
     <MainLayout>
         <div class="min-h-screen bg-black mt-8">
-            <div class="min-h-screen bg-black text-white">
-                <div class="w-full ">
-                    <div class="relative w-full">
+                <div class="max-w-full mx-auto">
+                        <div class="relative">
                         <!-- Back Button -->
                         <button @click="router.go(-1)"
                             class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-10">
@@ -17,7 +16,7 @@
                         <!-- Image container - modified for full width -->
                         <div class="w-full overflow-hidden">
                             <img :src="article.imageUrl" :alt="article.altText"
-                                class="w-full h-auto  object-cover bg-black mt-14" />
+                                class="w-full h-auto max-h-[70vh] object-contain bg-gray-950" />
                                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70 mix-blend-multiply"></div>
                         </div>
                     </div>
@@ -27,7 +26,7 @@
                 <div class="bg-black rounded-lg shadow-xl overflow-hidden">
 
                     <!-- article Details -->
-                    <div class="p-6">
+                    <div class="p-6 ml-24 mr-24">
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex space-x-4">
                                 <!-- Like Button -->
@@ -92,7 +91,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </MainLayout>
 </template>
 
