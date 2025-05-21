@@ -13,7 +13,7 @@ class ContentReactionController extends Controller
     public function storePhotoReaction(Request $request, $id)
     {
         $request->validate([
-            'content_photo_id' => 'required|exists:content_photos,id',
+            // 'content_photo_id' => 'required|exists:content_photos,id',
             'user_id' => 'required|exists:users,id',
             'reaction_type_id' => 'required|exists:reaction_types,id',
         ]);
@@ -37,7 +37,7 @@ class ContentReactionController extends Controller
     public function storeVideoReaction(Request $request, $id)
     {
         $request->validate([
-            'content_video_id' => 'required|exists:content_videos,id',
+            // 'content_video_id' => 'required|exists:content_videos,id',
             'user_id' => 'required|exists:users,id',
             'reaction_type_id' => 'required|exists:reaction_types,id',
         ]);
@@ -52,5 +52,7 @@ class ContentReactionController extends Controller
             'user_id' => $request->user_id,
             'reaction_type_id' => $request->reaction_type_id,
         ]);
+
+        return response()->json($contentReaction);
     }
 }

@@ -11,4 +11,14 @@ class Reaction extends Model
     protected $fillable = [
         'react_type',
     ];
+
+    public function contentReactions()
+    {
+        return $this->hasMany(ContentReaction::class, 'reaction_type_id');
+    }
+
+    public function userReactions()
+    {
+        return $this->hasMany(UserReaction::class, 'reaction_type_id');
+    }
 }
