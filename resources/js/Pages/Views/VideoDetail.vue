@@ -469,7 +469,7 @@ onMounted(async () => {
 
             thumbnailUrl: videoData.thumbnail
                 ? `/storage/${videoData.thumbnail.replace(/^public\//, "")}`
-                : "/js/Assets/default-thumbnail.jpg",
+                : "/js/Assets/default-photo.jpg",
             tags: videoData.tag ? videoData.tag.split(/,\s*/) : [],
             user: videoData.user || null,
             created_at: videoData.created_at,
@@ -495,7 +495,7 @@ onMounted(async () => {
                 user: {
                     id: 2,
                     name: "John Doe",
-                    avatar: "/default-avatar.jpg",
+                    avatar: "/js/Assets/default-photo.jpg",
                 },
                 text: "This is an amazing video! The editing is fantastic.",
                 date: "2023-05-15T10:30:00Z",
@@ -506,7 +506,7 @@ onMounted(async () => {
                 user: {
                     id: 3,
                     name: "Jane Smith",
-                    avatar: "/default-avatar.jpg",
+                    avatar: "/js/Assets/default-photo.jpg",
                 },
                 text: "Great content and production quality!",
                 date: "2023-05-14T16:45:00Z",

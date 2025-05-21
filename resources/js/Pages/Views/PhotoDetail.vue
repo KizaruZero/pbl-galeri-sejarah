@@ -44,7 +44,7 @@
                                     <img
                                         :src="
                                             photo.user?.avatar ||
-                                            '/default-avatar.jpg'
+                                            '/js/Assets/default-photo.jpg'
                                         "
                                         :alt="photo.user?.name"
                                         class="w-full h-full object-cover"
@@ -344,7 +344,7 @@
                                                 :src="
                                                     comment.user
                                                         ?.photo_profile ||
-                                                    '/default-avatar.jpg'
+                                                    '/js/Assets/default-photo.jpg'
                                                 "
                                                 :alt="comment.user?.name"
                                                 class="w-full h-full object-cover"
@@ -434,7 +434,7 @@ const UserId = computed(() => {
     currentUser.value = {
         id: user.id,
         name: user.name,
-        photo_profile: user.photo_profile || "/default-avatar.jpg",
+        photo_profile: user.photo_profile || "/js/Assets/default-photo.jpg",
     };
 
     return user.id;
@@ -472,7 +472,7 @@ const formatRelativeDate = (dateString) => {
 };
 
 const handleAvatarError = (e) => {
-    e.target.src = "/default-avatar.jpg";
+    e.target.src = "/js/Assets/default-photo.jpg";
 };
 
 const toggleLike = () => {
@@ -497,7 +497,8 @@ const getCurrentUser = async () => {
         currentUser.value = {
             id: response.data.id,
             name: response.data.name,
-            avatar: response.data.photo_profile || "/default-avatar.jpg",
+            avatar:
+                response.data.photo_profile || "/js/Assets/default-photo.jpg",
         };
     } catch (error) {
         console.error("Error fetching user:", error);
@@ -527,7 +528,7 @@ const fetchComments = async (photoId) => {
                 user: {
                     id: commentData.user_id,
                     name: "Loading...", // Temporary placeholder
-                    avatar: "/default-avatar.jpg",
+                    avatar: "/js/Assets/default-photo.jpg",
                 },
                 text: commentData.content,
                 date: commentData.created_at,
@@ -557,7 +558,7 @@ const fetchComments = async (photoId) => {
                     name: userResponse.data.name,
                     avatar:
                         userResponse.data.photo_profile ||
-                        "/default-avatar.jpg",
+                        "/js/Assets/default-photo.jpg",
                 };
             }
         } catch (userError) {

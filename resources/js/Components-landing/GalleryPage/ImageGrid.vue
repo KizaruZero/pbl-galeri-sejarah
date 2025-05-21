@@ -74,7 +74,7 @@ onMounted(async () => {
                 ? video.thumbnail.startsWith("http")
                     ? video.thumbnail
                     : `/storage/${video.thumbnail.replace(/^public\//, "")}`
-                : "/default-thumbnail.jpg",
+                : "/js/Assets/default-photo.jpg",
             title: video.title,
             titleSize: "base",
             description: video.description,

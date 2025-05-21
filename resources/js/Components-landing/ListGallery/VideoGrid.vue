@@ -133,7 +133,7 @@ onMounted(async () => {
                 : convertToEmbedUrl(video.link_youtube) || "", // Fallback ke YouTube
             thumbnailUrl: video.thumbnail
                 ? `/storage/${video.thumbnail.replace(/^public\//, "")}`
-                : "/default-thumbnail.jpg",
+                : "/js/Assets/default-photo.jpg",
             duration: video.metadata_video?.duration || "00:00",
             views: video.total_views || 0,
             tags: video.tag ? video.tag.split(/,\s*/) : [],
