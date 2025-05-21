@@ -23,11 +23,9 @@
             </div>
 
             <!-- Grid Card -->
-            <div
-                class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
+            <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <ArticleCard
-                    v-for="article in articles"
+                    v-for="article in paginatedArticles"
                     :key="article.id"
                     :id="article.id"
                     :title="article.title"
@@ -38,10 +36,7 @@
                         article.image_url
                             ? article.image_url.startsWith('http')
                                 ? article.image_url
-                                : `/storage/${article.image_url.replace(
-                                      /^public\//,
-                                      ''
-                                  )}`
+                                : `/storage/${article.image_url.replace(/^public\//, '')}`
                             : '/default-article.jpg'
                     "
                     :status="article.status"
@@ -49,21 +44,53 @@
                     @click="getDetailPage(article.slug)"
                 />
             </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-8 gap-2">
+                <button
+                    @click="currentPage--"
+                    :disabled="currentPage === 1"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                >
+                    Previous
+                </button>
+                <div class="flex items-center px-4 text-white">
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+                <button
+                    @click="currentPage++"
+                    :disabled="currentPage >= totalPages"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                >
+                    Next
+                </button>
+            </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import ArticleCard from "./ArticleCard.vue";
 import axios from "axios";
 
 const articles = ref([]);
 const loading = ref(true);
 const error = ref(null);
-const isLiked = ref(false);
-const isSaved = ref(false);
-const likeCount = ref(Math.floor(Math.random() * 100) + 5);
+const currentPage = ref(1);
+const itemsPerPage = 20;
+
+// Computed property for paginated articles
+const paginatedArticles = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return articles.value.slice(start, end);
+});
+
+// Computed property for total pages
+const totalPages = computed(() => {
+    return Math.ceil(articles.value.length / itemsPerPage);
+});
 
 const getDetailPage = (slug) => {
     window.location.href = `/article/${slug}`;
@@ -129,5 +156,10 @@ const toggleSave = () => {
 .modal-enter-from,
 .modal-leave-to {
     opacity: 0;
+}
+
+/* Add styles for pagination buttons */
+button:not(:disabled) {
+    transition: background-color 0.3s ease;
 }
 </style>
