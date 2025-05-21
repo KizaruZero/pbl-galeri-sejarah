@@ -22,7 +22,7 @@ class VideoController extends Controller
     //
     public function index()
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'userComments.userReactions', 'user', 'categoryContents'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'userComments.userReactions', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('status', 'approved')
             ->get();
         if (!$contentVideo) {
@@ -33,7 +33,7 @@ class VideoController extends Controller
 
     public function show($slug)
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
@@ -43,158 +43,6 @@ class VideoController extends Controller
         $contentVideo->updateTotalViews();
         return response()->json($contentVideo);
     }
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'description' => 'required|string',
-    //         'video_url' => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
-    //         'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
-    //         'source' => 'nullable|string|max:255',
-    //         'tag' => 'nullable|string|max:255',
-    //         'link_youtube' => 'nullable|url|max:255',
-    //     ]);
-
-    //     $userId = Auth::user()->id;
-    //     if (!$userId) {
-    //         return response()->json(['message' => 'User not authenticated'], 401);
-    //     }
-
-    //     // Handle file upload
-    //     if ($request->hasFile('video_url') && $request->hasFile('thumbnail')) {
-    //         $videoFile = $request->file('video_url');
-    //         $thumbnailFile = $request->file('thumbnail');
-
-    //         // Generate filenames
-    //         $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
-    //         $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
-
-    //         // Store files in public storage
-    //         $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
-    //         $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
-
-    //         // Save relative paths to DB
-    //         $videoUrl = 'video_content/' . $videoFilename;
-    //         $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
-
-    //         // Create slug from title
-    //         $slug = Str::slug($request->title);
-
-    //         // Create new video record
-    //         $video = ContentVideo::create([
-    //             'title' => $request->title,
-    //             'slug' => $slug,
-    //             'description' => $request->description,
-    //             'source' => $request->source,
-    //             'tag' => $request->tag,
-    //             'user_id' => $userId,
-    //             'video_url' => $videoUrl,
-    //             'thumbnail' => $thumbnailUrl,
-    //             'link_youtube' => $request->link_youtube,
-    //             'status' => 'pending',
-    //         ]);
-
-    //         // Extract video metadata
-
-
-    //         return response()->json([
-    //             'message' => 'Video uploaded successfully',
-    //             'data' => $video
-    //         ], 201);
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'No video or thumbnail file provided'
-    //     ], 400);
-    // }
-
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'description' => 'required|string',
-    //         'video_url' => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
-    //         'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
-    //         'source' => 'nullable|string|max:255',
-    //         'tag' => 'nullable|string|max:255',
-    //         'link_youtube' => 'nullable|url|max:255',
-    //     ]);
-
-    //     $userId = Auth::user()->id;
-    //     if (!$userId) {
-    //         return response()->json(['message' => 'User not authenticated'], 401);
-    //     }
-
-    //     if ($request->hasFile('video_url') && $request->hasFile('thumbnail')) {
-    //         $videoFile = $request->file('video_url');
-    //         $thumbnailFile = $request->file('thumbnail');
-
-    //         $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
-    //         $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
-
-    //         $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
-    //         $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
-
-    //         $videoUrl = 'video_content/' . $videoFilename;
-    //         $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
-
-    //         $slug = Str::slug($request->title);
-
-    //         $video = ContentVideo::create([
-    //             'title' => $request->title,
-    //             'slug' => $slug,
-    //             'description' => $request->description,
-    //             'source' => $request->source,
-    //             'tag' => $request->tag,
-    //             'user_id' => $userId,
-    //             'video_url' => $videoUrl,
-    //             'thumbnail' => $thumbnailUrl,
-    //             'link_youtube' => $request->link_youtube,
-    //             'status' => 'pending',
-    //         ]);
-
-    //         // ✨ Extract video metadata using getID3
-
-    //         $media = MediaAnalyzer::fromLocalFile(
-    //             path: $videoUrl,
-    //             disk: 'public',  // "local", "ftp", "sftp", "s3"
-    //         );
-
-    //         $media->getAllInfo();
-    //         // ✨ Safely extract fields
-    //         $fileSize = $media->size;
-    //         $frameRate = $media->frameRate;
-    //         $width = $media->width;
-    //         $height = $media->height;
-    //         $duration = $media->getDuration();
-    //         $format = $media->getFormat();
-    //         $codec = $media->getVideoCodec();
-    //         $audioCodec = $media->getAudioCodec();
-    //         // ✨ Save to metadata_video table
-    //         MetadataVideo::create([
-    //             'location' => $videoUrl,
-    //             'file_size' => $fileSize,
-    //             'frame_rate' => $frameRate,
-    //             'resolution' => $width && $height ? "{$width}x{$height}" : null,
-    //             'duration' => $duration,
-    //             'format_file' => $format,
-    //             'codec_video_audio' => trim("{$codec} / {$audioCodec}"),
-    //             'collection_date' => Carbon::now(),
-    //             'content_video_id' => $video->id,
-    //         ]);
-
-    //         return response()->json([
-    //             'message' => 'Video uploaded successfully',
-    //             'data' => $video
-    //         ], 201);
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'No video or thumbnail file provided'
-    //     ], 400);
-    // }
 
     public function store(Request $request)
     {
@@ -345,7 +193,7 @@ class VideoController extends Controller
     }
     public function getVideoByUser($userId)
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('status', 'approved')
             ->where('user_id', $userId)
             ->get();
@@ -364,7 +212,7 @@ class VideoController extends Controller
             ->whereNotNull('content_video_id')
             ->count();
 
-        $data = UserFavorite::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'contentVideo.categoryContents'])
+        $data = UserFavorite::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'contentVideo.categoryContents', 'contentVideo.contentReactions', 'contentVideo.contentReactions.reactionType'])
             ->where('user_id', $userId)
             ->whereNotNull('content_video_id')
             ->get();
@@ -379,7 +227,7 @@ class VideoController extends Controller
 
     public function getVideoByCategory($slug)
     {
-        $contentVideos = CategoryContent::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'category'])
+        $contentVideos = CategoryContent::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'category', 'contentVideo.contentReactions', 'contentVideo.userFavorite'])
             ->whereHas('category', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })

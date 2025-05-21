@@ -15,7 +15,7 @@ class PhotoController extends Controller
 {
     public function index()
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'userComments.userReactions', 'user', 'categoryContents'])
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'userComments.userReactions', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('status', 'approved')
             ->get();
         if (!$contentPhoto) {
@@ -26,7 +26,7 @@ class PhotoController extends Controller
 
     public function show($slug)
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents'])
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
@@ -152,7 +152,7 @@ class PhotoController extends Controller
 
     public function getPhotoByUser($userId)
     {
-        $contentPhotos = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents'])
+        $contentPhotos = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('status', 'approved')
             ->where('user_id', $userId)
             ->get();
@@ -173,7 +173,9 @@ class PhotoController extends Controller
             'contentPhoto.metadataPhoto',
             'contentPhoto.userComments',
             'contentPhoto.user',
-            'category'
+            'category',
+            'contentPhoto.contentReactions',
+            'contentPhoto.userFavorite'
         ])
             ->whereHas('category', function ($query) use ($slug) {
                 $query->where('slug', $slug);
