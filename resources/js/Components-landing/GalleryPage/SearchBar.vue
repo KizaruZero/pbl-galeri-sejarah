@@ -89,7 +89,7 @@
         <div v-else>
           <div v-if="searchResults.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="item in searchResults" :key="`${item.type}-${item.id}`" class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
-              <a :href="getDetailPage(item)" class="block">
+              <a @click.prevent="navigateToDetail(item)" class="block cursor-pointer">
                 <img :src="item.image_url" :alt="item.title" class="w-full h-48 object-cover">
                 <div class="p-4">
                   <h3 class="text-white font-semibold text-lg mb-2">{{ item.title }}</h3>
@@ -168,8 +168,7 @@ onMounted(async () => {
   }
 });
 
-
-const getDetailPage = (item) => {
+const navigateToDetail = (item) => {
     if (item.type === 'photo') {
         window.location.href = `/gallery-photo/${item.slug}`;
     } else if (item.type === 'video') {

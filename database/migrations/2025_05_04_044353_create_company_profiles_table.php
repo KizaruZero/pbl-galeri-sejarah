@@ -26,6 +26,9 @@ return new class extends Migration {
             $table->string('bg_article_3')->nullable()->comment('Background image for article section');
             $table->string('logo')->nullable()->comment('Company logo');
             $table->string('cms_name')->nullable()->comment('CMS name displayed in hero section');
+            $table->string('cms_email')->nullable()->comment('CMS email displayed in hero section');
+            $table->string('cms_phone')->nullable()->comment('CMS phone displayed in hero section');
+            $table->string('cms_address')->nullable()->comment('CMS address displayed in hero section');
             $table->text('events_text')->nullable()->comment('Text for events section');
             $table->text('gallery_text')->nullable()->comment('Text for gallery section');
             $table->text('article_text')->nullable()->comment('Text for article section');

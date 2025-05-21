@@ -55,6 +55,15 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->hintColor('warning')
                             ->image()
                             ->directory('company-profile'),
+                        TextInput::make('cms_email')
+                            ->label('CMS Email')
+                            ->required(),
+                        TextInput::make('cms_phone')
+                            ->label('CMS Phone')
+                            ->required(),
+                        TextInput::make('cms_address')
+                            ->label('CMS Address')
+                            ->required(),
                     ])->columns(2),
 
                 Section::make('Background Images')
