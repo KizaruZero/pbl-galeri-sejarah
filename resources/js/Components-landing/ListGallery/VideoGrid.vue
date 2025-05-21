@@ -4,18 +4,36 @@
             <!-- Judul -->
             <div class="flex flex-col items-center text-white mb-12">
                 <span class="w-full h-0.5 bg-white mb-6"></span>
-                <h1
-                    class="text-3xl md:text-4xl lg:text-5xl font-serif text-center"
-                >
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">
                     Video Gallery
                 </h1>
                 <span class="w-full h-0.5 bg-white mt-6"></span>
             </div>
 
+            <!-- Loading State -->
+            <div v-if="loading" class="flex justify-center items-center py-20">
+                <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="error" class="text-center text-red-500 py-20">
+                <svg class="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p class="text-lg">{{ error }}</p>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else-if="!videos.length" class="flex flex-col items-center justify-center py-20 text-white">
+                <svg class="w-20 h-20 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <h3 class="text-xl font-medium mb-1">No Videos Found</h3>
+                <p class="text-gray-400">There are no videos available in this gallery yet.</p>
+            </div>
+
             <!-- Grid Card -->
-            <div
-                class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
+            <div v-else class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <VideoCard
                     v-for="video in videos"
                     :key="video.id"
