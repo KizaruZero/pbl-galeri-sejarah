@@ -50,8 +50,7 @@ class CommentController extends Controller
     {
         $request->validate([
             'content' => 'required|string|max:255',
-            'content_photo_id' => 'required|exists:content_photos,id',
-            'user_id' => 'required|exists:users,id',
+            'content_photo_id' => 'required|exists:content_photo,id',
         ]);
 
         $contentPhoto = ContentPhoto::find($id);

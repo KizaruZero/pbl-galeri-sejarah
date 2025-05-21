@@ -175,11 +175,11 @@
                     </h2>
 
                     <!-- New Comment Form -->
-                    <div class="mb-6">
+                    <div class="mb-6" v-if="UserId">
                         <div class="flex items-start gap-3">
                             <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-700 mt-1">
-                                <img :src="currentUser.avatar" :alt="currentUser.name"
-                                    class="w-full h-full object-cover" />
+                                <!-- <img :src="currentUser.photo_profile" :alt="currentUser.name"
+                                    class="w-full h-full object-cover" /> -->
                             </div>
                             <div class="flex-1">
                                 <textarea v-model="newComment" placeholder="Add a comment..."
@@ -192,15 +192,25 @@
                             </div>
                         </div>
                     </div>
+                    <div v-else class="mb-6 p-4 bg-gray-800 rounded-lg text-center">
+                        <p class="text-gray-300">Please <a href="/login" class="text-blue-400 hover:underline">login</a>
+                            to post a comment.</p>
+                    </div>
 
                     <!-- Comments List -->
                     <div class="space-y-4">
                         <div v-for="comment in comments" :key="comment.id" class="bg-white p-4 rounded-lg">
+                            <div v-if="comment.isLoading" class="text-center text-gray-500">
+                                Posting comment...
+                            </div>
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-700">
-                                        <img :src="comment.user.avatar" :alt="comment.user.name"
-                                            class="w-full h-full object-cover" />
+                                        <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-700">
+                                            <img :src="comment.user?.photo_profile || '/default-avatar.jpg'"
+                                                :alt="comment.user?.name" class="w-full h-full object-cover"
+                                                @error="handleAvatarError" />
+                                        </div>
                                     </div>
                                     <div>
                                         <p class="font-medium text-black">
@@ -246,9 +256,24 @@
         useRouter
     } from "vue-router";
     import axios from "axios";
+    import {
+        defineProps,
+        computed
+    } from 'vue';
+    import {
+        usePage
+    } from '@inertiajs/vue3';
+
+    const props = defineProps({
+        auth: {
+            type: Object,
+            default: () => ({})
+        }
+    });
 
     const router = useRouter();
     const photo = ref({
+        id: null,
         title: "",
         description: "",
         imageUrl: "",
@@ -264,111 +289,250 @@
     const isBookmarked = ref(false);
     const comments = ref([]);
     const newComment = ref("");
-    const currentUser = ref({
-        id: 1,
-        name: "You",
-        avatar: "/default-avatar.jpg",
+    const currentUser = ref(null);
+    const isLoading = ref(true);
+    const UserId = computed(() => {
+        const user = usePage().props.auth.user;
+        if (!user) return [];
+        currentUser.value = {
+            id: user.id,
+            name: user.name,
+            photo_profile: user.photo_profile || "/default-avatar.jpg",
+        };
+
+
+        return user.id;
     });
 
-    const slug = window.location.pathname.split("/").pop();
 
-    // Format date to relative time (e.g. "2 days ago")
+    // Format relative date
     const formatRelativeDate = (dateString) => {
         const date = new Date(dateString);
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
 
         let interval = Math.floor(seconds / 31536000);
-        if (interval >= 1)
-            return interval + " year" + (interval === 1 ? "" : "s") + " ago";
+        if (interval >= 1) return interval + " year" + (interval === 1 ? "" : "s") + " ago";
 
         interval = Math.floor(seconds / 2592000);
-        if (interval >= 1)
-            return interval + " month" + (interval === 1 ? "" : "s") + " ago";
+        if (interval >= 1) return interval + " month" + (interval === 1 ? "" : "s") + " ago";
 
         interval = Math.floor(seconds / 86400);
-        if (interval >= 1)
-            return interval + " day" + (interval === 1 ? "" : "s") + " ago";
+        if (interval >= 1) return interval + " day" + (interval === 1 ? "" : "s") + " ago";
 
         interval = Math.floor(seconds / 3600);
-        if (interval >= 1)
-            return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
+        if (interval >= 1) return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
 
         interval = Math.floor(seconds / 60);
-        if (interval >= 1)
-            return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
+        if (interval >= 1) return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
 
-        return (
-            Math.floor(seconds) + " second" + (seconds === 1 ? "" : "s") + " ago"
-        );
+        return Math.floor(seconds) + " second" + (seconds === 1 ? "" : "s") + " ago";
     };
 
-    // Handle avatar image error
     const handleAvatarError = (e) => {
         e.target.src = "/default-avatar.jpg";
     };
 
-    // Toggle like
     const toggleLike = () => {
         isLiked.value = !isLiked.value;
         likeCount.value += isLiked.value ? 1 : -1;
     };
 
-    // Toggle bookmark
     const toggleBookmark = () => {
         isBookmarked.value = !isBookmarked.value;
     };
 
+    // Get authenticated user
+    const getCurrentUser = async () => {
+        try {
+            const response = await axios.get('/api/users', { // Changed from '/api/users' to '/api/user'
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            currentUser.value = {
+                id: response.data.id,
+                name: response.data.name,
+                avatar: response.data.photo_profile || "/default-avatar.jpg",
+            };
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            currentUser.value = null;
+        }
+    };
+
+    // Fetch comments
+    const fetchComments = async (photoId) => {
+    try {
+        const response = await axios.get(`/api/user-comments/${photoId}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${localStorage.getItem('token') || '123'}`,
+            },
+        });
+
+        // Handle single comment response
+        const commentData = response.data.data || response.data;
+        
+        // Create comments array with proper structure
+        comments.value = [{
+            id: commentData.id,
+            user: {
+                id: commentData.user_id,
+                name: "Loading...", // Temporary placeholder
+                avatar: "/default-avatar.jpg"
+            },
+            text: commentData.content,
+            date: commentData.created_at,
+            canDelete: commentData.user_id === (currentUser.value?.id || null),
+            isLoading: false
+        }];
+
+        // Now fetch user details for this comment
+        try {
+            const userResponse = await axios.get(`/api/users/${commentData.user_id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token') || '123'}`,
+                }
+            });
+            
+            // Update the user info in the comment
+            if (comments.value[0].id === commentData.id) {
+                comments.value[0].user = {
+                    id: userResponse.data.id,
+                    name: userResponse.data.name,
+                    avatar: userResponse.data.photo_profile || '/default-avatar.jpg'
+                };
+            }
+        } catch (userError) {
+            console.error("Error fetching user:", userError);
+            // Keep the default user info if user fetch fails
+        }
+
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        comments.value = [];
+    }
+};
+
     // Add comment
-    const addComment = () => {
-        if (newComment.value.trim()) {
-            comments.value.unshift({
-                id: Date.now(),
+    const addComment = async () => {
+        if (!newComment.value.trim() || !UserId.value) return;
+
+        try {
+            const loadingComment = {
+                id: 'temp-' + Date.now(),
                 user: {
-                    ...currentUser.value
+                    ...UserId.value
                 },
                 text: newComment.value,
                 date: new Date().toISOString(),
                 canDelete: true,
+                isLoading: true
+            };
+            comments.value.unshift(loadingComment);
+
+            const response = await axios.post(
+                `/api/comment/photo/${photo.value.id}`, // Changed to a more standard endpoint
+                {
+                    content: newComment.value.trim(),
+                    content_photo_id: photo.value.id,
+                    user_id: UserId.value, // Assuming the backend handles this
+
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
+
+            // Remove loading comment and add the real one
+            comments.value = comments.value.filter(c => c.id !== loadingComment.id);
+            comments.value.unshift({
+                id: response.data.id,
+                user: {
+                    ...UserId.value
+                },
+                text: response.data.content || newComment.value,
+                date: response.data.created_at || new Date().toISOString(),
+                canDelete: true
             });
+
             newComment.value = "";
+        } catch (error) {
+            console.error("Error adding comment:", error);
+            // Remove loading comment if error occurs
+            comments.value = comments.value.filter(c => !c.isLoading);
+
+            let errorMessage = "Failed to add comment. Please try again.";
+            if (error.response) {
+                if (error.response.status === 401) {
+                    errorMessage = "Please log in to comment.";
+                    router.push('/login');
+                } else if (error.response.status === 422) {
+                    // Handle validation errors
+                    const errors = error.response.data.errors;
+                    errorMessage = Object.values(errors).flat().join('\n');
+                } else if (error.response.data ?.message) {
+                    errorMessage = error.response.data.message;
+                }
+            }
+            alert(errorMessage);
         }
     };
 
     // Delete comment
-    const deleteComment = (id) => {
-        comments.value = comments.value.filter((comment) => comment.id !== id);
+    const deleteComment = async (commentId) => {
+        try {
+            await axios.delete(`/api/comment/${commentId}`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${localStorage.getItem('token') || '123'}`,
+                },
+            });
+            comments.value = comments.value.filter(comment => comment.id !== commentId);
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+            alert("Failed to delete comment. Please try again.");
+        }
     };
 
-    // Format file size from bytes to readable format (B, KB, MB, GB, TB)
+    // Format file size
     const formatFileSize = (bytes) => {
         if (typeof bytes !== 'number' || isNaN(bytes)) return 'Not specified';
-
         if (bytes === 0) return '0 Bytes';
 
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-        // Format to 2 decimal places, but remove trailing .00 if exists
         const sizeValue = parseFloat(bytes / Math.pow(k, i)).toFixed(2);
-        const formattedSize = sizeValue % 1 === 0 ? sizeValue.toString().split('.')[0] : sizeValue;
+        const formattedSize = sizeValue % 1 === 0 ? sizeValue.split('.')[0] : sizeValue;
 
         return `${formattedSize} ${sizes[i]}`;
     };
 
-    // Fetch photo data
+    // On mounted
     onMounted(async () => {
+
+        console.log("Mounted User", currentUser.value);
+        console.log("Current User:", UserId.value);
+
         try {
+            const slug = window.location.pathname.split("/").pop();
             const response = await axios.get(`/api/content-photo/${slug}`, {
                 headers: {
                     Accept: "application/json",
-                    Authorization: "Bearer 123",
+                    Authorization: `Bearer ${localStorage.getItem('token') || '123'}`,
                 },
             });
 
             photo.value = {
                 ...response.data,
+                id: response.data.id,
                 imageUrl: response.data.image_url ?
                     response.data.image_url.startsWith("http") ?
                     response.data.image_url :
@@ -388,38 +552,12 @@
                 dimensions: response.data.metadata_photo ?.dimensions,
             };
 
-            // Set dummy data for demo
-            likeCount.value = Math.floor(Math.random() * 100);
-            isLiked.value = Math.random() > 0.5;
-            isBookmarked.value = Math.random() > 0.5;
-
-            // Set dummy comments
-            comments.value = [{
-                    id: 1,
-                    user: {
-                        id: 2,
-                        name: "John Doe",
-                        avatar: "/default-avatar.jpg",
-                    },
-                    text: "This is an amazing photo! The colors are fantastic.",
-                    date: "2023-05-15T10:30:00Z",
-                    canDelete: false,
-                },
-                {
-                    id: 2,
-                    user: {
-                        id: 3,
-                        name: "Jane Smith",
-                        avatar: "/default-avatar.jpg",
-                    },
-                    text: "Great composition and lighting!",
-                    date: "2023-05-14T16:45:00Z",
-                    canDelete: false,
-                },
-            ];
+            if (photo.value.id) {
+                await fetchComments(photo.value.id);
+            }
         } catch (error) {
             console.error("Error fetching photo:", error);
-            // Redirect to 404 page if photo not found
+            router.push('/not-found');
         } finally {
             loading.value = false;
         }
