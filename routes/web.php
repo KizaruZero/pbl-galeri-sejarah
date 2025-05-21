@@ -44,6 +44,9 @@ Route::get('/gallery-photo/{slug}', function () {
 Route::get('/gallery-photo/{slug1}/{slug}', function () {
     return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
 });
+Route::get('/gallery-video/{slug}', function () {
+    return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+});
 Route::get('/gallery-video/{slug1}/{slug}', function () {
     return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
 });
