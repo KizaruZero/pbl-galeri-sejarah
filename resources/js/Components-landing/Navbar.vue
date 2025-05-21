@@ -80,11 +80,8 @@
           ></span>
         </Link>
         <!-- Conditional rendering for Member/Contact link -->
-        <Link
-          :href="user ? '/contact' : '/member'"
-          class="relative group py-1"
-        >
-          {{ user ? 'Contact' : 'Member' }}
+        <Link :href="user ? '/contact' : '/member'" class="relative group py-1">
+          {{ user ? "Contact" : "Member" }}
           <span
             class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
@@ -93,7 +90,7 @@
         <!-- Cek apakah user login -->
         <div v-if="user" class="relative group" ref="dropdownRef">
           <img
-            :src="userAvatar  || `https://ui-avatars.com/api/?name=${user.name}`"
+            :src="userAvatar || `https://ui-avatars.com/api/?name=${user.name}`"
             :alt="user.name"
             class="w-14 h-14 rounded-full object-cover cursor-pointer"
             @click="dropdownOpen = !dropdownOpen"
@@ -135,26 +132,61 @@
   <!-- Sidebar (Mobile) -->
   <transition name="slide">
     <div v-if="menuOpen" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex">
-      <div class="w-64 bg-black h-full p-6 flex flex-col gap-6">
+      <div class="w-56 bg-black h-full p-6 flex flex-col gap-6">
+        <!-- Close Button -->
         <button @click="toggleMenu" class="text-white self-end text-2xl">✕</button>
+
+        <!-- User Profile Section (if logged in) -->
+        <div v-if="user" class="flex flex-col items-center gap-4 mb-4">
+          <img
+            :src="userAvatar || `https://ui-avatars.com/api/?name=${user.name}`"
+            :alt="user.name"
+            class="w-20 h-20 rounded-full object-cover"
+          />
+          <span class="text-white text-lg">{{ user.name }}</span>
+        </div>
+
+        <!-- Navigation Links -->
         <Link href="/" class="text-white text-lg py-1" @click="toggleMenu">Home</Link>
-        <Link href="/events" class="text-white text-lg py-1" @click="toggleMenu"
-          >Events</Link
-        >
-        <Link href="/gallery" class="text-white text-lg py-1" @click="toggleMenu"
-          >Gallery</Link
-        >
-        <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu"
-          >Article</Link
-        >
+        <Link href="/events" class="text-white text-lg py-1" @click="toggleMenu">Events</Link>
+        <Link href="/gallery" class="text-white text-lg py-1" @click="toggleMenu">Gallery</Link>
+        <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu">Article</Link>
         <Link
           :href="user ? '/contact' : '/member'"
           class="text-white text-lg py-1"
           @click="toggleMenu"
-        >{{ user ? 'Contact' : 'Member' }}</Link>
-        <Link href="/login" class="text-white text-lg py-1" @click="toggleMenu"
-          >Login</Link
-        >
+        >{{ user ? "Contact" : "Member" }}</Link>
+
+        <!-- Conditional Login/User Actions -->
+        <template v-if="user">
+          <template v-if="roles.includes('super_admin')">
+            <Link
+              @click="goToDashboard"
+              class="text-white text-lg py-1"
+            >Dashboard</Link>
+          </template>
+          <template v-else-if="roles.includes('member')">
+            <Link
+              href="/profile-page"
+              class="text-white text-lg py-1"
+              @click="toggleMenu"
+            >Profile</Link>
+          </template>
+          <Link
+            href="/logout"
+            method="post"
+            as="button"
+            class="text-white text-lg py-1 text-left w-full"
+            @click="toggleMenu"
+          >Logout</Link>
+        </template>
+        <template v-else>
+          <Link
+            href="/login"
+            class="text-white text-lg py-1"
+            @click="toggleMenu"
+          >Login</Link>
+        </template>
       </div>
       <div class="flex-1" @click="toggleMenu"></div>
     </div>
@@ -208,34 +240,36 @@ const fetchCompanyProfile = async () => {
 };
 
 const getMediaUrl = (url) => {
-  if (!url) return `https://ui-avatars.com/api/?name=${user.value?.name || 'User'}`;
-  if (url.startsWith('http')) return url;
+  if (!url) return `https://ui-avatars.com/api/?name=${user.value?.name || "User"}`;
+  if (url.startsWith("http")) return url;
 
   // Simplified path cleaning
   const cleanPath = url
-    .replace(/^\//, '') // Remove leading slash
-    .replace(/^(storage|public)\//, ''); // Remove storage/public prefix
+    .replace(/^\//, "") // Remove leading slash
+    .replace(/^(storage|public)\//, ""); // Remove storage/public prefix
 
-  return cleanPath ? `/storage/${cleanPath}` : `https://ui-avatars.com/api/?name=${user.value?.name || 'User'}`;
-}
+  return cleanPath
+    ? `/storage/${cleanPath}`
+    : `https://ui-avatars.com/api/?name=${user.value?.name || "User"}`;
+};
 
 const fetchUserProfile = async () => {
   try {
     if (!user.value?.id) return;
 
     const { data: userData } = await axios.get(`/api/users/${user.value.id}`);
-    console.log('User Profile Response:', userData);
+    console.log("User Profile Response:", userData);
 
     if (userData && userData.profile_photo_url) {
       // Update userAvatar with processed URL
       userAvatar.value = getMediaUrl(userData.profile_photo_url);
-      console.log('Updated user avatar:', userAvatar.value);
+      console.log("Updated user avatar:", userAvatar.value);
 
       // Update user data
       user.value = {
         ...user.value,
         ...userData,
-        avatar: userAvatar.value
+        avatar: userAvatar.value,
       };
     }
   } catch (error) {
