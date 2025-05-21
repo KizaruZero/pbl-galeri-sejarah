@@ -126,7 +126,7 @@
                     >
                         <span v-if="loading">
                             <i class="fas fa-spinner fa-spin mr-2"></i>
-                            Installing...
+                            Installing....
                         </span>
                         <span v-else>Install Application</span>
                     </button>
