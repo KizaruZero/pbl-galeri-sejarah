@@ -9,22 +9,17 @@
         ></div>
     </section>
 
-    <!-- Slideshow -->
+    <!-- Hero Section -->
     <section
-        v-else
+        v-else-if="currentPhoto"
         class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden"
     >
         <div class="relative w-full h-full">
-            <transition-group name="slide" tag="div" class="w-full h-full">
-                <img
-                    v-for="(photo, index) in photos"
-                    v-show="currentSlideIndex === index"
-                    :key="photo.slug"
-                    :src="photo.imageUrl"
-                    :alt="photo.altText"
-                    class="absolute inset-0 w-full h-full object-cover object-center"
-                />
-            </transition-group>
+            <img
+                :src="currentPhoto.imageUrl"
+                :alt="currentPhoto.altText"
+                class="absolute inset-0 w-full h-full object-cover object-center"
+            />
         </div>
 
         <!-- Overlay -->
@@ -37,20 +32,38 @@
             <h1
                 class="uppercase font-bellefair text-6xl max-md:text-4xl max-sm:text-2xl leading-tight"
             >
-                {{ photos[currentSlideIndex]?.title }}
+                {{ currentPhoto.title }}
             </h1>
         </div>
+    </section>
+
+    <!-- Error State -->
+    <section
+        v-else
+        class="flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] bg-black text-white"
+    >
+        <p>Tidak dapat memuat data</p>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 const photos = ref([]);
 const loading = ref(true);
 const error = ref(null);
-const currentSlideIndex = ref(0);
+
+const currentPhoto = computed(() => {
+    // Ambil slug dari URL pathname
+    const slug = window.location.pathname.split("/").pop();
+
+    if (!slug && photos.value.length > 0) {
+        // Jika tidak ada slug, ambil yang pertama
+        return photos.value[0];
+    }
+    return photos.value.find((photo) => photo.slug === slug);
+});
 
 onMounted(async () => {
     try {
@@ -98,14 +111,6 @@ onMounted(async () => {
         loading.value = false;
     }
 });
-
-// Auto slide
-setInterval(() => {
-    if (photos.value.length > 1) {
-        currentSlideIndex.value =
-            (currentSlideIndex.value + 1) % photos.value.length;
-    }
-}, 5000);
 </script>
 
 <style>
@@ -113,24 +118,6 @@ setInterval(() => {
 
 .font-bellefair {
     font-family: "Bellefair", serif;
-}
-
-/* Slide transition */
-.slide-enter-active,
-.slide-leave-active {
-    transition: transform 1s ease-in-out;
-}
-.slide-enter-from {
-    transform: translateX(100%);
-}
-.slide-enter-to {
-    transform: translateX(0);
-}
-.slide-leave-from {
-    transform: translateX(0);
-}
-.slide-leave-to {
-    transform: translateX(-100%);
 }
 
 /* Spinner */
