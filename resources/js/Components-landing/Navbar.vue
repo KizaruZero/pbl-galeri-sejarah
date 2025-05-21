@@ -258,13 +258,10 @@ const fetchUserProfile = async () => {
     if (!user.value?.id) return;
 
     const { data: userData } = await axios.get(`/api/users/${user.value.id}`);
-    console.log("User Profile Response:", userData);
 
     if (userData && userData.profile_photo_url) {
       // Update userAvatar with processed URL
       userAvatar.value = getMediaUrl(userData.profile_photo_url);
-      console.log("Updated user avatar:", userAvatar.value);
-
       // Update user data
       user.value = {
         ...user.value,
