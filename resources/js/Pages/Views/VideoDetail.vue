@@ -25,7 +25,7 @@
             <!-- Main Video Container -->
             <div class="rounded-lg shadow-xl overflow-hidden">
                 <!-- Video Player -->
-                <div class="relative pt-[56.25%] bg-black">
+                <div class="relative pt-[3%] bg-black">
                     <video
                         v-if="isLocalVideo"
                         controls
@@ -138,10 +138,12 @@
                             class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20"
                         >
                             <img
-                                :src="video.user?.avatar"
+                                :src="getMediaUrl(video.user?.photo_profile)"
                                 :alt="video.user?.name"
                                 class="w-full h-full object-cover"
                             />
+                        </div>
+                        <div>
                             <p class="text-white font-medium">
                                 {{ video.user?.name || "Unknown Creator" }}
                             </p>
@@ -149,8 +151,7 @@
                                 class="text-gray-300 text-xs"
                                 v-if="video.created_at"
                             >
-                                Uploaded
-                                {{ formatRelativeDate(video.created_at) }}
+                                Uploaded {{ formatRelativeDate(video.created_at) }}
                             </p>
                             <p class="text-gray-300 text-xs">Content Creator</p>
                         </div>
@@ -167,62 +168,38 @@
                     <!-- video Details -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
-                            <h3 class="text-gray-400 text-sm">
-                                Collection Date
-                            </h3>
-                            <p class="text-white">
-                                {{ video.collection_date || "Not specified" }}
-                            </p>
+                            <h3 class="text-gray-400 text-sm">Collection Date</h3>
+                            <p class="text-white">{{ video.collection_date || 'Not specified' }}</p>
                         </div>
                         <div>
                             <h3 class="text-gray-400 text-sm">Lokasi</h3>
-                            <p class="text-white">
-                                {{ video.location || "Not specified" }}
-                            </p>
+                            <p class="text-white">{{ video.location || 'Not specified' }}</p>
                         </div>
                         <div>
                             <h3 class="text-gray-400 text-sm">Frame Rate</h3>
-                            <p class="text-white">
-                                {{ video.frame_rate || "Not specified" }}
-                            </p>
+                            <p class="text-white">{{ video.frame_rate || 'Not specified' }}</p>
                         </div>
                         <div>
                             <h3 class="text-gray-400 text-sm">Resolusi</h3>
-                            <p class="text-white">
-                                {{ video.resolution || "Not specified" }}
-                            </p>
+                            <p class="text-white">{{ video.resolution || 'Not specified' }}</p>
                         </div>
                         <div>
                             <h3 class="text-gray-400 text-sm">File Size</h3>
                             <p class="text-white">
-                                {{
-                                    video.file_size
-                                        ? formatFileSize(
-                                              parseInt(video.file_size)
-                                          )
-                                        : "Not specified"
-                                }}
+                                {{ video.file_size ? formatFileSize(parseInt(video.file_size)) : 'Not specified' }}
                             </p>
                         </div>
                         <div>
                             <h3 class="text-gray-400 text-sm">Durasi</h3>
-                            <p class="text-white">
-                                {{ video.duration || "Not specified" }}
-                            </p>
+                            <p class="text-white">{{ video.duration || 'Not specified' }}</p>
                         </div>
                         <div>
                             <h3 class="text-gray-400 text-sm">Format File</h3>
-                            <p class="text-white">
-                                {{ video.format_file || "Not specified" }}
-                            </p>
+                            <p class="text-white">{{ video.format_file || 'Not specified' }}</p>
                         </div>
                         <div>
-                            <h3 class="text-gray-400 text-sm">
-                                Codec Video Audio
-                            </h3>
-                            <p class="text-white">
-                                {{ video.codec_video_audio || "Not specified" }}
-                            </p>
+                            <h3 class="text-gray-400 text-sm">Codec Video Audio</h3>
+                            <p class="text-white">{{ video.codec_video_audio || 'Not specified' }}</p>
                         </div>
                     </div>
 
@@ -344,23 +321,43 @@ import MainLayout from "@/Layouts/MainLayout.vue";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { usePage } from "@inertiajs/vue3";
 
 const route = useRoute();
 const router = useRouter();
 
-const video = ref({});
+// Helper functions first
+const getMediaUrl = (url) => {
+    if (!url) return "/default-avatar.jpg";
+    if (url.startsWith("http")) return url;
 
+    const cleanPath = url
+        .replace(/^storage\//, "")
+        .replace(/^public\//, "")
+        .replace(/^\//, "")
+        .replace(/^storage\//, "");
+
+    return cleanPath ? `/storage/${cleanPath}` : "/default-avatar.jpg";
+};
+
+// Then declare reactive references
+const video = ref({});
+const loading = ref(true);
 const isLiked = ref(false);
 const likeCount = ref(0);
 const isBookmarked = ref(false);
 const comments = ref([]);
 const newComment = ref("");
-const loading = ref(true);
 
+// Now currentUser can use getMediaUrl
 const currentUser = ref({
-    id: 1,
-    name: "You",
-    avatar: "",
+    id: usePage().props.auth?.user?.id || 1,
+    name: usePage().props.auth?.user?.name || "You",
+    avatar: getMediaUrl(usePage().props.auth?.user?.profile_photo_url) || "/default-avatar.jpg",
+});
+
+const isLocalVideo = computed(() => {
+    return video.value.video_url && !video.value.video_url.includes('youtube.com');
 });
 
 const formatDate = (dateString) => {
@@ -374,6 +371,7 @@ const formatDate = (dateString) => {
 };
 
 const formatRelativeDate = (dateString) => {
+    if (!dateString) return "";
     const date = new Date(dateString);
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
@@ -433,18 +431,16 @@ const deleteComment = (id) => {
 
 // Format file size from bytes to readable format (B, KB, MB, GB, TB)
 const formatFileSize = (bytes) => {
-    if (typeof bytes !== "number" || isNaN(bytes)) return "Not specified";
-
-    if (bytes === 0) return "0 Bytes";
+    if (typeof bytes !== 'number' || isNaN(bytes)) return 'Not specified';
+    if (bytes === 0) return '0 Bytes';
 
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     // Format to 2 decimal places, but remove trailing .00 if exists
     const sizeValue = parseFloat(bytes / Math.pow(k, i)).toFixed(2);
-    const formattedSize =
-        sizeValue % 1 === 0 ? sizeValue.toString().split(".")[0] : sizeValue;
+    const formattedSize = sizeValue % 1 === 0 ? sizeValue.toString().split('.')[0] : sizeValue;
 
     return `${formattedSize} ${sizes[i]}`;
 };
@@ -463,15 +459,18 @@ onMounted(async () => {
 
         video.value = {
             ...videoData,
-            video_url: videoData.video_url
-                ? `/storage/${videoData.video_url.replace(/^public\//, "")}`
-                : convertToEmbedUrl(videoData.link_youtube) || "",
-
-            thumbnailUrl: videoData.thumbnail
-                ? `/storage/${videoData.thumbnail.replace(/^public\//, "")}`
-                : "/js/Assets/default-photo.jpg",
+            video_url: videoData.video_url ?
+                `/storage/${videoData.video_url.replace(/^public\//, "")}` :
+                convertToEmbedUrl(videoData.link_youtube) || "",
+            thumbnailUrl: videoData.thumbnail ?
+                `/storage/${videoData.thumbnail.replace(/^public\//, "")}` :
+                "/default-thumbnail.jpg",
             tags: videoData.tag ? videoData.tag.split(/,\s*/) : [],
-            user: videoData.user || null,
+            user: videoData.user ? {
+                ...videoData.user,
+                avatar: getMediaUrl(videoData.user.photo_profile),
+                photo_profile: videoData.user.photo_profile
+            } : null,
             created_at: videoData.created_at,
             collection_date: videoData.metadata_video?.collection_date,
             file_size: videoData.metadata_video?.file_size,
@@ -489,13 +488,12 @@ onMounted(async () => {
         isBookmarked.value = Math.random() > 0.5;
 
         // Set dummy comments
-        comments.value = [
-            {
+        comments.value = [{
                 id: 1,
                 user: {
                     id: 2,
                     name: "John Doe",
-                    avatar: "/js/Assets/default-photo.jpg",
+                    avatar: "/default-avatar.jpg",
                 },
                 text: "This is an amazing video! The editing is fantastic.",
                 date: "2023-05-15T10:30:00Z",
@@ -506,14 +504,13 @@ onMounted(async () => {
                 user: {
                     id: 3,
                     name: "Jane Smith",
-                    avatar: "/js/Assets/default-photo.jpg",
+                    avatar: "/default-avatar.jpg",
                 },
                 text: "Great content and production quality!",
                 date: "2023-05-14T16:45:00Z",
                 canDelete: false,
             },
         ];
-        console.log("Final video URL:", video.value.video_url);
     } catch (error) {
         console.error("Error fetching video:", error);
     } finally {

@@ -42,10 +42,7 @@
                                     class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20"
                                 >
                                     <img
-                                        :src="
-                                            photo.user?.avatar ||
-                                            '/js/Assets/default-photo.jpg'
-                                        "
+                                        :src="getMediaUrl(photo.user?.photo_profile)"
                                         :alt="photo.user?.name"
                                         class="w-full h-full object-cover"
                                         @error="handleAvatarError"
@@ -53,19 +50,13 @@
                                 </div>
                                 <div>
                                     <p class="text-white font-medium">
-                                        {{
-                                            photo.user?.name ||
-                                            "Unknown Photographer"
-                                        }}
+                                        {{ photo.user?.name || "Unknown Photographer" }}
                                     </p>
                                     <p
                                         class="text-gray-300 text-xs"
                                         v-if="photo.created_at"
                                     >
-                                        Uploaded
-                                        {{
-                                            formatRelativeDate(photo.created_at)
-                                        }}
+                                        Uploaded {{ formatRelativeDate(photo.created_at) }}
                                     </p>
                                 </div>
                             </div>
@@ -73,7 +64,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Main Photo Card -->
+
             <!-- Photo Details -->
             <div class="p-6 ml-24 mr-24">
                 <div class="flex justify-between items-start mb-4">
@@ -163,53 +154,38 @@
                     {{ photo.description }}
                 </p>
                 <div class="border-t border-gray-800 pt-6" />
+
                 <!-- Photo Details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
                         <h3 class="text-gray-400 text-sm">Collection Date</h3>
-                        <p class="text-white">
-                            {{ photo.collection_date || "Not specified" }}
-                        </p>
+                        <p class="text-white">{{ photo.collection_date || 'Not specified' }}</p>
                     </div>
                     <div>
                         <h3 class="text-gray-400 text-sm">Location</h3>
-                        <p class="text-white">
-                            {{ photo.location || "Not specified" }}
-                        </p>
+                        <p class="text-white">{{ photo.location || 'Not specified' }}</p>
                     </div>
                     <div>
                         <h3 class="text-gray-400 text-sm">Model Camera</h3>
-                        <p class="text-white">
-                            {{ photo.camera_model || "Not specified" }}
-                        </p>
+                        <p class="text-white">{{ photo.camera_model || 'Not specified' }}</p>
                     </div>
                     <div>
                         <h3 class="text-gray-400 text-sm">Dimensions</h3>
-                        <p class="text-white">
-                            {{ photo.dimensions || "Not specified" }}
-                        </p>
+                        <p class="text-white">{{ photo.dimensions || 'Not specified' }}</p>
                     </div>
                     <div>
                         <h3 class="text-gray-400 text-sm">File Size</h3>
                         <p class="text-white">
-                            {{
-                                photo.file_size
-                                    ? formatFileSize(parseInt(photo.file_size))
-                                    : "Not specified"
-                            }}
+                            {{ photo.file_size ? formatFileSize(parseInt(photo.file_size)) : 'Not specified' }}
                         </p>
                     </div>
                     <div>
                         <h3 class="text-gray-400 text-sm">Aperture</h3>
-                        <p class="text-white">
-                            {{ photo.aperture || "Not specified" }}
-                        </p>
+                        <p class="text-white">{{ photo.aperture || 'Not specified' }}</p>
                     </div>
                     <div>
                         <h3 class="text-gray-400 text-sm">ISO</h3>
-                        <p class="text-white">
-                            {{ photo.ISO || "Not specified" }}
-                        </p>
+                        <p class="text-white">{{ photo.ISO || 'Not specified' }}</p>
                     </div>
                 </div>
 
@@ -284,8 +260,12 @@
                             <div
                                 class="w-8 h-8 rounded-full overflow-hidden bg-gray-700 mt-1"
                             >
-                                <!-- <img :src="currentUser.photo_profile" :alt="currentUser.name"
-                                    class="w-full h-full object-cover" /> -->
+                                <img
+                                    :src="currentUser.photo_profile"
+                                    :alt="currentUser.name"
+                                    class="w-full h-full object-cover"
+                                    @error="handleAvatarError"
+                                />
                             </div>
                             <div class="flex-1">
                                 <textarea
@@ -332,34 +312,24 @@
                             >
                                 Posting comment...
                             </div>
-                            <div class="flex justify-between items-start">
+                            <div v-else class="flex justify-between items-start">
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="w-8 h-8 rounded-full overflow-hidden bg-gray-700"
                                     >
-                                        <div
-                                            class="w-8 h-8 rounded-full overflow-hidden bg-gray-700"
-                                        >
-                                            <img
-                                                :src="
-                                                    comment.user
-                                                        ?.photo_profile ||
-                                                    '/js/Assets/default-photo.jpg'
-                                                "
-                                                :alt="comment.user?.name"
-                                                class="w-full h-full object-cover"
-                                                @error="handleAvatarError"
-                                            />
-                                        </div>
+                                        <img
+                                            :src="getMediaUrl(comment.user?.photo_profile)"
+                                            :alt="comment.user?.name"
+                                            class="w-full h-full object-cover"
+                                            @error="handleAvatarError"
+                                        />
                                     </div>
                                     <div>
                                         <p class="font-medium text-black">
                                             {{ comment.user.name }}
                                         </p>
                                         <p class="text-gray-400 text-xs">
-                                            {{
-                                                formatRelativeDate(comment.date)
-                                            }}
+                                            {{ formatRelativeDate(comment.date) }}
                                         </p>
                                     </div>
                                 </div>
@@ -395,10 +365,10 @@
 
 <script setup>
 import MainLayout from "@/Layouts/MainLayout.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { defineProps, computed } from "vue";
+import { defineProps } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -409,6 +379,22 @@ const props = defineProps({
 });
 
 const router = useRouter();
+
+// Helper functions
+const getMediaUrl = (url) => {
+    if (!url) return "/js/Assets/default-photo.jpg";
+    if (url.startsWith("http")) return url;
+
+    const cleanPath = url
+        .replace(/^storage\//, "")
+        .replace(/^public\//, "")
+        .replace(/^\//, "")
+        .replace(/^storage\//, "");
+
+    return cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
+};
+
+// State variables
 const photo = ref({
     id: null,
     title: "",
@@ -427,10 +413,12 @@ const isBookmarked = ref(false);
 const comments = ref([]);
 const newComment = ref("");
 const currentUser = ref(null);
-const isLoading = ref(true);
+
+// Get the current authenticated user
 const UserId = computed(() => {
-    const user = usePage().props.auth.user;
-    if (!user) return [];
+    const user = usePage().props.auth?.user;
+    if (!user) return null;
+
     currentUser.value = {
         id: user.id,
         name: user.name,
@@ -440,7 +428,7 @@ const UserId = computed(() => {
     return user.id;
 });
 
-// Format relative date
+// Format date to relative time (e.g. "2 days ago")
 const formatRelativeDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -466,108 +454,115 @@ const formatRelativeDate = (dateString) => {
     if (interval >= 1)
         return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
 
-    return (
-        Math.floor(seconds) + " second" + (seconds === 1 ? "" : "s") + " ago"
-    );
+    return Math.floor(seconds) + " second" + (seconds === 1 ? "" : "s") + " ago";
 };
 
+// Handle avatar image error
 const handleAvatarError = (e) => {
     e.target.src = "/js/Assets/default-photo.jpg";
 };
 
+// Toggle like
 const toggleLike = () => {
     isLiked.value = !isLiked.value;
     likeCount.value += isLiked.value ? 1 : -1;
 };
 
+// Toggle bookmark
 const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
 };
 
-// Get authenticated user
-const getCurrentUser = async () => {
-    try {
-        const response = await axios.get("/api/users", {
-            // Changed from '/api/users' to '/api/user'
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
-        currentUser.value = {
-            id: response.data.id,
-            name: response.data.name,
-            avatar:
-                response.data.photo_profile || "/js/Assets/default-photo.jpg",
-        };
-    } catch (error) {
-        console.error("Error fetching user:", error);
-        currentUser.value = null;
-    }
-};
-
-// Fetch comments
+// Fetch comments for the photo
 const fetchComments = async (photoId) => {
     try {
         const response = await axios.get(`/api/user-comments/${photoId}`, {
             headers: {
                 Accept: "application/json",
-                Authorization: `Bearer ${
-                    localStorage.getItem("token") || "123"
-                }`,
+                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
             },
         });
 
-        // Handle single comment response
+        // Handle comments array or single comment response
         const commentData = response.data.data || response.data;
 
-        // Create comments array with proper structure
-        comments.value = [
-            {
+        if (Array.isArray(commentData)) {
+            // Handle array of comments
+            comments.value = commentData.map(comment => ({
+                id: comment.id,
+                user: {
+                    id: comment.user_id,
+                    name: comment.user?.name || "Loading...",
+                    photo_profile: comment.user?.photo_profile || "/js/Assets/default-photo.jpg",
+                },
+                text: comment.content,
+                date: comment.created_at,
+                canDelete: comment.user_id === (currentUser.value?.id || null),
+                isLoading: false,
+            }));
+        } else {
+            // Handle single comment
+            comments.value = [{
                 id: commentData.id,
                 user: {
                     id: commentData.user_id,
-                    name: "Loading...", // Temporary placeholder
-                    avatar: "/js/Assets/default-photo.jpg",
+                    name: "Loading...",
+                    photo_profile: "/js/Assets/default-photo.jpg",
                 },
                 text: commentData.content,
                 date: commentData.created_at,
-                canDelete:
-                    commentData.user_id === (currentUser.value?.id || null),
+                canDelete: commentData.user_id === (currentUser.value?.id || null),
                 isLoading: false,
-            },
-        ];
+            }];
 
-        // Now fetch user details for this comment
-        try {
-            const userResponse = await axios.get(
-                `/api/users/${commentData.user_id}`,
-                {
+            // Fetch user details for this comment
+            try {
+                const userResponse = await axios.get(`/api/users/${commentData.user_id}`, {
                     headers: {
-                        Authorization: `Bearer ${
-                            localStorage.getItem("token") || "123"
-                        }`,
+                        Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                     },
-                }
-            );
+                });
 
-            // Update the user info in the comment
-            if (comments.value[0].id === commentData.id) {
-                comments.value[0].user = {
-                    id: userResponse.data.id,
-                    name: userResponse.data.name,
-                    avatar:
-                        userResponse.data.photo_profile ||
-                        "/js/Assets/default-photo.jpg",
-                };
+                // Update the user info in the comment
+                if (comments.value[0].id === commentData.id) {
+                    comments.value[0].user = {
+                        id: userResponse.data.id,
+                        name: userResponse.data.name,
+                        photo_profile: userResponse.data.photo_profile || "/js/Assets/default-photo.jpg",
+                    };
+                }
+            } catch (userError) {
+                console.error("Error fetching user:", userError);
             }
-        } catch (userError) {
-            console.error("Error fetching user:", userError);
-            // Keep the default user info if user fetch fails
         }
     } catch (error) {
         console.error("Error fetching comments:", error);
-        comments.value = [];
+
+        // Set dummy comments if API fails
+        comments.value = [
+            {
+                id: 1,
+                user: {
+                    id: 2,
+                    name: "John Doe",
+                    photo_profile: "/js/Assets/default-photo.jpg",
+                },
+                text: "This is an amazing photo! The colors are fantastic.",
+                date: "2023-05-15T10:30:00Z",
+                canDelete: false,
+            },
+            {
+                id: 2,
+                user: {
+                    id: 3,
+                    name: "Jane Smith",
+                    photo_profile: "/js/Assets/default-photo.jpg",
+                },
+                text: "Great composition and lighting!",
+                date: "2023-05-14T16:45:00Z",
+                canDelete: false,
+            },
+        ];
     }
 };
 
@@ -579,7 +574,7 @@ const addComment = async () => {
         const loadingComment = {
             id: "temp-" + Date.now(),
             user: {
-                ...UserId.value,
+                ...currentUser.value,
             },
             text: newComment.value,
             date: new Date().toISOString(),
@@ -589,11 +584,11 @@ const addComment = async () => {
         comments.value.unshift(loadingComment);
 
         const response = await axios.post(
-            `/api/comment/photo/${photo.value.id}`, // Changed to a more standard endpoint
+            `/api/comment/photo/${photo.value.id}`,
             {
                 content: newComment.value.trim(),
                 content_photo_id: photo.value.id,
-                user_id: UserId.value, // Assuming the backend handles this
+                user_id: UserId.value,
             },
             {
                 headers: {
@@ -611,7 +606,7 @@ const addComment = async () => {
         comments.value.unshift({
             id: response.data.id,
             user: {
-                ...UserId.value,
+                ...currentUser.value,
             },
             text: response.data.content || newComment.value,
             date: response.data.created_at || new Date().toISOString(),
@@ -647,9 +642,7 @@ const deleteComment = async (commentId) => {
         await axios.delete(`/api/comment/${commentId}`, {
             headers: {
                 Accept: "application/json",
-                Authorization: `Bearer ${
-                    localStorage.getItem("token") || "123"
-                }`,
+                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
             },
         });
         comments.value = comments.value.filter(
@@ -661,35 +654,29 @@ const deleteComment = async (commentId) => {
     }
 };
 
-// Format file size
+// Format file size from bytes to readable format
 const formatFileSize = (bytes) => {
-    if (typeof bytes !== "number" || isNaN(bytes)) return "Not specified";
-    if (bytes === 0) return "0 Bytes";
+    if (typeof bytes !== 'number' || isNaN(bytes)) return 'Not specified';
+    if (bytes === 0) return '0 Bytes';
 
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     const sizeValue = parseFloat(bytes / Math.pow(k, i)).toFixed(2);
-    const formattedSize =
-        sizeValue % 1 === 0 ? sizeValue.split(".")[0] : sizeValue;
+    const formattedSize = sizeValue % 1 === 0 ? sizeValue.toString().split('.')[0] : sizeValue;
 
     return `${formattedSize} ${sizes[i]}`;
 };
 
-// On mounted
+// Fetch photo data
 onMounted(async () => {
-    console.log("Mounted User", currentUser.value);
-    console.log("Current User:", UserId.value);
-
     try {
         const slug = window.location.pathname.split("/").pop();
         const response = await axios.get(`/api/content-photo/${slug}`, {
             headers: {
                 Accept: "application/json",
-                Authorization: `Bearer ${
-                    localStorage.getItem("token") || "123"
-                }`,
+                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
             },
         });
 
@@ -699,15 +686,14 @@ onMounted(async () => {
             imageUrl: response.data.image_url
                 ? response.data.image_url.startsWith("http")
                     ? response.data.image_url
-                    : `/storage/${response.data.image_url.replace(
-                          /^public\//,
-                          ""
-                      )}`
-                : "/default-photo.jpg",
+                    : `/storage/${response.data.image_url.replace(/^public\//, "")}`
+                : "/js/Assets/default-photo.jpg",
             altText: response.data.alt_text || response.data.title || "",
             tags: response.data.tag ? response.data.tag.split(", ") : [],
-            user: response.data.user || null,
-            photoProfile: response.data.photo_profile || null,
+            user: response.data.user ? {
+                ...response.data.user,
+                photo_profile: response.data.user.photo_profile
+            } : null,
             created_at: response.data.created_at,
             collection_date: response.data.metadata_photo?.collection_date,
             file_size: response.data.metadata_photo?.file_size,
@@ -718,6 +704,12 @@ onMounted(async () => {
             dimensions: response.data.metadata_photo?.dimensions,
         };
 
+        // Set dummy data for likes/bookmarks for demo
+        likeCount.value = Math.floor(Math.random() * 100);
+        isLiked.value = Math.random() > 0.5;
+        isBookmarked.value = Math.random() > 0.5;
+
+        // Fetch comments if the photo has an ID
         if (photo.value.id) {
             await fetchComments(photo.value.id);
         }
