@@ -175,6 +175,7 @@ class PhotoController extends Controller
             'contentPhoto.user',
             'category',
             'contentPhoto.contentReactions',
+            'contentPhoto.contentReactions.reactionType',
             'contentPhoto.userFavorite'
         ])
             ->whereHas('category', function ($query) use ($slug) {

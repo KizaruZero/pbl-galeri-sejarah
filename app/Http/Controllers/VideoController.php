@@ -234,7 +234,7 @@ class VideoController extends Controller
             ->first();
 
         if (!$contentVideos) {
-            return response()->json(['message' => 'Content not found'], 404);
+            return response()->json(['message' => 'Tidak ada konten ditemukan untuk kategori ini'], 404);
         }
         return response()->json($contentVideos);
     }

@@ -114,7 +114,9 @@ class ArticleResource extends Resource
                 //
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                if (auth()->user()->role != 'super_admin' && auth()->user()->role != 'author') {
+                $userRoles = auth()->user()->roles->pluck('name');
+
+                if (!$userRoles->contains('super_admin')) {
                     return $query->where('user_id', auth()->id());
                 }
             })

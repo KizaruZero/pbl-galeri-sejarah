@@ -76,7 +76,7 @@ onMounted(async () => {
                 ? photo.image_url.startsWith("http")
                     ? photo.image_url
                     : `/storage/${photo.image_url.replace(/^public\//, "")}`
-                : "/default-photo.jpg",
+                : "/js/Assets/default-photo.jpg",
             title: photo.title || "Untitled",
             titleSize: "base",
             description: photo.description || "No description available",
@@ -93,8 +93,12 @@ onMounted(async () => {
             tags: photo.tags || [],
         }));
     } catch (err) {
-        console.error("Gagal mengambil data photo:", err);
-        error.value = "Gagal mengambil data";
+        if (err.response && err.response.status === 404) {
+            error.value = "Event tidak ditemukan";
+        } else {
+            error.value = "Gagal mengambil data";
+        }
+        console.error("Error:", err);
     } finally {
         loading.value = false;
     }

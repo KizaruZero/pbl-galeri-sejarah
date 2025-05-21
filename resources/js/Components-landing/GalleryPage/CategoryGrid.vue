@@ -97,7 +97,7 @@ onMounted(async () => {
                           /^public\//,
                           ""
                       )}`
-                : "/default-category.jpg",
+                : "/js/Assets/default-photo.jpg",
             categoryName: category.category_name || "Untitled",
             titleSize: "base",
             categoryDescription:
