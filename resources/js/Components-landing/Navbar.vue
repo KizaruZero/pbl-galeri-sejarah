@@ -79,8 +79,12 @@
             class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
-        <Link href="/member" class="relative group py-1"
-          >Member
+        <!-- Conditional rendering for Member/Contact link -->
+        <Link
+          :href="user ? '/contact' : '/member'"
+          class="relative group py-1"
+        >
+          {{ user ? 'Contact' : 'Member' }}
           <span
             class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
@@ -143,9 +147,11 @@
         <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu"
           >Article</Link
         >
-        <Link href="/member" class="text-white text-lg py-1" @click="toggleMenu"
-          >Member</Link
-        >
+        <Link
+          :href="user ? '/contact' : '/member'"
+          class="text-white text-lg py-1"
+          @click="toggleMenu"
+        >{{ user ? 'Contact' : 'Member' }}</Link>
         <Link href="/login" class="text-white text-lg py-1" @click="toggleMenu"
           >Login</Link
         >
@@ -216,15 +222,15 @@ const getMediaUrl = (url) => {
 const fetchUserProfile = async () => {
   try {
     if (!user.value?.id) return;
-    
+
     const { data: userData } = await axios.get(`/api/users/${user.value.id}`);
     console.log('User Profile Response:', userData);
-    
+
     if (userData && userData.profile_photo_url) {
       // Update userAvatar with processed URL
       userAvatar.value = getMediaUrl(userData.profile_photo_url);
       console.log('Updated user avatar:', userAvatar.value);
-      
+
       // Update user data
       user.value = {
         ...user.value,
