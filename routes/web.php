@@ -63,7 +63,7 @@ Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
 Route::middleware('auth')->group(function () {
     // Halaman profile (auth bawaan Laravel Breeze/Jetstream)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
