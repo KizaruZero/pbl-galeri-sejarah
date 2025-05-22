@@ -55,22 +55,19 @@
                             <h1 class="text-2xl font-bold text-white">
                                 {{ video.title }}
                             </h1>
-                            <div
-                                class="flex items-center mt-2 space-x-4 text-sm text-gray-400"
-                            >
+                            <div class="flex items-center mt-2 space-x-4 text-sm text-gray-400">
                                 <span>{{ video.views }} views</span>
                                 <span>{{ formatDate(video.created_at) }}</span>
                             </div>
                         </div>
+
                         <div class="flex space-x-4">
                             <!-- Like Button -->
                             <button
                                 @click="toggleLike"
                                 class="flex items-center space-x-1 group"
                             >
-                                <div
-                                    class="p-1 rounded-full group-hover:bg-red-500/10 transition-colors"
-                                >
+                                <div class="p-1 rounded-full group-hover:bg-red-500/10 transition-colors">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-6 w-6"
@@ -104,11 +101,10 @@
                             <!-- Bookmark Button -->
                             <button
                                 @click="toggleBookmark"
-                                class="flex items-center group"
+                                :disabled="bookmarkLoading"
+                                class="flex items-center group disabled:opacity-50"
                             >
-                                <div
-                                    class="p-1 rounded-full group-hover:bg-blue-500/10 transition-colors"
-                                >
+                                <div class="p-1 rounded-full group-hover:bg-blue-500/10 transition-colors">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-6 w-6"
@@ -134,9 +130,7 @@
 
                     <!-- Creator Info -->
                     <div class="flex items-center gap-3 mb-6 p-3 rounded-lg">
-                        <div
-                            class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20"
-                        >
+                        <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20">
                             <img
                                 :src="getMediaUrl(video.user?.photo_profile)"
                                 :alt="video.user?.name"
@@ -147,10 +141,7 @@
                             <p class="text-white font-medium">
                                 {{ video.user?.name || "Unknown Creator" }}
                             </p>
-                            <p
-                                class="text-gray-300 text-xs"
-                                v-if="video.created_at"
-                            >
+                            <p class="text-gray-300 text-xs" v-if="video.created_at">
                                 Uploaded {{ formatRelativeDate(video.created_at) }}
                             </p>
                             <p class="text-gray-300 text-xs">Content Creator</p>
@@ -165,14 +156,15 @@
                     </div>
 
                     <div class="border-t border-gray-800 pt-6" />
-                    <!-- video Details -->
+
+                    <!-- Video Details -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
                             <h3 class="text-gray-400 text-sm">Collection Date</h3>
                             <p class="text-white">{{ video.collection_date || 'Not specified' }}</p>
                         </div>
                         <div>
-                            <h3 class="text-gray-400 text-sm">Lokasi</h3>
+                            <h3 class="text-gray-400 text-sm">Location</h3>
                             <p class="text-white">{{ video.location || 'Not specified' }}</p>
                         </div>
                         <div>
@@ -180,7 +172,7 @@
                             <p class="text-white">{{ video.frame_rate || 'Not specified' }}</p>
                         </div>
                         <div>
-                            <h3 class="text-gray-400 text-sm">Resolusi</h3>
+                            <h3 class="text-gray-400 text-sm">Resolution</h3>
                             <p class="text-white">{{ video.resolution || 'Not specified' }}</p>
                         </div>
                         <div>
@@ -190,24 +182,21 @@
                             </p>
                         </div>
                         <div>
-                            <h3 class="text-gray-400 text-sm">Durasi</h3>
+                            <h3 class="text-gray-400 text-sm">Duration</h3>
                             <p class="text-white">{{ video.duration || 'Not specified' }}</p>
                         </div>
                         <div>
-                            <h3 class="text-gray-400 text-sm">Format File</h3>
+                            <h3 class="text-gray-400 text-sm">File Format</h3>
                             <p class="text-white">{{ video.format_file || 'Not specified' }}</p>
                         </div>
                         <div>
-                            <h3 class="text-gray-400 text-sm">Codec Video Audio</h3>
+                            <h3 class="text-gray-400 text-sm">Video Audio Codec</h3>
                             <p class="text-white">{{ video.codec_video_audio || 'Not specified' }}</p>
                         </div>
                     </div>
 
                     <!-- Tags -->
-                    <div
-                        class="flex flex-wrap gap-2 mb-6"
-                        v-if="video.tags && video.tags.length"
-                    >
+                    <div class="flex flex-wrap gap-2 mb-6" v-if="video.tags && video.tags.length">
                         <router-link
                             v-for="tag in video.tags"
                             :key="tag"
@@ -227,9 +216,7 @@
                         <!-- New Comment Form -->
                         <div class="mb-6">
                             <div class="flex items-start gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full overflow-hidden bg-gray-700 mt-1"
-                                >
+                                <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-700 mt-1">
                                     <img
                                         :src="currentUser.avatar"
                                         :alt="currentUser.name"
@@ -263,9 +250,7 @@
                             >
                                 <div class="flex justify-between items-start">
                                     <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-8 h-8 rounded-full overflow-hidden bg-gray-700"
-                                        >
+                                        <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-700">
                                             <img
                                                 :src="comment.user.avatar"
                                                 :alt="comment.user.name"
@@ -277,11 +262,7 @@
                                                 {{ comment.user.name }}
                                             </p>
                                             <p class="text-gray-400 text-xs">
-                                                {{
-                                                    formatRelativeDate(
-                                                        comment.date
-                                                    )
-                                                }}
+                                                {{ formatRelativeDate(comment.date) }}
                                             </p>
                                         </div>
                                     </div>
@@ -319,14 +300,20 @@
 <script setup>
 import MainLayout from "@/Layouts/MainLayout.vue";
 import { ref, computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import axios from "axios";
 import { usePage } from "@inertiajs/vue3";
 
-const route = useRoute();
 const router = useRouter();
 
-// Helper functions first
+// CSRF Token and Headers
+const headers = {
+    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+    'X-Requested-With': 'XMLHttpRequest',
+    'Accept': 'application/json',
+};
+
+// Helper function for media URLs
 const getMediaUrl = (url) => {
     if (!url) return "/default-avatar.jpg";
     if (url.startsWith("http")) return url;
@@ -334,39 +321,38 @@ const getMediaUrl = (url) => {
     const cleanPath = url
         .replace(/^storage\//, "")
         .replace(/^public\//, "")
-        .replace(/^\//, "")
-        .replace(/^storage\//, "");
+        .replace(/^\//, "");
 
     return cleanPath ? `/storage/${cleanPath}` : "/default-avatar.jpg";
 };
 
-// Then declare reactive references
+// Reactive state
 const video = ref({});
 const loading = ref(true);
 const isLiked = ref(false);
 const likeCount = ref(0);
 const isBookmarked = ref(false);
+const bookmarkId = ref(null);
+const bookmarkLoading = ref(false);
 const comments = ref([]);
 const newComment = ref("");
 
-// Now currentUser can use getMediaUrl
+// Current user data
 const currentUser = ref({
-    id: usePage().props.auth?.user?.id || 1,
+    id: usePage().props.auth?.user?.id,
     name: usePage().props.auth?.user?.name || "You",
     avatar: getMediaUrl(usePage().props.auth?.user?.profile_photo_url) || "/default-avatar.jpg",
 });
 
+// Computed properties
 const isLocalVideo = computed(() => {
     return video.value.video_url && !video.value.video_url.includes('youtube.com');
 });
 
+// Utility functions
 const formatDate = (dateString) => {
     if (!dateString) return "";
-    const options = {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    };
+    const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
@@ -376,47 +362,138 @@ const formatRelativeDate = (dateString) => {
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
 
-    let interval = Math.floor(seconds / 31536000);
-    if (interval >= 1)
-        return interval + " year" + (interval === 1 ? "" : "s") + " ago";
+    const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 }
+    ];
 
-    interval = Math.floor(seconds / 2592000);
-    if (interval >= 1)
-        return interval + " month" + (interval === 1 ? "" : "s") + " ago";
+    for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+        if (count >= 1) {
+            return `${count} ${interval.label}${count === 1 ? '' : 's'} ago`;
+        }
+    }
 
-    interval = Math.floor(seconds / 86400);
-    if (interval >= 1)
-        return interval + " day" + (interval === 1 ? "" : "s") + " ago";
-
-    interval = Math.floor(seconds / 3600);
-    if (interval >= 1)
-        return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
-
-    interval = Math.floor(seconds / 60);
-    if (interval >= 1)
-        return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
-
-    return (
-        Math.floor(seconds) + " second" + (seconds === 1 ? "" : "s") + " ago"
-    );
+    return `${Math.floor(seconds)} second${seconds === 1 ? '' : 's'} ago`;
 };
 
+const formatFileSize = (bytes) => {
+    if (typeof bytes !== 'number' || isNaN(bytes)) return 'Not specified';
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    const sizeValue = parseFloat(bytes / Math.pow(k, i)).toFixed(2);
+    const formattedSize = sizeValue % 1 === 0 ? sizeValue.toString().split('.')[0] : sizeValue;
+
+    return `${formattedSize} ${sizes[i]}`;
+};
+
+const convertToEmbedUrl = (url) => {
+    if (!url) return null;
+    if (url.includes("youtube.com/watch")) {
+        const videoId = url.split("v=")[1]?.split("&")[0];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    }
+    return url;
+};
+
+// Action functions
 const toggleLike = () => {
     isLiked.value = !isLiked.value;
     likeCount.value += isLiked.value ? 1 : -1;
 };
 
-const toggleBookmark = () => {
-    isBookmarked.value = !isBookmarked.value;
+const toggleBookmark = async () => {
+    if (!currentUser.value.id) {
+        console.log('No user logged in');
+        router.visit('/login');
+        return;
+    }
+
+    bookmarkLoading.value = true;
+    console.log('Starting bookmark operation with:', {
+        isBookmarked: isBookmarked.value,
+        videoId: video.value.id,
+        userId: currentUser.value.id
+    });
+
+    try {
+        if (isBookmarked.value) {
+            console.log('Attempting to delete bookmark');
+            // Use the delete video favorite route
+            await axios.delete('/api/user-favorite/video', {
+                headers,
+                withCredentials: true,
+                data: {
+                    user_id: currentUser.value.id,
+                    content_video_id: video.value.id
+                }
+            });
+            console.log('Bookmark deleted successfully');
+            isBookmarked.value = false;
+        } else {
+            console.log('Attempting to create bookmark');
+            // Use the create video favorite route
+            const response = await axios.post('/api/user-favorite/video', {
+                user_id: currentUser.value.id,
+                content_video_id: video.value.id
+            }, {
+                headers,
+                withCredentials: true
+            });
+            console.log('Bookmark created:', response.data);
+            isBookmarked.value = true;
+        }
+    } catch (error) {
+        console.error('Error details:', {
+            response: error.response?.data,
+            status: error.response?.status,
+            message: error.message
+        });
+
+        if (error.response?.status === 401) {
+            router.visit('/login');
+        } else {
+            alert('Error updating bookmark. Please try again.');
+        }
+    } finally {
+        bookmarkLoading.value = false;
+    }
+};
+
+const checkIfBookmarked = async () => {
+    if (!currentUser.value.id || !video.value.id) return;
+
+    try {
+        const response = await axios.get(`/api/favorite/video/user/${currentUser.value.id}`, {
+            headers,
+            withCredentials: true
+        });
+
+        const isBookmarkedVideo = response.data.some(favorite =>
+            favorite.content_video_id === video.value.id
+        );
+
+        isBookmarked.value = isBookmarkedVideo;
+    } catch (error) {
+        console.error('Error checking bookmark status:', error);
+        if (error.response?.status === 401) {
+            router.visit('/login');
+        }
+    }
 };
 
 const addComment = () => {
     if (newComment.value.trim()) {
         comments.value.unshift({
             id: Date.now(),
-            user: {
-                ...currentUser.value,
-            },
+            user: { ...currentUser.value },
             text: newComment.value,
             date: new Date().toISOString(),
             canDelete: true,
@@ -429,22 +506,7 @@ const deleteComment = (id) => {
     comments.value = comments.value.filter((comment) => comment.id !== id);
 };
 
-// Format file size from bytes to readable format (B, KB, MB, GB, TB)
-const formatFileSize = (bytes) => {
-    if (typeof bytes !== 'number' || isNaN(bytes)) return 'Not specified';
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    // Format to 2 decimal places, but remove trailing .00 if exists
-    const sizeValue = parseFloat(bytes / Math.pow(k, i)).toFixed(2);
-    const formattedSize = sizeValue % 1 === 0 ? sizeValue.toString().split('.')[0] : sizeValue;
-
-    return `${formattedSize} ${sizes[i]}`;
-};
-
+// Initialize component
 onMounted(async () => {
     try {
         const slug = window.location.pathname.split("/").pop();
@@ -482,13 +544,16 @@ onMounted(async () => {
             format_file: videoData.metadata_video?.format_file,
         };
 
-        // Set dummy data
+        // Check bookmark status after video data is loaded
+        await checkIfBookmarked();
+
+        // Set dummy data for likes and comments
         likeCount.value = Math.floor(Math.random() * 100);
         isLiked.value = Math.random() > 0.5;
-        isBookmarked.value = Math.random() > 0.5;
 
         // Set dummy comments
-        comments.value = [{
+        comments.value = [
+            {
                 id: 1,
                 user: {
                     id: 2,
@@ -517,19 +582,9 @@ onMounted(async () => {
         loading.value = false;
     }
 });
-
-function convertToEmbedUrl(url) {
-    if (!url) return null;
-    if (url.includes("youtube.com/watch")) {
-        const videoId = url.split("v=")[1]?.split("&")[0];
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-    }
-    return url;
-}
 </script>
 
 <style scoped>
-/* Smooth transitions for interactive elements */
 button {
     transition: all 0.2s ease;
 }

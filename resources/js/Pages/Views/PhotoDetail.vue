@@ -76,7 +76,11 @@
                         </button>
 
                         <!-- Bookmark Button -->
-                        <button @click="toggleBookmark" class="flex items-center group">
+                        <button 
+                            @click="toggleBookmark" 
+                            :disabled="bookmarkLoading"
+                            class="flex items-center group disabled:opacity-50"
+                        >
                             <div class="p-1 rounded-full group-hover:bg-blue-500/10 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="
                                         isBookmarked
@@ -360,6 +364,8 @@
     const comments = ref([]);
     const newComment = ref("");
     const currentUser = ref(null);
+    const bookmarkLoading = ref(false);
+    const bookmarkId = ref(null);
 
     const availableReactions = [{
             id: 1,
@@ -448,8 +454,95 @@
     };
 
     // Toggle bookmark
-    const toggleBookmark = () => {
-        isBookmarked.value = !isBookmarked.value;
+    const toggleBookmark = async () => {
+        if (!currentUser.value?.id) {
+            console.log('No user logged in');
+            router.visit('/login');
+            return;
+        }
+
+        bookmarkLoading.value = true;
+        console.log('Starting bookmark operation with:', {
+            isBookmarked: isBookmarked.value,
+            photoId: photo.value.id,
+            userId: currentUser.value.id
+        });
+
+        try {
+            if (isBookmarked.value) {
+                console.log('Attempting to delete bookmark');
+                await axios.delete('/api/user-favorite/photo', {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    withCredentials: true,
+                    data: {
+                        user_id: currentUser.value.id,
+                        content_photo_id: photo.value.id
+                    }
+                });
+                console.log('Bookmark deleted successfully');
+                isBookmarked.value = false;
+            } else {
+                console.log('Attempting to create bookmark');
+                const response = await axios.post('/api/user-favorite/photo', {
+                    user_id: currentUser.value.id,
+                    content_photo_id: photo.value.id
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    withCredentials: true
+                });
+                console.log('Bookmark created:', response.data);
+                isBookmarked.value = true;
+            }
+        } catch (error) {
+            console.error('Error details:', {
+                response: error.response?.data,
+                status: error.response?.status,
+                message: error.message
+            });
+            
+            if (error.response?.status === 401) {
+                router.visit('/login');
+            } else {
+                alert('Error updating bookmark. Please try again.');
+            }
+        } finally {
+            bookmarkLoading.value = false;
+        }
+    };
+
+    // Add this new function to check bookmark status
+    const checkIfBookmarked = async () => {
+        if (!currentUser.value?.id || !photo.value.id) return;
+
+        try {
+            const response = await axios.get(`/api/favorite/photo/user/${currentUser.value.id}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                withCredentials: true
+            });
+
+            const isBookmarkedPhoto = response.data.some(favorite => 
+                favorite.content_photo_id === photo.value.id
+            );
+
+            isBookmarked.value = isBookmarkedPhoto;
+        } catch (error) {
+            console.error('Error checking bookmark status:', error);
+            if (error.response?.status === 401) {
+                router.visit('/login');
+            }
+        }
     };
 
     // Fetch comments for the photo
@@ -708,7 +801,10 @@
             // Set dummy data for likes/bookmarks for demo
             likeCount.value = Math.floor(Math.random() * 100);
             isLiked.value = Math.random() > 0.5;
-            isBookmarked.value = Math.random() > 0.5;
+            // Replace this line:
+            // isBookmarked.value = Math.random() > 0.5;
+            // With:
+            await checkIfBookmarked();
 
             // Fetch comments if the photo has an ID
             if (photo.value.id) {
