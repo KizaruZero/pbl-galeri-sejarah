@@ -104,6 +104,20 @@ const getDetailPage = (slug) => {
     window.location.href = `/gallery-photo/${slug1}/${slug}`;
 };
 
+// Add getMediaUrl helper function at the beginning of script section
+const getMediaUrl = (url) => {
+    if (!url) return "/js/Assets/default-photo.jpg";
+    if (url.startsWith("http")) return url;
+
+    const cleanPath = url
+        .replace(/^storage\//, "")
+        .replace(/^public\//, "")
+        .replace(/^\//, "")
+        .replace(/^storage\//, "");
+
+    return cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
+};
+
 onMounted(async () => {
     const options = {
         method: "GET",
@@ -116,13 +130,22 @@ onMounted(async () => {
 
     try {
         const response = await axios.request(options);
+        console.log("API Response:", response.data);
 
         const photoArray = Array.isArray(response.data.photos)
             ? response.data.photos
             : response.data.photos.data || [];
 
+        console.log("Photo Array before mapping:", photoArray);
+
         photos.value = photoArray.map((item) => {
             const photo = item.content_photo;
+            console.log("Individual photo item:", item);
+            console.log("User data:", photo.user);
+
+            const photoUser = photo.user || null;
+            console.log("Photo user profile:", photoUser?.photo_profile);
+
             return {
                 ...photo,
                 imageUrl: photo.image_url
@@ -137,10 +160,16 @@ onMounted(async () => {
                 altText: photo.alt_text || "",
                 tags: photo.tag ? photo.tag.split(", ") : [],
                 user_id: photo.user_id,
-                user: item.user || null,
-                category: item.category, // Include category info if needed
+                user: photoUser ? {
+                    ...photoUser,
+                    name: photoUser.name || "Unknown Photographer",
+                    avatar: getMediaUrl(photoUser.photo_profile)
+                } : null,
+                category: item.category,
             };
         });
+
+        console.log("Final processed photos:", photos.value);
 
         // Set dummy data untuk demo - applied to each photo if needed
         photos.value = photos.value.map((photo) => ({

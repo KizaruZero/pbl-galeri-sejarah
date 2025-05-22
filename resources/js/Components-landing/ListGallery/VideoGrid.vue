@@ -75,6 +75,8 @@
                     :description="video.description"
                     :duration="video.duration"
                     :views="video.views"
+                    :userName="video.user?.name || 'Unknown Creator'"
+                    :userAvatar="getMediaUrl(video.user?.photo_profile)"
                     @click="getDetailPage(video.slug)"
                 />
             </div>
@@ -99,6 +101,20 @@ const slug1 = window.location.pathname.split("/").pop(); // ambil slug dari URL
 
 const getDetailPage = (slug) => {
     window.location.href = `/gallery-video/${slug1}/${slug}`;
+};
+
+// Add getMediaUrl helper function before onMounted
+const getMediaUrl = (url) => {
+    if (!url) return "/default-avatar.jpg";
+    if (url.startsWith("http")) return url;
+
+    const cleanPath = url
+        .replace(/^storage\//, "")
+        .replace(/^public\//, "")
+        .replace(/^\//, "")
+        .replace(/^storage\//, "");
+
+    return cleanPath ? `/storage/${cleanPath}` : "/default-avatar.jpg";
 };
 
 onMounted(async () => {
@@ -128,9 +144,9 @@ onMounted(async () => {
             title: video.title || "Untitled Video",
             description: video.description || "No description available",
             slug: video.slug,
-            video_url: video.video_url // Gunakan video lokal sebagai prioritas
+            video_url: video.video_url
                 ? `/storage/${video.video_url.replace(/^public\//, "")}`
-                : convertToEmbedUrl(video.link_youtube) || "", // Fallback ke YouTube
+                : convertToEmbedUrl(video.link_youtube) || "",
             thumbnailUrl: video.thumbnail
                 ? `/storage/${video.thumbnail.replace(/^public\//, "")}`
                 : "/js/Assets/default-photo.jpg",
@@ -139,6 +155,11 @@ onMounted(async () => {
             tags: video.tag ? video.tag.split(/,\s*/) : [],
             category: video.category || {},
             metadata: video.metadata_video || {},
+            user: video.user ? {
+                ...video.user,
+                name: video.user.name || "Unknown Creator",
+                photo_profile: video.user.photo_profile
+            } : null
         }));
 
         // Helper function untuk YouTube (sebagai fallback)
