@@ -475,65 +475,53 @@ const toggleBookmark = () => {
 // Fetch comments for the photo
 const fetchComments = async (photoId) => {
     try {
-        const response = await axios.get(`/api/user-comments/${photoId}`, {
+        const response = await axios.get(`/api/comment/photo/${photoId}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
             },
         });
 
-        // Handle comments array or single comment response
+        // Handle both array and single comment responses
         const commentData = response.data.data || response.data;
+        const commentsArray = Array.isArray(commentData) ? commentData : [commentData];
 
-        if (Array.isArray(commentData)) {
-            // Handle array of comments
-            comments.value = commentData.map(comment => ({
+        comments.value = await Promise.all(commentsArray.map(async (comment) => {
+            // Create basic comment structure
+            const commentObj = {
                 id: comment.id,
                 user: {
                     id: comment.user_id,
-                    name: comment.user?.name || "Loading...",
-                    photo_profile: comment.user?.photo_profile || "/js/Assets/default-photo.jpg",
+                    name: "Loading...", // Temporary placeholder
+                    photo_profile: "/js/Assets/default-photo.jpg",
                 },
                 text: comment.content,
                 date: comment.created_at,
                 canDelete: comment.user_id === (currentUser.value?.id || null),
                 isLoading: false,
-            }));
-        } else {
-            // Handle single comment
-            comments.value = [{
-                id: commentData.id,
-                user: {
-                    id: commentData.user_id,
-                    name: "Loading...",
-                    photo_profile: "/js/Assets/default-photo.jpg",
-                },
-                text: commentData.content,
-                date: commentData.created_at,
-                canDelete: commentData.user_id === (currentUser.value?.id || null),
-                isLoading: false,
-            }];
+            };
 
-            // Fetch user details for this comment
+            // Try to fetch user details if not included in comment response
             try {
-                const userResponse = await axios.get(`/api/users/${commentData.user_id}`, {
+                const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                     },
                 });
-
-                // Update the user info in the comment
-                if (comments.value[0].id === commentData.id) {
-                    comments.value[0].user = {
-                        id: userResponse.data.id,
-                        name: userResponse.data.name,
-                        photo_profile: userResponse.data.photo_profile || "/js/Assets/default-photo.jpg",
-                    };
-                }
+                
+                commentObj.user = {
+                    id: userResponse.data.id,
+                    name: userResponse.data.name,
+                    photo_profile: userResponse.data.photo_profile || "/js/Assets/default-photo.jpg",
+                };
             } catch (userError) {
                 console.error("Error fetching user:", userError);
+                // Keep the placeholder values if user fetch fails
             }
-        }
+
+            return commentObj;
+        }));
+
     } catch (error) {
         console.error("Error fetching comments:", error);
 
@@ -637,20 +625,26 @@ const addComment = async () => {
 
 // Delete comment
 const deleteComment = async (commentId) => {
-    try {
-        await axios.delete(`/api/comment/${commentId}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-            },
-        });
-        comments.value = comments.value.filter(
-            (comment) => comment.id !== commentId
-        );
-    } catch (error) {
-        console.error("Error deleting comment:", error);
-        alert("Failed to delete comment. Please try again.");
-    }
+  if (!confirm("Yakin ingin menghapus komentar ini?")) return;
+  
+  try {
+    await axios.delete(
+      `/api/user-comments/${commentId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json'
+        }
+      }
+    );
+    
+    // Hapus komentar dari daftar tampilan
+    comments.value = comments.value.filter(c => c.id !== commentId);
+    alert('Komentar berhasil dihapus');
+  } catch (error) {
+    console.error('Delete error:', error);
+    alert(error.response?.data?.message || 'Gagal menghapus komentar');
+  }
 };
 
 // Format file size from bytes to readable format
