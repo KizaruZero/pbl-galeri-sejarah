@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -59,5 +60,41 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        $user = auth()->user();
+        $data = ['name' => $request->name];
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($user->photo_profile) {
+                $oldPhotoPath = str_replace('/storage/', '', $user->photo_profile);
+                if (Storage::disk('public')->exists($oldPhotoPath)) {
+                    Storage::disk('public')->delete($oldPhotoPath);
+                    \Log::info('Old photo deleted:', ['path' => $oldPhotoPath]);
+                }
+            }
+
+            // Store new photo
+            $path = $request->file('photo')->store('photo_profile', 'public');
+            $data['photo_profile'] = $path;
+            \Log::info('New photo saved:', ['path' => $path]);
+        }
+
+        $user->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'user' => $user,
+            'photo_url' => $user->photo_profile ? asset('storage/' . $user->photo_profile) : null
+        ]);
     }
 }

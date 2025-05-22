@@ -104,6 +104,20 @@ const getDetailPage = (slug) => {
     window.location.href = `/gallery-photo/${slug1}/${slug}`;
 };
 
+// Add getMediaUrl helper function at the beginning of script section
+const getMediaUrl = (url) => {
+    if (!url) return "/js/Assets/default-photo.jpg";
+    if (url.startsWith("http")) return url;
+
+    const cleanPath = url
+        .replace(/^storage\//, "")
+        .replace(/^public\//, "")
+        .replace(/^\//, "")
+        .replace(/^storage\//, "");
+
+    return cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
+};
+
 onMounted(async () => {
     const options = {
         method: "GET",
@@ -116,7 +130,6 @@ onMounted(async () => {
 
     try {
         const response = await axios.request(options);
-
         const photoArray = Array.isArray(response.data.photos)
             ? response.data.photos
             : response.data.photos.data || [];
@@ -137,8 +150,12 @@ onMounted(async () => {
                 altText: photo.alt_text || "",
                 tags: photo.tag ? photo.tag.split(", ") : [],
                 user_id: photo.user_id,
-                user: item.user || null,
-                category: item.category, // Include category info if needed
+                user: item.user ? {
+                    ...item.user,
+                    name: item.user.name || "Unknown Photographer",
+                    avatar: getMediaUrl(item.user.photo_profile)
+                } : null,
+                category: item.category,
             };
         });
 

@@ -101,16 +101,40 @@ class CommentController extends Controller
         return response()->json($comment);
     }
 
-    public function destroyVideoComment(Request $request, $id)
+    public function destroy(Request $request, $id)
     {
+        // Validasi input
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        // Cari komentar yang akan dihapus
         $comment = UserComment::find($id);
+
+        // Jika komentar tidak ditemukan
         if (!$comment) {
-            return response()->json(['message' => 'Comment not found'], 404);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Comment not found'
+            ], 404);
         }
 
+        // Verifikasi bahwa user yang menghapus adalah pemilik komentar
+        if ($comment->user_id != $request->user_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to delete this comment'
+            ], 403);
+        }
+
+        // Hapus komentar
         $comment->delete();
 
-        return response()->json(['message' => 'Comment deleted successfully']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Comment deleted successfully'
+        ]);
     }
+
 }
 

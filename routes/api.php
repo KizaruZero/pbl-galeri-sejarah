@@ -54,6 +54,7 @@ Route::post('/comment/photo/{id}', [CommentController::class, 'storePhotoComment
 Route::get('/comment/photo/{id}', [CommentController::class, 'getCommentByContentPhoto']);
 Route::post('/comment/video/{id}', [CommentController::class, 'storeVideoComment']);
 Route::get('/comment/video/{id}', [CommentController::class, 'getCommentByContentVideo']);
+Route::delete('/user-comments/{id}', [CommentController::class, 'destroy'])->middleware('auth:sanctum'); // Jika menggunakan authentication
 
 // Reaction
 Route::post('/reaction/photo/{id}', [ContentReactionController::class, 'storePhotoReaction']);
