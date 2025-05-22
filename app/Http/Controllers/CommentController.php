@@ -67,6 +67,18 @@ class CommentController extends Controller
         return response()->json($comment);
     }
 
+    public function destroyPhotoComment(Request $request, $id)
+    {
+        $comment = UserComment::find($id);
+        if (!$comment) {
+            return response()->json(['message' => 'Comment not found'], 404);
+        }
+
+        $comment->delete();
+
+        return response()->json(['message' => 'Comment deleted successfully']);
+    }
+
     public function storeVideoComment(Request $request, $id)
     {
         $request->validate([
@@ -87,6 +99,18 @@ class CommentController extends Controller
         ]);
 
         return response()->json($comment);
+    }
+
+    public function destroyVideoComment(Request $request, $id)
+    {
+        $comment = UserComment::find($id);
+        if (!$comment) {
+            return response()->json(['message' => 'Comment not found'], 404);
+        }
+
+        $comment->delete();
+
+        return response()->json(['message' => 'Comment deleted successfully']);
     }
 }
 

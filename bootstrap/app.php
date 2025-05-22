@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Configuration\Middleware\ValidateCsrfTokens;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,8 +17,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\InstallMiddleware::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/install',
+            '/change-database',
+            '/registration-company',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
+    
     })->create();
