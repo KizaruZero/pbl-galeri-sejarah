@@ -46,48 +46,50 @@ Route::get('/', function () {
 /**
  * Routing Vue Pages (non-auth)
  */
-Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
-Route::get('/article/{slug}', fn() => Inertia::render('Views/ArticleDetailView'));
-Route::get('/member', fn() => Inertia::render('Views/MemberView'))->middleware('guest');
-Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware('auth');
-Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
-Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
-Route::get('/events', fn() => Inertia::render('Views/EventView'));
-Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
-Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
-Route::get('/gallery/{slug}', function ($slug) {
-    return Inertia::render('Views/ListGallery');
-});
-Route::get('/search', [SearchController::class, 'search'])->name('search');
-Route::get('/photo/{slug}', [PhotoController::class, 'show'])->name('photo.show');
-Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');
-Route::get('/gallery-photo/{slug}', function () {
-    return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
-});
-Route::get('/gallery-photo/{slug1}/{slug}', function () {
-    return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
-});
-Route::get('/gallery-video/{slug}', function () {
-    return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
-});
-Route::get('/gallery-video/{slug1}/{slug}', function () {
-    return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
-});
-Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
+// middleware web
+Route::middleware('web')->group(function () {
+    Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
+    Route::get('/article/{slug}', fn() => Inertia::render('Views/ArticleDetailView'));
+    Route::get('/member', fn() => Inertia::render('Views/MemberView'))->middleware('guest');
+    Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware('auth');
+    Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
+    Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
+    Route::get('/events', fn() => Inertia::render('Views/EventView'));
+    Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
+    Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
+    Route::get('/gallery/{slug}', function ($slug) {
+        return Inertia::render('Views/ListGallery');
+    });
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
+    Route::get('/photo/{slug}', [PhotoController::class, 'show'])->name('photo.show');
+    Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');
+    Route::get('/gallery-photo/{slug}', function () {
+        return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+    });
+    Route::get('/gallery-photo/{slug1}/{slug}', function () {
+        return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+    });
+    Route::get('/gallery-video/{slug}', function () {
+        return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+    });
+    Route::get('/gallery-video/{slug1}/{slug}', function () {
+        return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+    });
+    Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 
     Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
         // ->middleware('auth', 'role:member')
     ;
 
-/**
- * Routing untuk pengguna terautentikasi
- */
-Route::middleware('auth')->group(function () {
-    // Halaman profile (auth bawaan Laravel Breeze/Jetstream)
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    /**
+     * Routing untuk pengguna terautentikasi
+     */
+    Route::middleware('auth')->group(function () {
+        // Halaman profile (auth bawaan Laravel Breeze/Jetstream)
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
     // user post
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
