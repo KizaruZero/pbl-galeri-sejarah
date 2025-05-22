@@ -130,22 +130,12 @@ onMounted(async () => {
 
     try {
         const response = await axios.request(options);
-        console.log("API Response:", response.data);
-
         const photoArray = Array.isArray(response.data.photos)
             ? response.data.photos
             : response.data.photos.data || [];
 
-        console.log("Photo Array before mapping:", photoArray);
-
         photos.value = photoArray.map((item) => {
             const photo = item.content_photo;
-            console.log("Individual photo item:", item);
-            console.log("User data:", photo.user);
-
-            const photoUser = photo.user || null;
-            console.log("Photo user profile:", photoUser?.photo_profile);
-
             return {
                 ...photo,
                 imageUrl: photo.image_url
@@ -160,16 +150,14 @@ onMounted(async () => {
                 altText: photo.alt_text || "",
                 tags: photo.tag ? photo.tag.split(", ") : [],
                 user_id: photo.user_id,
-                user: photoUser ? {
-                    ...photoUser,
-                    name: photoUser.name || "Unknown Photographer",
-                    avatar: getMediaUrl(photoUser.photo_profile)
+                user: item.user ? {
+                    ...item.user,
+                    name: item.user.name || "Unknown Photographer",
+                    avatar: getMediaUrl(item.user.photo_profile)
                 } : null,
                 category: item.category,
             };
         });
-
-        console.log("Final processed photos:", photos.value);
 
         // Set dummy data untuk demo - applied to each photo if needed
         photos.value = photos.value.map((photo) => ({
