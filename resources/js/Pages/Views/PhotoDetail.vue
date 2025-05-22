@@ -368,7 +368,6 @@ import MainLayout from "@/Layouts/MainLayout.vue";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { defineProps } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps({

@@ -206,7 +206,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 
 // Tab Icons
 const PhotoIcon = {
