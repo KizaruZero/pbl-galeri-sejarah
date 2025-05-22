@@ -101,60 +101,52 @@
           </p>
         </div>
 
-        <!-- Photo Favorites Grid -->
-        <div
-          v-if="photoFavorites && photoFavorites.length > 0"
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 md:gap-4 mb-4"
-        >
-          <div
-            v-for="favorite in photoFavorites"
-            :key="'photo-' + favorite.id"
-            class="aspect-square overflow-hidden rounded-md sm:rounded-lg shadow-md cursor-pointer"
-          >
-            <img
-              :src="
-                '/storage/' + (favorite.content_photo?.image_url || favorite.image_url)
-              "
-              :alt="favorite.content_photo?.title || 'Favorite photo'"
-              class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
-            />
-          </div>
-        </div>
+        <!-- Combined Favorites Grid -->
+<div
+  v-if="(photoFavorites && photoFavorites.length > 0) || (videoFavorites && videoFavorites.length > 0)"
+  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 md:gap-4 mb-4"
+>
+  <!-- Photo Favorites -->
+  <div
+    v-for="favorite in photoFavorites"
+    :key="'photo-' + favorite.id"
+    class="aspect-square overflow-hidden rounded-md sm:rounded-lg shadow-md cursor-pointer"
+  >
+    <img
+      :src="'/storage/' + (favorite.content_photo?.image_url || favorite.image_url)"
+      :alt="favorite.content_photo?.title || 'Favorite photo'"
+      class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+    />
+  </div>
 
-        <!-- Video Favorites Grid -->
-        <div
-          v-if="videoFavorites && videoFavorites.length > 0"
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 md:gap-4"
-        >
-          <div
-            v-for="favorite in videoFavorites"
-            :key="'video-' + favorite.id"
-            class="aspect-square overflow-hidden relative rounded-md sm:rounded-lg shadow-md cursor-pointer"
-            @click="openVideo(favorite.content_video || favorite)"
-          >
-            <img
-              :src="
-                '/storage/' + (favorite.content_video?.thumbnail || favorite.thumbnail)
-              "
-              :alt="favorite.content_video?.title || favorite.title"
-              class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
-            />
-            <div class="absolute inset-0 flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white opacity-80"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286l-11.54 6.347c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
+  <!-- Video Favorites -->
+  <div
+    v-for="favorite in videoFavorites"
+    :key="'video-' + favorite.id"
+    class="aspect-square overflow-hidden relative rounded-md sm:rounded-lg shadow-md cursor-pointer"
+    @click="openVideo(favorite.content_video || favorite)"
+  >
+    <img
+      :src="'/storage/' + (favorite.content_video?.thumbnail || favorite.thumbnail)"
+      :alt="favorite.content_video?.title || favorite.title"
+      class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+    />
+    <div class="absolute inset-0 flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white opacity-80"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286l-11.54 6.347c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
       </div>
     </div>
 

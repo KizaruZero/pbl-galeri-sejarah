@@ -26,7 +26,8 @@ Route::get('/', function () {
  */
 Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
 Route::get('/article/{slug}', fn() => Inertia::render('Views/ArticleDetailView'));
-Route::get('/member', fn() => Inertia::render('Views/MemberView'));
+Route::get('/member', fn() => Inertia::render('Views/MemberView'))->middleware('guest');
+Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware('auth');
 Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
 Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
 Route::get('/events', fn() => Inertia::render('Views/EventView'));
