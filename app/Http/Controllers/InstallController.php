@@ -64,6 +64,10 @@ class InstallController extends Controller
             // Rebuild config cache
             Artisan::call('config:cache');
 
+            if (!$request->hasSession()) {
+                $request->setLaravelSession(app('session')->driver());
+            }
+
             // Return success response with a flag to indicate client should reload
             return response()->json([
                 'message' => 'Database configuration updated successfully.',

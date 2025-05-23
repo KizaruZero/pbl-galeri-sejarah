@@ -169,10 +169,15 @@ export default {
                     }, 1000);
                 }
             } catch (error) {
-                this.error = true;
-                this.errorMessage =
-                    error.response?.data?.error ||
-                    "An error occurred while saving the configuration.";
+                sessionStorage.setItem(
+                        "post_reload_redirect",
+                        "/registration-company"
+                    );
+
+                    // Wait a moment before reloading
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 this.loading = false;
             }
         },
