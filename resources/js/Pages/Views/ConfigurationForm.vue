@@ -170,14 +170,14 @@ export default {
                 }
             } catch (error) {
                 sessionStorage.setItem(
-                        "post_reload_redirect",
-                        "/registration-company"
-                    );
+                    "post_reload_redirect",
+                    "/registration-company"
+                );
 
-                    // Wait a moment before reloading
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                // Wait a moment before reloading
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
                 this.loading = false;
             }
         },

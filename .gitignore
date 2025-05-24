@@ -5,6 +5,9 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/installed
+/storage/installed_progress.json
+
 /vendor
 .env
 .env.backup

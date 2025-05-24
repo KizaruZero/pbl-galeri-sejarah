@@ -116,6 +116,41 @@ class PhotoController extends Controller
         ], 400);
     }
 
+    // update photo 
+    public function updatePhotoByUser(Request $request, $id)
+    {
+        $photo = ContentPhoto::find($id);
+        if (!$photo) {
+            return response()->json(['message' => 'Photo not found'], 404);
+        }
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'source' => 'nullable|string|max:255',
+            'alt_text' => 'nullable|string|max:255',
+            'note' => 'nullable|string',
+            'tag' => 'nullable|string|max:255',
+        ]);
+        $slug = Str::slug($validatedData['title']);
+
+        $photo->update([
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'image' => $validatedData['image'],
+            'source' => $validatedData['source'],
+            'alt_text' => $validatedData['alt_text'],
+            'note' => $validatedData['note'],
+            'tag' => $validatedData['tag'],
+            'slug' => $slug,
+        ]);
+
+        return response()->json([
+            'message' => 'Photo status updated successfully',
+            'data' => $photo
+        ], 200);
+    }
+
     private function getGPSCoordinates($exif)
     {
         if (!isset($exif['GPSLatitude']) || !isset($exif['GPSLongitude'])) {
@@ -153,8 +188,8 @@ class PhotoController extends Controller
     public function getPhotoByUser($userId)
     {
         $contentPhotos = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
-            ->where('status', 'approved')
             ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
             ->get();
 
         if ($contentPhotos->isEmpty()) {

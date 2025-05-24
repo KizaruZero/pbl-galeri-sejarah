@@ -194,7 +194,6 @@ class VideoController extends Controller
     public function getVideoByUser($userId)
     {
         $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
-            ->where('status', 'approved')
             ->where('user_id', $userId)
             ->get();
         if (!$contentVideo) {
@@ -205,6 +204,43 @@ class VideoController extends Controller
             'total' => $contentVideo->count()
         ]);
     }
+
+    public function updateVideoByUser(Request $request, $id)
+    {
+        $video = ContentVideo::find($id);
+        if (!$video) {
+            return response()->json(['message' => 'Video not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'source' => 'nullable|string|max:255',
+            'tag' => 'nullable|string|max:255',
+            'link_youtube' => 'nullable|url|max:255',
+            'video_url' => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+            'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
+        ]);
+
+        $slug = Str::slug($validatedData['title']);
+
+        $video->update([
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'source' => $validatedData['source'],
+            'tag' => $validatedData['tag'],
+            'link_youtube' => $validatedData['link_youtube'],
+            'video_url' => $validatedData['video_url'],
+            'thumbnail' => $validatedData['thumbnail'],
+            'slug' => $slug,
+        ]);
+
+        return response()->json([
+            'message' => 'Video updated successfully',
+            'data' => $video
+        ], 200);
+    }
+
 
     public function getFavoriteByUser($userId)
     {

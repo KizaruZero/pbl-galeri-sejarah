@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 
 class InstallController extends Controller
@@ -36,6 +38,7 @@ class InstallController extends Controller
             'db_name' => 'required|string',
             'db_user' => 'required|string',
             'db_pass' => 'nullable|string',
+            'db_host' => 'required|string',
         ]);
 
         try {
@@ -43,7 +46,6 @@ class InstallController extends Controller
             Artisan::call('route:clear');
             Artisan::call('config:clear');
             Artisan::call('view:clear');
-            Artisan::call('cache:clear');
 
             // Test database connection first
             $this->testDatabaseConnection(
@@ -59,10 +61,14 @@ class InstallController extends Controller
                 'DB_DATABASE' => $validated['db_name'],
                 'DB_USERNAME' => $validated['db_user'],
                 'DB_PASSWORD' => $validated['db_pass'] ?? '',
+                'DB_HOST' => $validated['db_host'],
+                'SESSION_DRIVER' => 'file',
             ]);
 
             // Rebuild config cache
             Artisan::call('config:cache');
+
+            // call migrate user table
 
             if (!$request->hasSession()) {
                 $request->setLaravelSession(app('session')->driver());
@@ -72,8 +78,6 @@ class InstallController extends Controller
             return response()->json([
                 'message' => 'Database configuration updated successfully.',
                 'status' => 200,
-                'redirect' => '/registration-company',
-                'reload_required' => true
             ]);
 
         } catch (\Exception $e) {
@@ -120,6 +124,9 @@ class InstallController extends Controller
             'app_email' => 'required|email',
             'app_phone' => 'nullable|string',
             'app_address' => 'nullable|string',
+            'admin.name' => 'required|string',
+            'admin.email' => 'required|email',
+            'admin.password' => 'required|string',
         ]);
 
         try {
@@ -147,6 +154,14 @@ class InstallController extends Controller
                     'cms_phone' => $validated['app_phone'],
                     'cms_address' => $validated['app_address'],
                 ]);
+
+                $user = User::create([
+                    'name' => $validated['admin']['name'],
+                    'email' => $validated['admin']['email'],
+                    'password' => Hash::make($validated['admin']['password']),
+                ]);
+
+                $user->assignRole('super_admin');
             } catch (\Exception $e) {
                 \Log::warning('Company profile creation failed: ' . $e->getMessage());
             }

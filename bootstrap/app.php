@@ -24,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             '/install',
             '/change-database',
             '/registration-company',
+            '/api/requirements',
+            '/requirements',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

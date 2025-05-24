@@ -13,9 +13,13 @@ use App\Http\Controllers\InstallController;
 
 // Installation routes - must be first and outside any middleware
 Route::get('/install', function () {
-    return Inertia::render('Views/ConfigurationForm');
+    return Inertia::render('Views/RegistrationForm');
 });
 
+Route::get('/requirements', function () {
+    return Inertia::render('Views/RequirementsCheck');
+})->name('requirements')
+    ->withoutMiddleware('web');
 Route::get('/registration-company', function () {
     return Inertia::render('Views/RegistrationCompany');
 })->name('registration-company')

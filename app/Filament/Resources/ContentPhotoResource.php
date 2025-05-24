@@ -78,7 +78,7 @@ class ContentPhotoResource extends Resource
                         ]);
                         return $category->id;
                     })
-                    ->required(),   
+                    ->required(),
                 Forms\Components\FileUpload::make('image_url')
                     ->image()
                     ->directory('foto_content')
@@ -187,6 +187,7 @@ class ContentPhotoResource extends Resource
                         'heroicon-o-x-circle' => 'Rejected',
                     ])
                     ->description(fn(ContentPhoto $record): string => $record->note ?? '')
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -333,7 +334,7 @@ class ContentPhotoResource extends Resource
         if (isset($data['categories'])) {
             // Delete existing category relationships
             $record->categoryContents()->delete();
-            
+
             // Create new category relationships
             foreach ($data['categories'] as $categoryId) {
                 $record->categoryContents()->create([

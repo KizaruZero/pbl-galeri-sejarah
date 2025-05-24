@@ -12,18 +12,24 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\UserFavoriteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentReactionController;
+use App\Http\Controllers\RequirementsController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::get('/api/requirements', [RequirementsController::class, 'checkRequirements']);
 
 // routes/api.php
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'search']);
 Route::get('/content-photo', [PhotoController::class, 'index']);
 Route::get('/content-photo/{slug}', [PhotoController::class, 'show']);
-Route::get('/content-photo/user/{userId}', [PhotoController::class, 'getPhotoByUser']);
+Route::put('/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']);
 
 Route::get('/content-video', [VideoController::class, 'index']);
 Route::get('/content-video/{slug}', [VideoController::class, 'show']);
+Route::put('/content-video/{id}', [VideoController::class, 'updateVideoByUser']);
+
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 
@@ -39,6 +45,11 @@ Route::get('/category-video/{slug}', [VideoController::class, 'getVideoByCategor
 
 // Company Profile
 Route::get('/company-profile', [CompanyProfileController::class, 'index']);
+Route::get('/company-profile/home', [CompanyProfileController::class, 'getHomeSection']);
+Route::get('/company-profile/events', [CompanyProfileController::class, 'getEventsSection']);
+Route::get('/company-profile/gallery', [CompanyProfileController::class, 'getGallerySection']);
+Route::get('/company-profile/article', [CompanyProfileController::class, 'getArticleSection']);
+Route::get('/company-profile/member', [CompanyProfileController::class, 'getMemberSection']);
 
 // User Favorite
 Route::get('/favorite/total/user/{userId}', [UserFavoriteController::class, 'getTotalFavorites']);

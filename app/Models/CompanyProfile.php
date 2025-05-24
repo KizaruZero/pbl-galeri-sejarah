@@ -27,6 +27,9 @@ class CompanyProfile extends Model
         'bg_article_1',
         'bg_article_2',
         'bg_article_3',
+        'bg_member_1',
+        'bg_member_2',
+        'bg_member_3',
         'logo',
         'cms_name',
         'cms_email',
@@ -35,6 +38,7 @@ class CompanyProfile extends Model
         'events_text',
         'gallery_text',
         'article_text',
+        'member_text',
     ];
 
     /**

@@ -14,6 +14,15 @@ class InstallMiddleware
             return $next($request);
         }
 
+        if ($request->is('requirements*')) {
+            return $next($request);
+        }
+
+        if ($request->is('api/requirements*')) {
+            return $next($request);
+        }
+
+
         // Check if app is not installed
         if (!file_exists(storage_path('installed'))) {
             return redirect('/install');
