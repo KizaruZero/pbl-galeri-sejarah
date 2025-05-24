@@ -13,6 +13,7 @@ use App\Http\Controllers\UserFavoriteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentReactionController;
 use App\Http\Controllers\RequirementsController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();

@@ -10,7 +10,7 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\InstallController;
-
+use App\Http\Controllers\NotificationController;
 // Installation routes - must be first and outside any middleware
 Route::get('/install', function () {
     return Inertia::render('Views/RegistrationForm');
@@ -98,6 +98,11 @@ Route::middleware('web')->group(function () {
     // user post
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
     Route::post('/api/content-video', [VideoController::class, 'store']);
+
+    Route::get('/api/notifications', [NotificationController::class, 'index']);
+    Route::post('/api/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/api/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+
 
 });
 

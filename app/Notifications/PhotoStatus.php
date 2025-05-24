@@ -15,9 +15,13 @@ class PhotoStatus extends Notification
      * Create a new notification instance.
      */
     protected $status;
-    public function __construct($status)
+    protected $title;
+    protected $note;
+    public function __construct($status, $title, $note)
     {
         $this->status = $status;
+        $this->title = $title;
+        $this->note = $note;
     }
 
     /**
@@ -47,8 +51,15 @@ class PhotoStatus extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        return [
-            'data' => 'Your photo has been ' . $this->status,
-        ];
+        $this->status = $this->status == 'approved' ? 'Approved' : 'Rejected';
+        if ($this->status == 'Approved') {
+            return [
+                'data' => 'Your Content Photo With Title ' . $this->title . ' has been ' . $this->status,
+            ];
+        } else if ($this->status == 'Rejected') {
+            return [
+                'data' => 'Your Content Photo With Title ' . $this->title . ' has been ' . $this->status . '. Reason: ' . $this->note,
+            ];
+        }
     }
 }

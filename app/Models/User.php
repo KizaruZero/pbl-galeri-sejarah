@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Role;
-// use filament notifications
+use Filament\Notifications\Notification;
 
 
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.

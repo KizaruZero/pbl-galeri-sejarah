@@ -13,6 +13,7 @@ class CommentReactionController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
+            'comment_id' => 'required|exists:user_comments,id',
             'reaction_type_id' => 'required|exists:reaction_types,id',
         ]);
 

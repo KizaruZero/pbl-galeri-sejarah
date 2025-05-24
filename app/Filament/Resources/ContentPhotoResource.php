@@ -21,6 +21,9 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\ContentPhotoResource\Widgets\ContentPhotoOverview;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\SpatieMediaLibraryImageEditor;
+use App\Notifications\PhotoStatus;
 
 
 
@@ -187,7 +190,8 @@ class ContentPhotoResource extends Resource
                         'heroicon-o-x-circle' => 'Rejected',
                     ])
                     ->description(fn(ContentPhoto $record): string => $record->note ?? '')
-
+                    // notification
+                    
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -220,13 +224,16 @@ class ContentPhotoResource extends Resource
                             'status' => 'approved',
                             'approved_at' => now(),
                         ]);
+                        
+                        // Send notification to the user
+                        $record->user->notify(new PhotoStatus('approved', $record->title, ''));
+                        
                         Notification::make()
                             ->title('Content Approved')
                             ->body('The content has been approved!')
                             ->success()
                             ->sendToDatabase(auth()->user())
                             ->send();
-                        return response()->json(['message' => 'Order approved and receipt sent to the user!']);
                     }),
                 Action::make('reject')
                     ->label('Reject')
@@ -243,18 +250,19 @@ class ContentPhotoResource extends Resource
                     ->action(function (ContentPhoto $record, array $data) {
                         $record->update([
                             'status' => 'rejected',
-                            'note' => $data['note'], // or whatever your notes column is named
+                            'note' => $data['note'],
                         ]);
+                        
+                        // Send notification to the user
+                        $record->user->notify(new PhotoStatus('rejected', $record->title, $data['note']));
+                        
                         Notification::make()
                             ->title('Content Rejected')
-                            ->body('The content has been rejected. Reason: ' . $data['note'])
+                            ->body('The content has been rejected.')
                             ->danger()
                             ->sendToDatabase(auth()->user())
                             ->send();
-                    })
-                    ->modalHeading('Reject Photo')
-                    ->modalDescription('Please provide a reason for rejecting this photo.')
-                    ->modalSubmitActionLabel('Confirm Rejection'),
+                    }),
 
             ])
             ->bulkActions([

@@ -126,6 +126,7 @@
           ></span>
         </Link>
       </div>
+      <NotificationList />
     </div>
   </nav>
 
@@ -197,6 +198,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
+import NotificationList from "../Components/NotificationList.vue";
 
 const dropdownRef = ref(null);
 const menuOpen = ref(false);

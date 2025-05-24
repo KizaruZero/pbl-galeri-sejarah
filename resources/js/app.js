@@ -9,6 +9,7 @@ import PrimeVue from 'primevue/config'
 import Carousel from 'primevue/carousel'
 
 import { LoopingRhombusesSpinner } from 'epic-spinners'
+import NotificationList from './Components/NotificationList.vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
@@ -29,6 +30,7 @@ createInertiaApp({
       .use(PrimeVue)
       .component('Carousel', Carousel)
       .component('LoopingRhombusesSpinner', LoopingRhombusesSpinner) // Register global spinner
+      .component('notification-list', NotificationList)
       .mount(el)
   },
   progress: {
