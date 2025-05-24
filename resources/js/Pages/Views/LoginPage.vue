@@ -1,17 +1,13 @@
 <template>
-  <main class="min-h-screen bg-stone-950">
-    <div class="flex min-h-screen">
-      <!-- Left section - Image -->
-      <section class="hidden lg:flex lg:w-1/2 p-8">
-        <img
-          src="https://cdn.builder.io/api/v1/image/assets/c67971bfdb224af7ac1abd38d94b93d0/3afdba83c7cccfa5981867fd3f1620f87d352528"
-          alt="Login illustration"
-          class="object-cover w-full rounded-2xl"
-        />
+  <main class="bg-stone-950">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <!-- Image section - Smaller height on mobile -->
+      <section class="w-full lg:w-1/2 h-[40vh] lg:h-screen">
+        <ImageSection />
       </section>
 
-      <!-- Right section - Login Form -->
-      <section class="w-full lg:w-1/2 flex items-center justify-center">
+      <!-- Login Form section -->
+      <section class="w-full lg:w-1/2 flex items-center justify-center py-2">
         <LoginForm />
       </section>
     </div>
@@ -19,5 +15,6 @@
 </template>
 
 <script setup>
+import ImageSection from "@/Components-landing/LoginPage/ImageSection.vue";
 import LoginForm from "@/Components-landing/LoginPage/LoginForm.vue";
 </script>
