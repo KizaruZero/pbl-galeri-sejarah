@@ -1,7 +1,7 @@
 <template>
   <section class="flex flex-col justify-center w-full max-w-md px-6 py-12 bg-stone-950">
     <div class="flex flex-col items-center">
-      <h1 class="text-4xl font-medium text-white uppercase">Welcome Back</h1>
+      <h1 class="text-center text-4xl font-medium text-white uppercase">Welcome Back</h1>
       <h2 class="mt-1.5 text-3xl font-medium text-white uppercase">Login</h2>
 
       <form @submit.prevent="submit" class="w-full mt-8 space-y-6">
