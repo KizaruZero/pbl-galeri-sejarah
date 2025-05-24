@@ -12,6 +12,7 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\UserFavoriteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentReactionController;
+use App\Http\Controllers\CommentReactionController;
 use App\Http\Controllers\RequirementsController;
 use App\Http\Controllers\NotificationController;
 

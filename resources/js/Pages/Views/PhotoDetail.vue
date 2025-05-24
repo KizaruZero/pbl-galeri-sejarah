@@ -253,8 +253,7 @@
                                     </div>
                                     <button v-if="comment.canDelete" @click="deleteComment(comment.id)"
                                         class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all p-1 rounded-full hover:bg-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5"
-                                            viewBox="0 0 20 20" fill="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd"
                                                 d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                                 clip-rule="evenodd" />
@@ -275,7 +274,7 @@
                                             class="flex items-center text-xxs md:text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-1.5 py-0.5 md:px-2.5 md:py-1 transition-colors"
                                             :class="{ 'bg-blue-900/50': reaction.userReacted }">
                                             <span
-                                                class="mr-0.5 md:mr-1">{{ availableReactions.find(r => r.name === reaction.type)?.emoji || '👍' }}</span>
+                                                class="mr-0.5 md:mr-1">{{ availableReactions.find(r => r.name === reaction.type)?.react_type}}</span>
                                             <span>{{ reaction.count }}</span>
                                         </button>
                                     </div>
@@ -296,9 +295,9 @@
                                         <div
                                             class="absolute bottom-full left-0 mb-1 md:mb-2 hidden group-hover:flex bg-gray-800 rounded-full shadow-lg p-1 space-x-1 border border-gray-700 z-10">
                                             <button v-for="reaction in reactions" :key="reaction.id"
-                                                @click.stop="toggleReaction(comment.id, reaction.name)"
+                                                @click.stop="toggleReaction(comment.id, reaction.react_type)"
                                                 class="hover:scale-125 transform transition-transform text-xs md:text-sm"
-                                                :title="reaction.name">
+                                                :title="reaction.react_type">
                                                 {{ reaction.react_type }}
                                             </button>
                                         </div>
@@ -793,52 +792,59 @@
     }
 
     try {
-        // Cari reaksi yang sesuai dari daftar reactions
         const reaction = reactions.value.find(r => r.react_type === reactionType);
-        if (!reaction) return;
+        if (!reaction) {
+            console.error('Reaction type not found:', reactionType);
+            return;
+        }
 
-        const response = await axios.post(`/reaction/comment/${commentId}`, {
+        console.log('Kudune iki reaction e:', {
             user_id: UserId.value,
-            comment_id: commentId,
-            reaction_type_id: reaction.id
-        }, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'Accept': 'application/json'
-            }
+            reaction_type_id: reaction.id,
+            comment_id: commentId
         });
 
-        // Update UI berdasarkan response
+        const response = await axios.post(`/api/reaction/comment/${commentId}`, {
+            user_id: UserId.value,
+            reaction_type_id: reaction.id,
+        });
+
+        console.log('Reaction response:', response.data);
+
+        // Find and update the comment's reactions
         const comment = comments.value.find(c => c.id === commentId);
         if (!comment) return;
 
+        // Initialize reactions array if it doesn't exist
         if (!comment.reactions) {
             comment.reactions = [];
         }
 
-        const existingReaction = comment.reactions.find(r => r.type === reactionType);
-
-        if (response.status === 200 && response.data.message === 'Reaction removed') {
-            // Hapus reaksi
-            if (existingReaction) {
-                existingReaction.count--;
-                if (existingReaction.count <= 0) {
-                    comment.reactions = comment.reactions.filter(r => r.type !== reactionType);
-                }
-            }
+        if (response.data.message === 'Reaction removed') {
+            // Remove the reaction
+            comment.reactions = comment.reactions.filter(r => 
+                !(r.type === reactionType && r.userId === UserId.value)
+            );
         } else {
-            // Tambah reaksi
-            if (existingReaction) {
-                existingReaction.count++;
-                existingReaction.userReacted = true;
+            // Add or update the reaction
+            const existingReactionIndex = comment.reactions.findIndex(r => 
+                r.userId === UserId.value
+            );
+
+            const newReaction = {
+                id: response.data.id,
+                type: reactionType,
+                userId: UserId.value,
+                userReacted: true
+            };
+
+            if (existingReactionIndex >= 0) {
+                comment.reactions[existingReactionIndex] = newReaction;
             } else {
-                comment.reactions.push({
-                    type: reactionType,
-                    count: 1,
-                    userReacted: true
-                });
+                comment.reactions.push(newReaction);
             }
         }
+
     } catch (error) {
         console.error('Error toggling reaction:', error);
         alert('Failed to update reaction. Please try again.');
@@ -848,6 +854,7 @@
     // Fetch photo data
     onMounted(async () => {
         await fetchReactions();
+
         try {
             const slug = window.location.pathname.split("/").pop();
             const response = await axios.get(`/api/content-photo/${slug}`, {
