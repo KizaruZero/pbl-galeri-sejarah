@@ -70,5 +70,10 @@ Route::delete('/user-comments/{id}', [CommentController::class, 'destroy'])->mid
 // Reaction
 Route::post('/reaction/photo/{id}', [ContentReactionController::class, 'storePhotoReaction']);
 Route::post('/reaction/video/{id}', [ContentReactionController::class, 'storeVideoReaction']);
+Route::post('/reaction/comment/{id}', [CommentReactionController::class, 'store']);
+Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'delete']);
+
+Route::post('/reaction/comment/{id}', [CommentReactionController::class, 'store']);
+Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'delete']);
 
 require __DIR__ . '/auth.php';

@@ -30,8 +30,18 @@ class ContentReactionController extends Controller
         ]);
 
         return response()->json($contentReaction);
+    }
 
+    public function deletePhotoReaction(Request $request, $id)
+    {
+        $contentReaction = ContentReaction::find($id);
+        if (!$contentReaction) {
+            return response()->json(['message' => 'Content reaction not found'], 404);
+        }
 
+        $contentReaction->delete();
+
+        return response()->json(['message' => 'Content reaction deleted']);
     }
 
     public function storeVideoReaction(Request $request, $id)
@@ -54,5 +64,17 @@ class ContentReactionController extends Controller
         ]);
 
         return response()->json($contentReaction);
+    }
+
+    public function deleteVideoReaction(Request $request, $id)
+    {
+        $contentReaction = ContentReaction::find($id);
+        if (!$contentReaction) {
+            return response()->json(['message' => 'Content reaction not found'], 404);
+        }
+
+        $contentReaction->delete();
+
+        return response()->json(['message' => 'Content reaction deleted']);
     }
 }
