@@ -69,7 +69,7 @@
         },
         userAvatar: {
             type: String,
-            default: ""
+            default: "/js/Assets/default-avatar.jpg"
         },
         createdAt: {
             type: String,

@@ -75,6 +75,8 @@
                     :description="video.description"
                     :duration="video.duration"
                     :views="video.views"
+                    :userName="video.userName"
+                    :userAvatar="video.userAvatar"
                     @click="getDetailPage(video.slug)"
                 />
             </div>
@@ -113,35 +115,42 @@ onMounted(async () => {
 
     try {
         const response = await axios.request(options);
-        console.log("API Response:", response.data); // Debug response
 
-        // Handle single video object response
-        const videoData = response.data.content_video || response.data;
+        // Filter only items with content_video (exclude photos and null content)
+        const validItems = response.data.filter(item => item.content_video !== null);
+        
+        // Map the filtered items to our video format
+        videos.value = validItems.map(item => {
+            const video = item.content_video;
+            return {
+                id: video.id,
+                title: video.title || "Untitled Video",
+                description: video.description || "No description available",
+                slug: video.slug,
+                video_url: video.video_url
+                    ? `/storage/${video.video_url.replace(/^public\//, "")}`
+                    : convertToEmbedUrl(video.link_youtube) || "",
+                thumbnailUrl: video.thumbnail
+                    ? `/storage/${video.thumbnail.replace(/^public\//, "")}`
+                    : "/js/Assets/default-photo.jpg",
+                duration: video.metadata_video?.duration || "00:00",
+                views: video.total_views || 0,
+                tags: video.tag ? video.tag.split(/,\s*/) : [],
+                category: item.category || {},
+                metadata: video.metadata_video || {},
+                userName: video.user?.name || "Anonymous",
+                userAvatar: video.user?.photo_profile
+                    ? `/storage/${video.user.photo_profile.replace(/^public\//, "")}`
+                    : "/js/Assets/default-avatar.jpg",
+                reactions: video.content_reactions || [],
+                comments: video.user_comments || [],
+                note: video.note || "",
+                source: video.source || "",
+                createdAt: video.created_at,
+            };
+        });
 
-        // Create array even if single video
-        const videoArray = videoData ? [videoData] : [];
-
-        console.log("Video array:", videoArray);
-
-        videos.value = videoArray.map((video) => ({
-            id: video.id,
-            title: video.title || "Untitled Video",
-            description: video.description || "No description available",
-            slug: video.slug,
-            video_url: video.video_url // Gunakan video lokal sebagai prioritas
-                ? `/storage/${video.video_url.replace(/^public\//, "")}`
-                : convertToEmbedUrl(video.link_youtube) || "", // Fallback ke YouTube
-            thumbnailUrl: video.thumbnail
-                ? `/storage/${video.thumbnail.replace(/^public\//, "")}`
-                : "/js/Assets/default-photo.jpg",
-            duration: video.metadata_video?.duration || "00:00",
-            views: video.total_views || 0,
-            tags: video.tag ? video.tag.split(/,\s*/) : [],
-            category: video.category || {},
-            metadata: video.metadata_video || {},
-        }));
-
-        // Helper function untuk YouTube (sebagai fallback)
+        // Helper function untuk YouTube
         function convertToEmbedUrl(url) {
             if (!url) return null;
             if (url.includes("youtube.com/watch")) {
@@ -153,7 +162,6 @@ onMounted(async () => {
             return url;
         }
 
-        console.log("Processed videos:", videos.value);
     } catch (err) {
         console.error("Failed to fetch videos:", err);
         if (err.response) {

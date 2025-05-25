@@ -75,8 +75,8 @@
                         photo.description || 'No description available'
                     "
                     :userId="photo.user_id"
-                    :userName="photo.user?.name || 'Unknown Photographer'"
-                    :userAvatar="photo.user?.avatar"
+                    :userName="photo.userName || 'Unknown Photographer'"
+                    :userAvatar="photo.userAvatar || '/js/Assets/default-avatar.jpg'"
                     :titleSize="'lg'"
                     @click="getDetailPage(photo.slug)"
                 />
@@ -130,92 +130,44 @@ onMounted(async () => {
 
     try {
         const response = await axios.request(options);
-        const photoArray = Array.isArray(response.data.photos)
-            ? response.data.photos
-            : response.data.photos.data || [];
 
-        photos.value = photoArray.map((item) => {
-            const photo = item.content_photo;
-            return {
-                ...photo,
-                imageUrl: photo.image_url
-                    ? photo.image_url.startsWith("http")
-                        ? photo.image_url
-                        : `/storage/${photo.image_url.replace(/^public\//, "")}`
-                    : "/js/Assets/default-photo.jpg",
-                title: photo.title || "Untitled",
-                titleSize: "base",
-                description: photo.description || "No description available",
-                slug: photo.slug,
-                altText: photo.alt_text || "",
-                tags: photo.tag ? photo.tag.split(", ") : [],
-                user_id: photo.user_id,
-                user: item.user ? {
-                    ...item.user,
-                    name: item.user.name || "Unknown Photographer",
-                    avatar: getMediaUrl(item.user.photo_profile)
-                } : null,
-                category: item.category,
-            };
-        });
+        // Get the photos array from response
+        const photoData = response.data.photos || [];
+        
+        // Filter and map the photos
+        photos.value = photoData
+            .filter(item => item.content_photo)
+            .map(item => {
+                const photo = item.content_photo;
+                return {
+                    id: photo.id,
+                    title: photo.title || "Untitled Photo",
+                    description: photo.description || "No description available",
+                    slug: photo.slug,
+                    imageUrl: photo.image_url
+                        ? `/storage/${photo.image_url.replace(/^public\//, "")}`
+                        : "/js/Assets/default-photo.jpg",
+                    user_id: photo.user_id,
+                    userName: photo.user?.name || "Anonymous",
+                    userAvatar: photo.user?.photo_profile
+                        ? `/storage/${photo.user.photo_profile.replace(/^public\//, "")}`
+                        : "/js/Assets/default-avatar.jpg",
+                    category: item.category || {},
+                    createdAt: photo.created_at,
+                };
+            });
 
-        // Set dummy data untuk demo - applied to each photo if needed
-        photos.value = photos.value.map((photo) => ({
-            ...photo,
-            likeCount: Math.floor(Math.random() * 100),
-            isLiked: Math.random() > 0.5,
-            isBookmarked: Math.random() > 0.5,
-
-            // Set dummy komentar for each photo if needed
-            comments: [
-                {
-                    id: 1,
-                    user: "John Doe",
-                    text: "This is an amazing photo! The colors are fantastic.",
-                    date: "2023-05-15T10:30:00Z",
-                    canDelete: false,
-                },
-                {
-                    id: 2,
-                    user: "Jane Smith",
-                    text: "Great composition and lighting!",
-                    date: "2023-05-14T16:45:00Z",
-                    canDelete: false,
-                },
-            ],
-        }));
     } catch (err) {
-        if (err.response && err.response.status === 404) {
-            error.value = "Tidak ada konten ditemukan untuk kategori ini";
+        console.error("Failed to fetch photos:", err);
+        if (err.response) {
+            error.value = err.response.data.message || "Failed to fetch photos";
         } else {
-            error.value = "Gagal mengambil data";
+            error.value = "Network error or server unavailable";
         }
-        console.error("Error:", err);
     } finally {
         loading.value = false;
     }
 });
-
-// Toggle like status
-const toggleLike = () => {
-    if (isLiked.value) {
-        likeCount.value--;
-    } else {
-        likeCount.value++;
-    }
-    isLiked.value = !isLiked.value;
-
-    // Here you would typically send an API request to update the like status
-    // saveReaction('like', isLiked.value);
-};
-
-// Toggle save status
-const toggleSave = () => {
-    isSaved.value = !isSaved.value;
-
-    // Here you would typically send an API request to update the save status
-    // saveReaction('save', isSaved.value);
-};
 </script>
 
 <style scoped>
