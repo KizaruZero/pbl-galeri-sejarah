@@ -14,9 +14,14 @@ class VideoStatus extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    protected $status;
+    protected $title;
+    protected $note;
+    public function __construct($status, $title, $note)
     {
-        //
+        $this->status = $status;
+        $this->title = $title;
+        $this->note = $note;
     }
 
     /**
@@ -26,7 +31,7 @@ class VideoStatus extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
@@ -35,9 +40,9 @@ class VideoStatus extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -47,8 +52,15 @@ class VideoStatus extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        return [
-            //
-        ];
+        $this->status = $this->status == 'approved' ? 'Approved' : 'Rejected';
+        if ($this->status == 'Approved') {
+            return [
+                'data' => 'Your Content Photo With Title ' . $this->title . ' has been ' . $this->status,
+            ];
+        } else if ($this->status == 'Rejected') {
+            return [
+                'data' => 'Your Content Video With Title ' . $this->title . ' has been ' . $this->status . '. Reason: ' . $this->note,
+            ];
+        }
     }
 }

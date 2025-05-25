@@ -1,0 +1,24 @@
+{
+    "users": [
+        {
+            "username": "kizarukaede@gmail.com",
+            "password": "password"
+        },
+        {
+            "username": "ardyapusaka@gmail.com",
+            "password": "password"
+        },
+        {
+            "username": "akainu@gmail.com",
+            "password": "password"
+        },
+        {
+            "username": "aokiji@gmail.com",
+            "password": "password"
+        },
+        {
+            "username": "fujitora@gmail.com",
+            "password": "password"
+        }
+    ]
+}

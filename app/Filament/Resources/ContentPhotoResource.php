@@ -191,7 +191,7 @@ class ContentPhotoResource extends Resource
                     ])
                     ->description(fn(ContentPhoto $record): string => $record->note ?? '')
                     // notification
-                    
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -224,10 +224,10 @@ class ContentPhotoResource extends Resource
                             'status' => 'approved',
                             'approved_at' => now(),
                         ]);
-                        
+
                         // Send notification to the user
                         $record->user->notify(new PhotoStatus('approved', $record->title, ''));
-                        
+
                         Notification::make()
                             ->title('Content Approved')
                             ->body('The content has been approved!')
@@ -252,10 +252,10 @@ class ContentPhotoResource extends Resource
                             'status' => 'rejected',
                             'note' => $data['note'],
                         ]);
-                        
+
                         // Send notification to the user
                         $record->user->notify(new PhotoStatus('rejected', $record->title, $data['note']));
-                        
+
                         Notification::make()
                             ->title('Content Rejected')
                             ->body('The content has been rejected.')

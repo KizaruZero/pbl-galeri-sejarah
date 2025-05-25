@@ -7,7 +7,8 @@ use App\Models\UserComment;
 use App\Models\ContentPhoto;
 use App\Models\ContentVideo;
 use App\Models\User;
-
+use App\Notifications\PhotoComment;
+use App\Notifications\VideoComment;
 class CommentController extends Controller
 {
     //
@@ -58,6 +59,20 @@ class CommentController extends Controller
             return response()->json(['message' => 'Content photo not found'], 404);
         }
 
+        $photoOwner = $contentPhoto->user;
+        if (!$photoOwner) {
+            return response()->json(['message' => 'Photo owner not found'], 404);
+        }
+
+        $reactingUser = User::find($request->user_id);
+        if (!$reactingUser) {
+            return response()->json(['message' => 'Reacting user not found'], 404);
+        }
+
+        if ($photoOwner->id !== $reactingUser->id) {
+            $photoOwner->notify(new PhotoComment($contentPhoto->title, $request->content, $reactingUser));
+        }
+
         $comment = UserComment::create([
             'content' => $request->content,
             'content_photo_id' => $id,
@@ -90,6 +105,20 @@ class CommentController extends Controller
         $contentVideo = ContentVideo::find($id);
         if (!$contentVideo) {
             return response()->json(['message' => 'Content video not found'], 404);
+        }
+
+        $videoOwner = $contentVideo->user;
+        if (!$videoOwner) {
+            return response()->json(['message' => 'Video owner not found'], 404);
+        }
+
+        $reactingUser = User::find($request->user_id);
+        if (!$reactingUser) {
+            return response()->json(['message' => 'Reacting user not found'], 404);
+        }
+
+        if ($videoOwner->id !== $reactingUser->id) {
+            $videoOwner->notify(new VideoComment($contentVideo->title, $request->content, $reactingUser));
         }
 
         $comment = UserComment::create([

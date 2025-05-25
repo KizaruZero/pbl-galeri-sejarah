@@ -6,6 +6,7 @@ use App\Filament\Resources\ContentVideoResource\Widgets\ContentVideoOverview;
 use App\Filament\Resources\ContentVideoResource\Pages;
 use App\Filament\Resources\ContentVideoResource\RelationManagers;
 use App\Models\ContentVideo;
+use App\Notifications\VideoStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -191,6 +192,7 @@ class ContentVideoResource extends Resource
                         'heroicon-o-x-circle' => 'Rejected',
                     ])
                     ->description(description: fn(ContentVideo $record): string => $record->note ?? '')
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('approved_at')
                     ->dateTime()
@@ -215,6 +217,7 @@ class ContentVideoResource extends Resource
                             'status' => 'approved',
                             'approved_at' => now(),
                         ]);
+                        $record->user->notify(new VideoStatus('approved', $record->title, ''));
                         Notification::make()
                             ->title('Content Approved')
                             ->body('The content has been approved!')

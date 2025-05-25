@@ -51,14 +51,7 @@ class SetupProject extends Command
         $this->info('Migration completed!');
 
         // set sessions
-        // CALL CONFIG CACHE
-        $this->call('config:clear');
-        $this->info('Config clear completed!');
-        $this->info('Running config cache...');
-        $this->call('config:cache');
-        $this->info('Config cache completed!');
-        $this->call('view:clear');
-        $this->info('View clear completed!');
+
 
 
         // key generate
@@ -70,6 +63,15 @@ class SetupProject extends Command
         $this->info('Creating storage link...');
         $this->call('storage:link');
         $this->info('Storage link created!');
+
+        // CALL CONFIG CACHE
+        $this->call('config:clear');
+        $this->info('Config clear completed!');
+        $this->info('Running config cache...');
+        $this->call('config:cache');
+        $this->info('Config cache completed!');
+        $this->call('view:clear');
+        $this->info('View clear completed!');
 
         $this->info('Project setup completed successfully!');
     }
