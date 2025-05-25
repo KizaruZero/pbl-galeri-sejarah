@@ -16,37 +16,37 @@ class ReactionSeeder extends Seeder
         $reaction = [
             [
                 'react_type' => 'like',
-                'icon' => 'fa-solid fa-thumbs-up',
+                'icon' => '👍',
 
             ],
             [
                 'react_type' => 'dislike',
-                'icon' => 'fa-solid fa-thumbs-down',
+                'icon' => '👎',
 
             ],
             [
                 'react_type' => 'love',
-                'icon' => 'fa-solid fa-heart',
+                'icon' => '❤️',
 
             ],
             [
                 'react_type' => 'haha',
-                'icon' => 'fa-solid fa-face-grin-squint-tears',
+                'icon' => '😂',
 
             ],
             [
                 'react_type' => 'wow',
-                'icon' => 'fa-solid fa-face-surprise',
+                'icon' => '😮',
 
             ],
             [
                 'react_type' => 'sad',
-                'icon' => 'fa-solid fa-face-sad-tear',
+                'icon' => '😢',
 
             ],
             [
                 'react_type' => 'angry',
-                'icon' => 'fa-solid fa-face-angry',
+                'icon' => '😡',
 
             ],
             
