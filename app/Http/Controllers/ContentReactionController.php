@@ -15,7 +15,7 @@ class ContentReactionController extends Controller
         $request->validate([
             // 'content_photo_id' => 'required|exists:content_photos,id',
             'user_id' => 'required|exists:users,id',
-            'reaction_type_id' => 'required|exists:reaction_types,id',
+            'reaction_type_id' => 'required|exists:reactions,id',
         ]);
 
         $contentPhoto = ContentPhoto::find($id);
@@ -49,7 +49,7 @@ class ContentReactionController extends Controller
         $request->validate([
             // 'content_video_id' => 'required|exists:content_videos,id',
             'user_id' => 'required|exists:users,id',
-            'reaction_type_id' => 'required|exists:reaction_types,id',
+            'reaction_type_id' => 'required|exists:reactions,id',
         ]);
 
         $contentVideo = ContentVideo::find($id);
