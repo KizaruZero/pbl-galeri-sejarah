@@ -196,14 +196,15 @@
                                         <span class="text-xs text-gray-400">Add reaction:</span>
                                         <div class="flex gap-1">
                                             <button v-for="reaction in reactions" :key="reaction.id"
-                                                class="px-3 py-1 bg-gray-700 rounded-full text-xs md:text-sm hover:scale-125 transform transition-transform" @click="newComment += reaction.react_type">
+                                                class="px-3 py-1 bg-gray-700 rounded-full text-xs md:text-sm hover:scale-125 transform transition-transform"
+                                                @click="newComment += reaction.react_type">
                                                 {{ reaction.react_type }}
                                             </button>
                                         </div>
                                     </div>
-                                <div v-else class="mt-4 p-4 bg-gray-800 rounded-lg">
-                                    <p class="text-gray-400">Loading reactions...</p>
-                                </div>
+                                    <div v-else class="mt-4 p-4 bg-gray-800 rounded-lg">
+                                        <p class="text-gray-400">Loading reactions...</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -253,7 +254,8 @@
                                     </div>
                                     <button v-if="comment.canDelete" @click="deleteComment(comment.id)"
                                         class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all p-1 rounded-full hover:bg-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5"
+                                            viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd"
                                                 d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                                 clip-rule="evenodd" />
@@ -267,20 +269,23 @@
 
                                 <!-- Comment Reactions -->
                                 <div class="mt-2 md:mt-3 pl-10 md:pl-13 flex items-center gap-2 md:gap-3">
-                                    <!-- Reaction buttons -->
+                                    <!-- Reaction buttons - always visible -->
                                     <div class="flex items-center gap-1 md:gap-2">
                                         <button v-for="reaction in comment.reactions" :key="reaction.id"
-                                            @click.stop="toggleReaction(comment.id, reaction.react_type)"
+                                            @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                             class="flex items-center text-xxs md:text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-1.5 py-0.5 md:px-2.5 md:py-1 transition-colors"
-                                            :class="{ 'bg-blue-900/50': reaction.userReacted }">
-                                            <span
-                                                class="mr-0.5 md:mr-1">{{ availableReactions.find(r => r.name === reaction.type)?.react_type}}</span>
+                                            :class="{ 
+                'bg-blue-900/50': reaction.userReacted,
+                'cursor-default': !UserId,
+                'hover:bg-gray-700/50': !UserId
+            }">
+                                            <span class="mr-0.5 md:mr-1">{{ reaction.react_type }}</span>
                                             <span>{{ reaction.count }}</span>
                                         </button>
                                     </div>
 
-                                    <!-- Add reaction button -->
-                                    <div class="relative">
+                                    <!-- Add reaction button - only visible when logged in -->
+                                    <div class="relative" v-if="UserId">
                                         <button
                                             class="text-gray-400 hover:text-gray-200 text-xxs md:text-xs flex items-center gap-1 p-0.5 md:p-1 rounded-full hover:bg-gray-700 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4"
@@ -390,7 +395,7 @@
     const fetchReactions = async () => {
         try {
             loadingReactions.value = true;
-            const response = await axios.get('http://127.0.0.1:8000/api/reactions', {
+            const response = await axios.get('/api/reactions', {
                 headers: {
                     Accept: 'application/json',
                     Authorization: 'Bearer 123'
@@ -625,6 +630,7 @@
                     date: comment.created_at,
                     canDelete: comment.user_id === (currentUser.value ?.id || null),
                     isLoading: false,
+                    reactions: comment.reactions || []
                 };
 
                 // Try to fetch user details if not included in comment response
@@ -786,70 +792,86 @@
     };
 
     const toggleReaction = async (commentId, reactionType) => {
-    if (!UserId.value) {
-        router.push('/login');
-        return;
-    }
-
-    try {
-        const reaction = reactions.value.find(r => r.react_type === reactionType);
-        if (!reaction) {
-            console.error('Reaction type not found:', reactionType);
+        if (!UserId.value) {
             return;
         }
 
-        console.log('Kudune iki reaction e:', {
-            user_id: UserId.value,
-            reaction_type_id: reaction.id,
-            comment_id: commentId
-        });
+        try {
+            // Find the reaction type from available reactions
+            const reaction = reactions.value.find(r => r.react_type === reactionType);
+            if (!reaction) {
+                console.error('Reaction type not found:', reactionType);
+                return;
+            }
 
-        const response = await axios.post(`/api/reaction/comment/${commentId}`, {
-            user_id: UserId.value,
-            reaction_type_id: reaction.id,
-        });
+            // Find the comment index
+            const commentIndex = comments.value.findIndex(c => c.id === commentId);
+            if (commentIndex === -1) return;
 
-        console.log('Reaction response:', response.data);
-
-        // Find and update the comment's reactions
-        const comment = comments.value.find(c => c.id === commentId);
-        if (!comment) return;
-
-        // Initialize reactions array if it doesn't exist
-        if (!comment.reactions) {
-            comment.reactions = [];
-        }
-
-        if (response.data.message === 'Reaction removed') {
-            // Remove the reaction
-            comment.reactions = comment.reactions.filter(r => 
-                !(r.type === reactionType && r.userId === UserId.value)
-            );
-        } else {
-            // Add or update the reaction
-            const existingReactionIndex = comment.reactions.findIndex(r => 
-                r.userId === UserId.value
-            );
-
-            const newReaction = {
-                id: response.data.id,
-                type: reactionType,
-                userId: UserId.value,
-                userReacted: true
+            // Create a copy of the comment to modify
+            const comment = {
+                ...comments.value[commentIndex]
             };
 
-            if (existingReactionIndex >= 0) {
-                comment.reactions[existingReactionIndex] = newReaction;
-            } else {
-                comment.reactions.push(newReaction);
+            // Initialize reactions array if it doesn't exist
+            if (!comment.reactions) {
+                comment.reactions = [];
             }
-        }
 
-    } catch (error) {
-        console.error('Error toggling reaction:', error);
-        alert('Failed to update reaction. Please try again.');
-    }
-};
+            // Check if user already reacted with this type
+            const existingReactionIndex = comment.reactions.findIndex(r =>
+                r.user_id === UserId.value && r.reaction_type_id === reaction.id
+            );
+
+            if (existingReactionIndex >= 0) {
+                // Remove the reaction
+                await axios.delete(`/api/reaction/comment/${commentId}`, {
+                    data: {
+                        user_id: UserId.value,
+                        reaction_type_id: reaction.id
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                // Remove the reaction from local state
+                comment.reactions = comment.reactions.filter(
+                    (_, index) => index !== existingReactionIndex
+                );
+            } else {
+                // Add new reaction
+                const response = await axios.post(`/api/reaction/comment/${commentId}`, {
+                    user_id: UserId.value,
+                    reaction_type_id: reaction.id
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                // Add the reaction to local state
+                comment.reactions = [
+                    ...comment.reactions,
+                    {
+                        id: response.data.id,
+                        user_id: UserId.value,
+                        reaction_type_id: reaction.id,
+                        react_type: reactionType
+                    }
+                ];
+            }
+
+            // Update the comment in the comments array
+            comments.value[commentIndex] = comment;
+
+        } catch (error) {
+            console.error('Error toggling reaction:', error);
+            alert('Failed to update reaction. Please try again.');
+        }
+    };
 
     // Fetch photo data
     onMounted(async () => {

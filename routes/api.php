@@ -67,15 +67,13 @@ Route::post('/comment/photo/{id}', [CommentController::class, 'storePhotoComment
 Route::get('/comment/photo/{id}', [CommentController::class, 'getCommentByContentPhoto']);
 Route::post('/comment/video/{id}', [CommentController::class, 'storeVideoComment']);
 Route::get('/comment/video/{id}', [CommentController::class, 'getCommentByContentVideo']);
-Route::delete('/user-comments/{id}', [CommentController::class, 'destroy'])->middleware('auth:sanctum'); // Jika menggunakan authentication
+Route::delete('/user-comments/{id}', [CommentController::class, 'destroyPhotoComment']);
 
 // Reaction
 Route::post('/reaction/photo/{id}', [ContentReactionController::class, 'storePhotoReaction']);
 Route::post('/reaction/video/{id}', [ContentReactionController::class, 'storeVideoReaction']);
 Route::post('/reaction/comment/{id}', [CommentReactionController::class, 'store']);
-Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'delete']);
-
-Route::post('/reaction/comment/{id}', [CommentReactionController::class, 'store']);
-Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'delete']);
+Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'destroy']);
+Route::get('/reaction/comment/{id}', [CommentReactionController::class, 'index']);
 
 require __DIR__ . '/auth.php';
