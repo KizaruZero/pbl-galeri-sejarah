@@ -117,6 +117,18 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->label('Article Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_member_1')
+                            ->label('Member Background Slide 1')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_member_2')
+                            ->label('Member Background Slide 2')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
+                        FileUpload::make('bg_member_3')
+                            ->label('Member Background Slide 3')
+                            ->image()
+                            ->directory('company-profile/backgrounds'),
                     ])->columns(3),
 
                 Section::make('Content')
@@ -130,6 +142,9 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->columnSpanFull(),
                         Textarea::make('article_text')
                             ->label('Article Text')
+                            ->columnSpanFull(),
+                        Textarea::make('member_text')
+                            ->label('Member Text')
                             ->columnSpanFull(),
                     ]),
             ])
