@@ -267,7 +267,7 @@ class VideoController extends Controller
             ->whereHas('category', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })
-            ->first();
+            ->get();
 
         if (!$contentVideos) {
             return response()->json(['message' => 'Tidak ada konten ditemukan untuk kategori ini'], 404);
