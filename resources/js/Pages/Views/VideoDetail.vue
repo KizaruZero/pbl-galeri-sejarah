@@ -1,15 +1,18 @@
 <template>
     <MainLayout>
-        <div class="min-h-screen bg-black md:mt-12">
-            <!-- Back Button - Adjusted for mobile -->
-            <button @click="router.go(-1)"
-                class="fixed md:absolute top-16 left-2 md:top-4 md:left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6 text-white" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-            </button>
+        <div class="min-h-screen bg-black mt-14 md:mt-12">
+                <!-- Back Button - Adjusted padding for mobile -->
+                <div class="p-4 mt-8 md:p-6">
+                    <button @click="goBack" class="flex mt-8 items-center text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        BACK
+                    </button>
+                </div>
 
             <!-- Main Video Container -->
             <div class="rounded-lg shadow-xl overflow-hidden">
@@ -944,7 +947,13 @@
         }
     };
 
-    // Initialize component
+
+
+    const goBack = () => {
+        window.history.back();
+    };
+
+// Initialize component
     onMounted(async () => {
         await fetchReactions();
         try {
@@ -957,7 +966,6 @@
             });
             
             console.log('Video data:', response.data);
-
             const videoData = response.data.video;
             
             video.value = {
@@ -1011,6 +1019,7 @@
             loading.value = false;
         }
     });
+    
 
 </script>
 

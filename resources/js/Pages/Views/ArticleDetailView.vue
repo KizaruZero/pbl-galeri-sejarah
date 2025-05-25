@@ -4,7 +4,7 @@
                 <div class="max-w-full mx-auto">
                         <div class="relative">
                         <!-- Back Button -->
-                        <button @click="router.go(-1)"
+                        <button @click="goBack"
                             class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-10">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -151,6 +151,10 @@
         html = `<p>${html}</p>`;
 
         return html;
+    };
+        
+    const goBack = () => {
+        window.history.back();
     };
 
     // Fetch article data
