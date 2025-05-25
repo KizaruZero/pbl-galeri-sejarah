@@ -10,6 +10,7 @@ class Reaction extends Model
     protected $table = 'reactions';
     protected $fillable = [
         'react_type',
+        'icon',
     ];
 
     public function contentReactions()

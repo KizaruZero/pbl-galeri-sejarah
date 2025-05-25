@@ -22,7 +22,7 @@ class CommentController extends Controller
             return response()->json(['message' => 'Content photo not found'], 404);
         }
 
-        $comments = UserComment::where('content_photo_id', $id)->get();
+        $comments = UserComment::where('content_photo_id', $id)->with('userReactions', 'userReactions.reactionType')->get();
         return response()->json([
             'status' => 'success',
             'data' => $comments
@@ -40,7 +40,7 @@ class CommentController extends Controller
             return response()->json(['message' => 'Content video not found'], 404);
         }
 
-        $comments = UserComment::where('content_video_id', $id)->get();
+        $comments = UserComment::where('content_video_id', $id)->with('userReactions', 'userReactions.reactionType')->get();
         return response()->json([
             'status' => 'success',
             'data' => $comments

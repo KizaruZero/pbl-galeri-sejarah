@@ -27,6 +27,12 @@ class ReactionResource extends Resource
                 Forms\Components\TextInput::make('react_type')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('icon')
+                    ->image()
+                    ->public()
+                    ->directory('reactions')
+                    ->required()
+                    ->maxSize(1024),
             ]);
     }
 
@@ -36,6 +42,8 @@ class ReactionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('react_type')
                     ->searchable(),
+                Tables\Columns\ImageColumn::make('icon')
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
