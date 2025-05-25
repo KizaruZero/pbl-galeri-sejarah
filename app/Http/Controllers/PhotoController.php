@@ -6,6 +6,7 @@ use App\Models\CategoryContent;
 use App\Models\ContentPhoto;
 use App\Models\UserFavorite;
 use App\Models\MetadataPhoto;
+use App\Models\ContentReaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
@@ -33,8 +34,14 @@ class PhotoController extends Controller
         if (!$contentPhoto) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
+        $contentReactions = ContentReaction::where('content_photo_id', $contentPhoto->id)
+            ->with('reactionType')
+            ->count();
         $contentPhoto->updateTotalViews();
-        return response()->json($contentPhoto);
+        return response()->json([
+            'photo' => $contentPhoto,
+            'total_reactions' => $contentReactions
+        ]);
     }
 
     public function store(Request $request)

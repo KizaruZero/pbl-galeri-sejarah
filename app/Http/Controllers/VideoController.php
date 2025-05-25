@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ContentVideo;
 use App\Models\UserFavorite;
 use App\Models\CategoryContent;
+use App\Models\ContentReaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\MetadataVideo;
@@ -40,8 +41,14 @@ class VideoController extends Controller
         if (!$contentVideo) {
             return response()->json(['message' => 'Video not found'], 404);
         }
+        $contentReactions = ContentReaction::where('content_video_id', $contentVideo->id)
+            ->with('reactionType')
+            ->count();
         $contentVideo->updateTotalViews();
-        return response()->json($contentVideo);
+        return response()->json([
+            'video' => $contentVideo,
+            'total_reactions' => $contentReactions
+        ]);
     }
 
     public function store(Request $request)

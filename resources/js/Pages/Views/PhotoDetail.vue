@@ -927,37 +927,44 @@
                     Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                 },
             });
+            
+            console.log('Photo data:', response.data);
 
+            const photoData = response.data.photo;
+            
             photo.value = {
-                ...response.data,
-                id: response.data.id,
-                imageUrl: response.data.image_url ?
-                    response.data.image_url.startsWith("http") ?
-                    response.data.image_url :
-                    `/storage/${response.data.image_url.replace(/^public\//, "")}` :
-                    "/js/Assets/default-photo.jpg",
-                altText: response.data.alt_text || response.data.title || "",
-                tags: response.data.tag ? response.data.tag.split(", ") : [],
-                user: response.data.user ? {
-                    ...response.data.user,
-                    photo_profile: response.data.user.photo_profile
-                } : null,
-                created_at: response.data.created_at,
-                collection_date: response.data.metadata_photo ?.collection_date,
-                file_size: response.data.metadata_photo ?.file_size,
-                aperture: response.data.metadata_photo ?.aperture,
-                location: response.data.metadata_photo ?.location,
-                camera_model: response.data.metadata_photo ?.model,
-                ISO: response.data.metadata_photo ?.ISO,
-                dimensions: response.data.metadata_photo ?.dimensions,
+                id: photoData.id,
+                title: photoData.title,
+                description: photoData.description,
+                imageUrl: photoData.image_url
+                    ? `/storage/${photoData.image_url.replace(/^public\//, "")}`
+                    : "/js/Assets/default-photo.jpg",
+                altText: photoData.alt_text || photoData.title,
+                tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
+                user: photoData.user,
+                created_at: photoData.created_at,
+                source: photoData.source,
+                note: photoData.note,
+                total_views: photoData.total_views || 0,
+                // Metadata fields
+                collection_date: photoData.metadata_photo?.collection_date,
+                file_size: photoData.metadata_photo?.file_size,
+                aperture: photoData.metadata_photo?.aperture,
+                location: photoData.metadata_photo?.location,
+                camera_model: photoData.metadata_photo?.model,
+                ISO: photoData.metadata_photo?.ISO,
+                dimensions: photoData.metadata_photo?.dimensions,
             };
 
-            // Set dummy data for likes/bookmarks for demo
-            likeCount.value = Math.floor(Math.random() * 100);
-            isLiked.value = Math.random() > 0.5;
-            // Replace this line:
-            // isBookmarked.value = Math.random() > 0.5;
-            // With:
+            // Set the actual like count from total_reactions
+            likeCount.value = response.data.total_reactions || 0;
+
+            // Get existing reactions for this photo
+            const userReaction = photoData.content_reactions.find(
+                reaction => reaction.user_id === UserId.value
+            );
+            isLiked.value = !!userReaction;
+
             await checkIfBookmarked();
 
             // Fetch comments if the photo has an ID

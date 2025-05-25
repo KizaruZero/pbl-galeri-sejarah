@@ -34,10 +34,15 @@ class ContentReactionController extends Controller
 
     public function deletePhotoReaction(Request $request, $id)
     {
-        $contentReaction = ContentReaction::find($id);
+        $contentPhoto = ContentPhoto::find($id);
+        if (!$contentPhoto) {
+            return response()->json(['message' => 'Content reaction not found'], 404);
+        }
+        $contentReaction = ContentReaction::where('content_photo_id', $id)->where('user_id', $request->user_id)->first();
         if (!$contentReaction) {
             return response()->json(['message' => 'Content reaction not found'], 404);
         }
+        
 
         $contentReaction->delete();
 
@@ -68,7 +73,11 @@ class ContentReactionController extends Controller
 
     public function deleteVideoReaction(Request $request, $id)
     {
-        $contentReaction = ContentReaction::find($id);
+        $contentVideo = ContentVideo::find($id);
+        if (!$contentVideo) {
+            return response()->json(['message' => 'Content reaction not found'], 404);
+        }
+        $contentReaction = ContentReaction::where('content_video_id', $id)->where('user_id', $request->user_id)->first();
         if (!$contentReaction) {
             return response()->json(['message' => 'Content reaction not found'], 404);
         }

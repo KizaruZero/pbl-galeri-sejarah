@@ -701,6 +701,66 @@
     }
 };
 
+    // Replace the toggleLike function with this implementation
+    const toggleLike = async () => {
+        if (!UserId.value) {
+            router.visit('/login');
+            return;
+        }
+
+        try {
+            if (isLiked.value) {
+                await axios.delete(`/api/reaction/video/${video.value.id}`, {
+                    data: {
+                        user_id: UserId.value,
+                        reaction_type_id: 1 // ID for "like" reaction
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                likeCount.value--;
+            } else {
+                await axios.post(`/api/reaction/video/${video.value.id}`, {
+                    user_id: UserId.value,
+                    reaction_type_id: 1 // ID for "like" reaction
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                likeCount.value++;
+            }
+            isLiked.value = !isLiked.value;
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            if (error.response?.status === 401) {
+                router.visit('/login');
+            } else {
+                alert('Failed to update like. Please try again.');
+            }
+        }
+    };
+
+    // Add this function to check if user has liked the video
+    const checkIfLiked = async () => {
+        if (!UserId.value || !video.value.id) return;
+
+        try {
+            // Get reactions for this video
+            const userReaction = video.value.content_reactions?.find(
+                reaction => reaction.user_id === UserId.value
+            );
+            isLiked.value = !!userReaction;
+            // Set the actual like count from total_reactions
+            likeCount.value = video.value.content_reactions?.length || 0;
+        } catch (error) {
+            console.error('Error checking like status:', error);
+        }
+    };
+
     // Computed properties
     const isLocalVideo = computed(() => {
         return video.value.video_url && !video.value.video_url.includes('youtube.com');
@@ -804,11 +864,6 @@
     };
 
     // Action functions
-    const toggleLike = () => {
-        isLiked.value = !isLiked.value;
-        likeCount.value += isLiked.value ? 1 : -1;
-    };
-
     const toggleBookmark = async () => {
         if (!currentUser.value.id) {
             console.log('No user logged in');
@@ -900,47 +955,58 @@
                     Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                 },
             });
+            
+            console.log('Video data:', response.data);
 
-            const videoData = response.data;
-
+            const videoData = response.data.video;
+            
             video.value = {
-                ...videoData,
-                video_url: videoData.video_url ?
-                    `/storage/${videoData.video_url.replace(/^public\//, "")}` : convertToEmbedUrl(
-                        videoData.link_youtube) || "",
-                thumbnailUrl: videoData.thumbnail ?
-                    `/storage/${videoData.thumbnail.replace(/^public\//, "")}` :
-                    "/default-thumbnail.jpg",
+                id: videoData.id,
+                title: videoData.title || "Untitled Video",
+                description: videoData.description || "No description available",
+                video_url: videoData.video_url
+                    ? `/storage/${videoData.video_url.replace(/^public\//, "")}`
+                    : convertToEmbedUrl(videoData.link_youtube) || "",
+                thumbnailUrl: videoData.thumbnail
+                    ? `/storage/${videoData.thumbnail.replace(/^public\//, "")}`
+                    : "/js/Assets/default-photo.jpg",
                 tags: videoData.tag ? videoData.tag.split(/,\s*/) : [],
-                user: videoData.user ? {
-                    ...videoData.user,
-                    avatar: getMediaUrl(videoData.user.photo_profile),
-                    photo_profile: videoData.user.photo_profile
-                } : null,
+                user: videoData.user,
                 created_at: videoData.created_at,
-                collection_date: videoData.metadata_video ?.collection_date,
-                file_size: videoData.metadata_video ?.file_size,
-                duration: videoData.metadata_video ?.duration,
-                location: videoData.metadata_video ?.location,
-                frame_rate: videoData.metadata_video ?.frame_rate,
-                resolution: videoData.metadata_video ?.resolution,
-                codec_video_audio: videoData.metadata_video ?.codec_video_audio,
-                format_file: videoData.metadata_video ?.format_file,
+                source: videoData.source,
+                note: videoData.note,
+                total_views: videoData.total_views || 0,
+                views: videoData.total_views || 0,
+                content_reactions: videoData.content_reactions || [],
+                // Metadata fields from metadata_video
+                collection_date: videoData.metadata_video?.collection_date,
+                file_size: videoData.metadata_video?.file_size,
+                duration: videoData.metadata_video?.duration,
+                location: videoData.metadata_video?.location,
+                frame_rate: videoData.metadata_video?.frame_rate,
+                resolution: videoData.metadata_video?.resolution,
+                codec_video_audio: videoData.metadata_video?.codec_video_audio,
+                format_file: videoData.metadata_video?.format_file,
             };
 
-            // Check bookmark status after video data is loaded
+            // Set the actual like count from total_reactions
+            likeCount.value = response.data.total_reactions || 0;
+
+            // Get existing reactions for this video
+            const userReaction = videoData.content_reactions.find(
+                reaction => reaction.user_id === UserId.value
+            );
+            isLiked.value = !!userReaction;
+
             await checkIfBookmarked();
 
-            // Set dummy data for likes and comments
-            likeCount.value = Math.floor(Math.random() * 100);
-            isLiked.value = Math.random() > 0.5;
-
-            // Fetch comments if the photo has an ID
+            // Fetch comments if the video has an ID
             if (video.value.id) {
                 await fetchComments(video.value.id);
             }
         } catch (error) {
             console.error("Error fetching video:", error);
+            router.push("/not-found");
         } finally {
             loading.value = false;
         }
