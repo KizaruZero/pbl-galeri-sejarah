@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserReaction extends Model
 {
-    //
     protected $table = 'user_reactions';
     protected $with = 'reactionType';
     protected $fillable = [
@@ -19,6 +18,7 @@ class UserReaction extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function comment()
     {
         return $this->belongsTo(UserComment::class, 'comment_id');

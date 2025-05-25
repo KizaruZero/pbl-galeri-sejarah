@@ -196,14 +196,15 @@
                                         <span class="text-xs text-gray-400">Add reaction:</span>
                                         <div class="flex gap-1">
                                             <button v-for="reaction in reactions" :key="reaction.id"
-                                                class="px-3 py-1 bg-gray-700 rounded-full text-xs md:text-sm hover:scale-125 transform transition-transform" @click="newComment += reaction.react_type">
+                                                class="px-3 py-1 bg-gray-700 rounded-full text-xs md:text-sm hover:scale-125 transform transition-transform"
+                                                @click="newComment += reaction.react_type">
                                                 {{ reaction.react_type }}
                                             </button>
                                         </div>
                                     </div>
-                                <div v-else class="mt-4 p-4 bg-gray-800 rounded-lg">
-                                    <p class="text-gray-400">Loading reactions...</p>
-                                </div>
+                                    <div v-else class="mt-4 p-4 bg-gray-800 rounded-lg">
+                                        <p class="text-gray-400">Loading reactions...</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -268,20 +269,23 @@
 
                                 <!-- Comment Reactions -->
                                 <div class="mt-2 md:mt-3 pl-10 md:pl-13 flex items-center gap-2 md:gap-3">
-                                    <!-- Reaction buttons -->
+                                    <!-- Reaction buttons - always visible -->
                                     <div class="flex items-center gap-1 md:gap-2">
                                         <button v-for="reaction in comment.reactions" :key="reaction.id"
-                                            @click.stop="toggleReaction(comment.id, reaction.react_type)"
+                                            @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                             class="flex items-center text-xxs md:text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-1.5 py-0.5 md:px-2.5 md:py-1 transition-colors"
-                                            :class="{ 'bg-blue-900/50': reaction.userReacted }">
-                                            <span
-                                                class="mr-0.5 md:mr-1">{{ availableReactions.find(r => r.name === reaction.type)?.emoji || '👍' }}</span>
+                                            :class="{ 
+                'bg-blue-900/50': reaction.userReacted,
+                'cursor-default': !UserId,
+                'hover:bg-gray-700/50': !UserId
+            }">
+                                            <span class="mr-0.5 md:mr-1">{{ reaction.react_type }}</span>
                                             <span>{{ reaction.count }}</span>
                                         </button>
                                     </div>
 
-                                    <!-- Add reaction button -->
-                                    <div class="relative">
+                                    <!-- Add reaction button - only visible when logged in -->
+                                    <div class="relative" v-if="UserId">
                                         <button
                                             class="text-gray-400 hover:text-gray-200 text-xxs md:text-xs flex items-center gap-1 p-0.5 md:p-1 rounded-full hover:bg-gray-700 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4"
@@ -296,9 +300,9 @@
                                         <div
                                             class="absolute bottom-full left-0 mb-1 md:mb-2 hidden group-hover:flex bg-gray-800 rounded-full shadow-lg p-1 space-x-1 border border-gray-700 z-10">
                                             <button v-for="reaction in reactions" :key="reaction.id"
-                                                @click.stop="toggleReaction(comment.id, reaction.name)"
+                                                @click.stop="toggleReaction(comment.id, reaction.react_type)"
                                                 class="hover:scale-125 transform transition-transform text-xs md:text-sm"
-                                                :title="reaction.name">
+                                                :title="reaction.react_type">
                                                 {{ reaction.react_type }}
                                             </button>
                                         </div>
@@ -391,7 +395,7 @@
     const fetchReactions = async () => {
         try {
             loadingReactions.value = true;
-            const response = await axios.get('http://127.0.0.1:8000/api/reactions', {
+            const response = await axios.get('/api/reactions', {
                 headers: {
                     Accept: 'application/json',
                     Authorization: 'Bearer 123'
@@ -626,6 +630,7 @@
                     date: comment.created_at,
                     canDelete: comment.user_id === (currentUser.value ?.id || null),
                     isLoading: false,
+                    reactions: comment.reactions || []
                 };
 
                 // Try to fetch user details if not included in comment response
@@ -787,67 +792,91 @@
     };
 
     const toggleReaction = async (commentId, reactionType) => {
-    if (!UserId.value) {
-        router.push('/login');
-        return;
-    }
-
-    try {
-        // Cari reaksi yang sesuai dari daftar reactions
-        const reaction = reactions.value.find(r => r.react_type === reactionType);
-        if (!reaction) return;
-
-        const response = await axios.post(`/reaction/comment/${commentId}`, {
-            user_id: UserId.value,
-            comment_id: commentId,
-            reaction_type_id: reaction.id
-        }, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'Accept': 'application/json'
-            }
-        });
-
-        // Update UI berdasarkan response
-        const comment = comments.value.find(c => c.id === commentId);
-        if (!comment) return;
-
-        if (!comment.reactions) {
-            comment.reactions = [];
+        if (!UserId.value) {
+            return;
         }
 
-        const existingReaction = comment.reactions.find(r => r.type === reactionType);
-
-        if (response.status === 200 && response.data.message === 'Reaction removed') {
-            // Hapus reaksi
-            if (existingReaction) {
-                existingReaction.count--;
-                if (existingReaction.count <= 0) {
-                    comment.reactions = comment.reactions.filter(r => r.type !== reactionType);
-                }
+        try {
+            // Find the reaction type from available reactions
+            const reaction = reactions.value.find(r => r.react_type === reactionType);
+            if (!reaction) {
+                console.error('Reaction type not found:', reactionType);
+                return;
             }
-        } else {
-            // Tambah reaksi
-            if (existingReaction) {
-                existingReaction.count++;
-                existingReaction.userReacted = true;
-            } else {
-                comment.reactions.push({
-                    type: reactionType,
-                    count: 1,
-                    userReacted: true
+
+            // Find the comment index
+            const commentIndex = comments.value.findIndex(c => c.id === commentId);
+            if (commentIndex === -1) return;
+
+            // Create a copy of the comment to modify
+            const comment = {
+                ...comments.value[commentIndex]
+            };
+
+            // Initialize reactions array if it doesn't exist
+            if (!comment.reactions) {
+                comment.reactions = [];
+            }
+
+            // Check if user already reacted with this type
+            const existingReactionIndex = comment.reactions.findIndex(r =>
+                r.user_id === UserId.value && r.reaction_type_id === reaction.id
+            );
+
+            if (existingReactionIndex >= 0) {
+                // Remove the reaction
+                await axios.delete(`/api/reaction/comment/${commentId}`, {
+                    data: {
+                        user_id: UserId.value,
+                        reaction_type_id: reaction.id
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
                 });
+
+                // Remove the reaction from local state
+                comment.reactions = comment.reactions.filter(
+                    (_, index) => index !== existingReactionIndex
+                );
+            } else {
+                // Add new reaction
+                const response = await axios.post(`/api/reaction/comment/${commentId}`, {
+                    user_id: UserId.value,
+                    reaction_type_id: reaction.id
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                // Add the reaction to local state
+                comment.reactions = [
+                    ...comment.reactions,
+                    {
+                        id: response.data.id,
+                        user_id: UserId.value,
+                        reaction_type_id: reaction.id,
+                        react_type: reactionType
+                    }
+                ];
             }
+
+            // Update the comment in the comments array
+            comments.value[commentIndex] = comment;
+
+        } catch (error) {
+            console.error('Error toggling reaction:', error);
+            alert('Failed to update reaction. Please try again.');
         }
-    } catch (error) {
-        console.error('Error toggling reaction:', error);
-        alert('Failed to update reaction. Please try again.');
-    }
-};
+    };
 
     // Fetch photo data
     onMounted(async () => {
         await fetchReactions();
+
         try {
             const slug = window.location.pathname.split("/").pop();
             const response = await axios.get(`/api/content-photo/${slug}`, {
