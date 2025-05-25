@@ -52,6 +52,39 @@ class CommentReactionController extends Controller
         }
     }
 
+    public function update(Request $request, $commentId)
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'reaction_type_id' => 'required|exists:reactions,id'
+            ]);
+
+            // Find existing reaction
+            $existingReaction = UserReaction::where([
+                'user_id' => $validated['user_id'],
+                'comment_id' => $commentId
+            ])->firstOrFail();
+
+            // Update reaction type
+            $existingReaction->update([
+                'reaction_type_id' => $validated['reaction_type_id']
+            ]);
+
+            return response()->json([
+                'message' => 'Reaction updated successfully',
+                'reaction' => $existingReaction->load('reactionType')
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error in reaction update: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error updating reaction',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function destroy(Request $request, $commentId)
     {
         try {

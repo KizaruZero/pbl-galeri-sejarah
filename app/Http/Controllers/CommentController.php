@@ -83,7 +83,7 @@ class CommentController extends Controller
     {
         $request->validate([
             'content' => 'required|string|max:255',
-            'content_video_id' => 'required|exists:content_videos,id',
+            'content_video_id' => 'required|exists:content_video,id',
             'user_id' => 'required|exists:users,id',
         ]);
 
@@ -101,7 +101,15 @@ class CommentController extends Controller
         return response()->json($comment);
     }
 
-    
+    public function destroyVideoComment(Request $request, $id)
+    {
+        $comment = UserComment::find($id);
+        if (!$comment) {
+            return response()->json(['message' => 'Comment not found'], 404);
+        }
 
+        $comment->delete();
+
+        return response()->json(['message' => 'Comment deleted successfully']);
+    }
 }
-
