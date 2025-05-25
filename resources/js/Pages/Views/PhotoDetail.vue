@@ -617,43 +617,65 @@
             const commentData = response.data.data || response.data;
             const commentsArray = Array.isArray(commentData) ? commentData : [commentData];
 
-            comments.value = await Promise.all(commentsArray.map(async (comment) => {
-                // Create basic comment structure
-                const commentObj = {
-                    id: comment.id,
-                    user: {
-                        id: comment.user_id,
-                        name: "Loading...", // Temporary placeholder
-                        photo_profile: "/js/Assets/default-photo.jpg",
+            // Fetch reactions for each comment
+        const commentsWithReactions = await Promise.all(commentsArray.map(async (comment) => {
+            // Create basic comment structure
+            const commentObj = {
+                id: comment.id,
+                user: {
+                    id: comment.user_id,
+                    name: "Loading...",
+                    photo_profile: "/js/Assets/default-photo.jpg",
+                },
+                text: comment.content,
+                date: comment.created_at,
+                canDelete: comment.user_id === (currentUser.value?.id || null),
+                isLoading: false,
+                reactions: []
+            };
+            
+                // Fetch user details
+            try {
+                const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                     },
-                    text: comment.content,
-                    date: comment.created_at,
-                    canDelete: comment.user_id === (currentUser.value ?.id || null),
-                    isLoading: false,
-                    reactions: comment.reactions || []
+                });
+
+                commentObj.user = {
+                    id: userResponse.data.id,
+                    name: userResponse.data.name,
+                    photo_profile: userResponse.data.photo_profile ||
+                        "/js/Assets/default-photo.jpg",
                 };
+            } catch (userError) {
+                console.error("Error fetching user:", userError);
+            }
 
-                // Try to fetch user details if not included in comment response
-                try {
-                    const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-                        },
-                    });
+            // Fetch reactions for this comment
+            try {
+                const reactionsResponse = await axios.get(`/api/reaction/comment/${comment.id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+                    },
+                });
+                
+                // Transform the response to match our frontend structure
+                commentObj.reactions = reactionsResponse.data.map(reaction => ({
+                    id: reaction.reaction_type_id,
+                    react_type: reaction.react_type,
+                    count: reaction.count,
+                    userReacted: reaction.userReacted,
+                    user_id: reaction.userReacted ? UserId.value : null
+                }));
+            } catch (reactionsError) {
+                console.error("Error fetching reactions:", reactionsError);
+            }
 
-                    commentObj.user = {
-                        id: userResponse.data.id,
-                        name: userResponse.data.name,
-                        photo_profile: userResponse.data.photo_profile ||
-                            "/js/Assets/default-photo.jpg",
-                    };
-                } catch (userError) {
-                    console.error("Error fetching user:", userError);
-                    // Keep the placeholder values if user fetch fails
-                }
+            return commentObj;
+        }));
 
-                return commentObj;
-            }));
+        comments.value = commentsWithReactions;
 
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -792,43 +814,44 @@
     };
 
     const toggleReaction = async (commentId, reactionType) => {
-        if (!UserId.value) {
+    if (!UserId.value) {
+        return;
+    }
+
+    try {
+        // Find the reaction type from available reactions
+        const reaction = reactions.value.find(r => r.react_type === reactionType);
+        if (!reaction) {
+            console.error('Reaction type not found:', reactionType);
             return;
         }
 
-        try {
-            // Find the reaction type from available reactions
-            const reaction = reactions.value.find(r => r.react_type === reactionType);
-            if (!reaction) {
-                console.error('Reaction type not found:', reactionType);
-                return;
-            }
+        // Find the comment index
+        const commentIndex = comments.value.findIndex(c => c.id === commentId);
+        if (commentIndex === -1) return;
+        
+        // Create a copy of the comment to modify
+        const comment = { ...comments.value[commentIndex] };
+        
+        // Initialize reactions array if it doesn't exist
+        if (!comment.reactions) {
+            comment.reactions = [];
+        }
 
-            // Find the comment index
-            const commentIndex = comments.value.findIndex(c => c.id === commentId);
-            if (commentIndex === -1) return;
+        // Check if user already has any reaction
+        const existingUserReactionIndex = comment.reactions.findIndex(r => 
+            r.user_id === UserId.value
+        );
 
-            // Create a copy of the comment to modify
-            const comment = {
-                ...comments.value[commentIndex]
-            };
-
-            // Initialize reactions array if it doesn't exist
-            if (!comment.reactions) {
-                comment.reactions = [];
-            }
-
-            // Check if user already reacted with this type
-            const existingReactionIndex = comment.reactions.findIndex(r =>
-                r.user_id === UserId.value && r.reaction_type_id === reaction.id
-            );
-
-            if (existingReactionIndex >= 0) {
-                // Remove the reaction
+        if (existingUserReactionIndex >= 0) {
+            // User already has a reaction - check if it's the same type
+            const existingReaction = comment.reactions[existingUserReactionIndex];
+            
+            if (existingReaction.react_type === reactionType) {
+                // Same reaction type - remove it
                 await axios.delete(`/api/reaction/comment/${commentId}`, {
                     data: {
-                        user_id: UserId.value,
-                        reaction_type_id: reaction.id
+                        user_id: UserId.value
                     },
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -838,11 +861,11 @@
 
                 // Remove the reaction from local state
                 comment.reactions = comment.reactions.filter(
-                    (_, index) => index !== existingReactionIndex
+                    (_, index) => index !== existingUserReactionIndex
                 );
             } else {
-                // Add new reaction
-                const response = await axios.post(`/api/reaction/comment/${commentId}`, {
+                // Different reaction type - update it
+                await axios.put(`/api/reaction/comment/${commentId}`, {
                     user_id: UserId.value,
                     reaction_type_id: reaction.id
                 }, {
@@ -852,26 +875,45 @@
                     }
                 });
 
-                // Add the reaction to local state
-                comment.reactions = [
-                    ...comment.reactions,
-                    {
-                        id: response.data.id,
-                        user_id: UserId.value,
-                        reaction_type_id: reaction.id,
-                        react_type: reactionType
-                    }
-                ];
+                // Update the reaction in local state
+                comment.reactions[existingUserReactionIndex] = {
+                    ...existingReaction,
+                    reaction_type_id: reaction.id,
+                    react_type: reactionType
+                };
             }
+        } else {
+            // User has no reaction - add new one
+            const response = await axios.post(`/api/reaction/comment/${commentId}`, {
+                user_id: UserId.value,
+                reaction_type_id: reaction.id
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                }
+            });
 
-            // Update the comment in the comments array
-            comments.value[commentIndex] = comment;
-
-        } catch (error) {
-            console.error('Error toggling reaction:', error);
-            alert('Failed to update reaction. Please try again.');
+            // Add the reaction to local state
+            comment.reactions = [
+                ...comment.reactions,
+                {
+                    id: response.data.id,
+                    user_id: UserId.value,
+                    reaction_type_id: reaction.id,
+                    react_type: reactionType
+                }
+            ];
         }
-    };
+
+        // Update the comment in the comments array
+        comments.value[commentIndex] = comment;
+        
+    } catch (error) {
+        console.error('Error toggling reaction:', error);
+        alert('Failed to update reaction. Please try again.');
+    }
+};
 
     // Fetch photo data
     onMounted(async () => {
