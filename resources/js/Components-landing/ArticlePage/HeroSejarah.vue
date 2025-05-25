@@ -51,7 +51,7 @@ const stopSlideshow = () => {
 
 const fetchCompanyProfile = async () => {
     try {
-        const response = await axios.get('/api/company-profile');
+        const response = await axios.get('/api/company-profile/article');
         const data = response.data.data;
         console.log('Company profile response:', data);
 

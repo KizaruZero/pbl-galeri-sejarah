@@ -59,7 +59,7 @@ const stopSlideshow = () => {
 
 const fetchCompanyProfile = async () => {
     try {
-        const response = await axios.get('/api/company-profile');
+        const response = await axios.get('/api/company-profile/home');
         const data = response.data.data;
 
         data.bg_home_urls = [
