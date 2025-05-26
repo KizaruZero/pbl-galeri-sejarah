@@ -85,6 +85,7 @@ class PhotoController extends Controller
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
             'tag' => 'nullable|string|max:255',
+            'category_id' => 'required|exists:categories,id', // Add validation for category_id
         ]);
 
         $userId = Auth::user()->id;
@@ -119,6 +120,13 @@ class PhotoController extends Controller
                 'status' => 'pending',
             ]);
 
+            // Create category content association
+            CategoryContent::create([
+                'category_id' => $request->category_id,
+                'content_photo_id' => $photo->id,
+                'content_video_id' => null
+            ]);
+
             // Extract EXIF metadata
             try {
                 $exif = exif_read_data($file->getPathname());
@@ -145,7 +153,7 @@ class PhotoController extends Controller
 
             return response()->json([
                 'message' => 'Photo uploaded successfully',
-                'data' => $photo->load('metadataPhoto')
+                'data' => $photo->load(['metadataPhoto', 'categoryContents'])
             ], 201);
         }
 

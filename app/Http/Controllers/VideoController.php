@@ -73,7 +73,7 @@ class VideoController extends Controller
         ->get();
 
         if ($popularVideos->isEmpty()) {
-            return response()->json(['message' => 'No popular photos found'], 404);
+            return response()->json(['message' => 'No popular video found'], 404);
         }
         return response()->json($popularVideos);
     }
@@ -88,6 +88,8 @@ class VideoController extends Controller
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
             'link_youtube' => 'nullable|url|max:255',
+            'category_id' => 'required|exists:categories,id', // Add validation for category_id
+
         ]);
 
         $userId = Auth::user()->id;
@@ -129,12 +131,20 @@ class VideoController extends Controller
                 'status' => 'pending',
             ]);
 
+
+            // Create category content association
+            CategoryContent::create([
+                'category_id' => $request->category_id,
+                'content_photo_id' => null,
+                'content_video_id' => $video->id,
+            ]);
+
             // Extract video metadata using MediaAnalyzer facade
             $this->extractAndSaveVideoMetadata($videoFile, $video->id);
 
             return response()->json([
                 'message' => 'Video uploaded successfully',
-                'data' => $video
+                'data' => $video->load(['metadataVideo', 'categoryContents'])
             ], 201);
         }
 

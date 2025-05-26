@@ -228,6 +228,28 @@
                 {{ thumbnailName }}
               </p>
             </div>
+
+            <!-- Category Field -->
+            <div>
+              <label for="category" class="block text-sm font-medium text-white mb-2"
+                >Category*</label
+              >
+              <select
+                id="category"
+                v-model="form.category_id"
+                required
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="" disabled>Select a category</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.category_name }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -305,7 +327,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
@@ -318,11 +340,11 @@ const form = ref({
   source: "",
   tag: "",
   link_youtube: "",
+  category_id: "",
 });
 
 const visitBacktoProfile = () => {
-  showModal.value = false;
-  router.visit("/profile-page");
+  window.history.back();
 };
 
 const videoName = ref("");
@@ -375,7 +397,6 @@ const fileInput = ref(null);
 const loading = ref(false);
 const submitForm = async () => {
   try {
-    console.log("Form submitted:", form.value);
     const formData = new FormData();
     formData.append("title", form.value.title);
     formData.append("description", form.value.description);
@@ -384,6 +405,7 @@ const submitForm = async () => {
     formData.append("source", form.value.source);
     formData.append("link_youtube", form.value.link_youtube);
     formData.append("tag", form.value.tag);
+    formData.append("category_id", form.value.category_id);
 
     loading.value = true;
 
@@ -428,6 +450,7 @@ const resetForm = () => {
     source: "",
     tag: "",
     link_youtube: "",
+    category_id: "",
   };
   videoName.value = "";
   videoPreview.value = "";
@@ -488,4 +511,21 @@ const removeThumbnail = () => {
     thumbnailInput.value.value = "";
   }
 };
+
+// Category handling
+const categories = ref([]);
+onMounted(async () => {
+  try {
+    const response = await axios.get("/api/categories");
+    categories.value = response.data.data || [];
+    categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to load categories. Please refresh the page.",
+    });
+  }
+});
 </script>
