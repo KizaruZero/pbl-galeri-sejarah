@@ -13,7 +13,7 @@ class UserReaction extends Model
         'comment_id',
         'reaction_type_id',
     ];
-
+    protected $appends = ['icon'];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -27,5 +27,10 @@ class UserReaction extends Model
     public function reactionType()
     {
         return $this->belongsTo(Reaction::class, 'reaction_type_id');
+    }
+
+    public function getIconAttribute()
+    {
+        return $this->reactionType->icon ?? null;
     }
 }

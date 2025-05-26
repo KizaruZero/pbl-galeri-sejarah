@@ -164,54 +164,54 @@
                     </div>
                 </div>
 
-                <!-- Comments Section -->
-                <div class="border-t border-gray-800 pt-4 md:pt-6">
-                    <h2 class="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">
+                <!-- Comments Section - Improved spacing -->
+                <div class="border-t border-gray-800 pt-5 sm:pt-6">
+                    <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-5">
                         Comments ({{ comments.length }})
                     </h2>
 
-                    <!-- New Comment Form -->
-                    <div class="mb-6 md:mb-8" v-if="UserId">
-                        <div class="flex items-start gap-3 md:gap-4">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+                    <!-- New Comment Form - Better mobile layout -->
+                    <div class="mb-6 sm:mb-7" v-if="UserId">
+                        <div class="flex items-start gap-3 sm:gap-4">
+                            <div class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-700">
                                 <img :src="currentUser.photo_profile" :alt="currentUser.name"
                                     class="w-full h-full object-cover" @error="handleAvatarError" />
                             </div>
-                            <div class="flex-1">
+                            <div class="flex-1 min-w-0">
                                 <div class="relative">
                                     <textarea v-model="newComment" placeholder="Add a comment..."
-                                        class="w-full px-3 py-2 md:px-4 md:py-3 bg-gray-800 text-white border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition placeholder-gray-400 text-sm md:text-base"
-                                        rows="3"></textarea>
-                                    <div class="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center">
+                                        class="w-full px-3 py-2 sm:px-4 sm:py-3 bg-gray-800 text-white border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition placeholder-gray-400 text-sm sm:text-base"
+                                        rows="3" maxlength="500"></textarea>
+                                    <div class="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex items-center">
                                         <span
-                                            class="text-xs text-gray-400 mr-2 md:mr-3">{{ newComment.length }}/500</span>
+                                            class="text-xs text-gray-400 mr-2 sm:mr-3">{{ newComment.length }}/500</span>
                                         <button @click="addComment" :disabled="!newComment.trim()"
-                                            class="px-3 py-1 md:px-4 md:py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors text-xs md:text-sm font-medium">
+                                            class="px-3 py-1 sm:px-4 sm:py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm font-medium">
                                             Post
                                         </button>
                                     </div>
                                 </div>
-                                <div class="mt-1 md:mt-2 flex items-center gap-2">
-                                    <div v-if="!loadingReactions" class="mt-4 p-4 bg-gray-800 rounded-lg">
+                                <div class="mt-2 sm:mt-3">
+                                    <div v-if="!loadingReactions" class="p-3 bg-gray-800 rounded-lg">
                                         <span class="text-xs text-gray-400">Add reaction:</span>
-                                        <div class="flex gap-1">
+                                        <div class="flex flex-wrap gap-1 mt-1">
                                             <button v-for="reaction in reactions" :key="reaction.id"
-                                                class="px-3 py-1 bg-gray-700 rounded-full text-xs md:text-sm hover:scale-125 transform transition-transform"
-                                                @click="newComment += reaction.react_type">
-                                                {{ reaction.react_type }}
+                                                class="px-2 py-1 bg-gray-700 rounded-full text-xs sm:text-sm hover:scale-110 transform transition-transform"
+                                                @click="newComment += reaction.icon">
+                                                {{ reaction.icon }}
                                             </button>
                                         </div>
                                     </div>
-                                    <div v-else class="mt-4 p-4 bg-gray-800 rounded-lg">
-                                        <p class="text-gray-400">Loading reactions...</p>
+                                    <div v-else class="p-3 bg-gray-800 rounded-lg">
+                                        <p class="text-gray-400 text-sm">Loading reactions...</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div v-else
-                        class="mb-6 md:mb-8 p-3 md:p-4 bg-gray-800/50 rounded-lg text-center border border-gray-700">
-                        <p class="text-gray-300 text-sm md:text-base">
+                        class="mb-6 sm:mb-7 p-3 sm:p-4 bg-gray-800/50 rounded-lg text-center border border-gray-700">
+                        <p class="text-gray-300 text-sm sm:text-base">
                             Please
                             <router-link to="/login" class="text-blue-400 hover:underline font-medium">login
                             </router-link>
@@ -219,32 +219,35 @@
                         </p>
                     </div>
 
-                    <!-- Comments List -->
-                    <div class="space-y-4 md:space-y-5">
+                    <!-- Comments List - Better spacing and transitions -->
+                    <div class="space-y-4 sm:space-y-5">
+                        <!-- Loading state -->
                         <div v-for="comment in comments" :key="comment.id" class="group">
                             <div v-if="comment.isLoading"
-                                class="p-3 md:p-4 bg-gray-800/50 rounded-lg flex items-center gap-2 md:gap-3">
-                                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gray-700 animate-pulse"></div>
+                                class="p-3 sm:p-4 bg-gray-800/50 rounded-lg flex items-center gap-2 sm:gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-700 animate-pulse"></div>
                                 <div class="flex-1 space-y-2">
-                                    <div class="h-3 bg-gray-700 rounded w-1/4 animate-pulse"></div>
-                                    <div class="h-2 bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-700 rounded w-1/3 animate-pulse"></div>
+                                    <div class="h-2 bg-gray-700 rounded w-2/3 animate-pulse"></div>
                                 </div>
                             </div>
+
+                            <!-- Actual comment -->
                             <div v-else
-                                class="bg-gray-800/50 p-3 md:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex items-center gap-2 md:gap-3">
+                                class="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
+                                <div class="flex justify-between items-start gap-2">
+                                    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                         <router-link :to="`/users/${comment.user.id}`" class="flex-shrink-0">
                                             <div
-                                                class="w-7 h-7 md:w-10 md:h-10 rounded-full overflow-hidden bg-gray-700">
+                                                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-700">
                                                 <img :src="getMediaUrl(comment.user?.photo_profile)"
                                                     :alt="comment.user?.name" class="w-full h-full object-cover"
                                                     @error="handleAvatarError" />
                                             </div>
                                         </router-link>
-                                        <div>
+                                        <div class="min-w-0">
                                             <router-link :to="`/users/${comment.user.id}`"
-                                                class="font-medium text-white hover:underline text-sm md:text-base">
+                                                class="font-medium text-white hover:underline text-sm sm:text-base truncate">
                                                 {{ comment.user.name }}
                                             </router-link>
                                             <p class="text-gray-400 text-xs mt-0.5">
@@ -254,7 +257,7 @@
                                     </div>
                                     <button v-if="comment.canDelete" @click="deleteComment(comment.id)"
                                         class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all p-1 rounded-full hover:bg-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5"
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5"
                                             viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd"
                                                 d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -263,47 +266,47 @@
                                     </button>
                                 </div>
                                 <p
-                                    class="mt-2 md:mt-3 text-gray-200 pl-10 md:pl-13 whitespace-pre-line text-sm md:text-base">
+                                    class="mt-2 sm:mt-3 text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
                                     {{ comment.text }}
                                 </p>
 
-                                <!-- Comment Reactions -->
-                                <div class="mt-2 md:mt-3 pl-10 md:pl-13 flex items-center gap-2 md:gap-3">
-                                    <!-- Reaction buttons - always visible -->
-                                    <div class="flex items-center gap-1 md:gap-2">
-                                        <button v-for="reaction in comment.reactions" :key="reaction.id"
+                                <!-- Comment Reactions - Improved mobile layout -->
+                                <div class="mt-2 sm:mt-3 pl-10 sm:pl-12 flex flex-wrap items-center gap-2 sm:gap-3">
+                                    <!-- Reaction buttons -->
+                                    <div class="flex flex-wrap items-center gap-1 sm:gap-2">
+                                        <button v-for="reaction in comment.reactions" :key="reaction.reaction_type_id"
                                             @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
-                                            class="flex items-center text-xxs md:text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-1.5 py-0.5 md:px-2.5 md:py-1 transition-colors"
-                                            :class="{
-                'bg-blue-900/50': reaction.userReacted,
-                'cursor-default': !UserId,
-                'hover:bg-gray-700/50': !UserId
-            }">
-                                            <span class="mr-0.5 md:mr-1">{{ reaction.react_type }}</span>
+                                            class="flex items-center text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-2 py-1 transition-colors"
+                                            :class="{ 
+                                                    'bg-blue-900/50': reaction.userReacted,
+                                                    'cursor-default': !UserId,
+                                                    'hover:bg-gray-700/50': !UserId
+                                                }">
+                                            <span class="mr-1">{{ reaction.icon }}</span>
                                             <span>{{ reaction.count }}</span>
                                         </button>
                                     </div>
 
-                                    <!-- Add reaction button - only visible when logged in -->
+                                    <!-- Add reaction button -->
                                     <div class="relative" v-if="UserId">
                                         <button
-                                            class="text-gray-400 hover:text-gray-200 text-xxs md:text-xs flex items-center gap-1 p-0.5 md:p-1 rounded-full hover:bg-gray-700 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            class="text-gray-400 hover:text-gray-200 text-xs flex items-center gap-1 p-1 rounded-full hover:bg-gray-700 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
-                                            <span>Add reaction</span>
+                                            <span class="hidden sm:inline">Add reaction</span>
                                         </button>
 
                                         <!-- Reaction picker -->
                                         <div
-                                            class="absolute bottom-full left-0 mb-1 md:mb-2 hidden group-hover:flex bg-gray-800 rounded-full shadow-lg p-1 space-x-1 border border-gray-700 z-10">
+                                            class="absolute bottom-full left-0 mb-2 hidden group-hover:flex bg-gray-800 rounded-full shadow-lg p-1 space-x-1 border border-gray-700 z-10">
                                             <button v-for="reaction in reactions" :key="reaction.id"
                                                 @click.stop="toggleReaction(comment.id, reaction.react_type)"
-                                                class="hover:scale-125 transform transition-transform text-xs md:text-sm"
+                                                class="hover:scale-125 transform transition-transform text-sm"
                                                 :title="reaction.react_type">
-                                                {{ reaction.react_type }}
+                                                {{ reaction.icon }}
                                             </button>
                                         </div>
                                     </div>
@@ -312,17 +315,16 @@
                         </div>
 
                         <!-- Empty state -->
-                        <div v-if="comments.length === 0" class="text-center py-6 md:py-8">
-                            <div class="text-gray-400 mb-1 md:mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 mx-auto"
+                        <div v-if="comments.length === 0" class="text-center py-6 sm:py-8">
+                            <div class="text-gray-400 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 sm:h-12 sm:w-12 mx-auto"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                             </div>
-                            <h3 class="text-gray-300 font-medium mb-0.5 md:mb-1 text-sm md:text-base">No comments yet
-                            </h3>
-                            <p class="text-gray-500 text-xs md:text-sm">Be the first to share what you think!</p>
+                            <h3 class="text-gray-300 font-medium mb-1 text-sm sm:text-base">No comments yet</h3>
+                            <p class="text-gray-500 text-xs sm:text-sm">Be the first to share what you think!</p>
                         </div>
                     </div>
                 </div>
@@ -427,38 +429,6 @@
         window.history.back();
     };
 
-    const availableReactions = [{
-            id: 1,
-            emoji: '👍',
-            name: 'like'
-        },
-        {
-            id: 2,
-            emoji: '❤️',
-            name: 'love'
-        },
-        {
-            id: 3,
-            emoji: '😂',
-            name: 'laugh'
-        },
-        {
-            id: 4,
-            emoji: '😮',
-            name: 'surprise'
-        },
-        {
-            id: 5,
-            emoji: '😢',
-            name: 'sad'
-        },
-        {
-            id: 6,
-            emoji: '😡',
-            name: 'angry'
-        }
-    ]
-
     // Get the current authenticated user
     const UserId = computed(() => {
         const user = usePage().props.auth ?.user;
@@ -507,7 +477,7 @@
         e.target.src = "/js/Assets/default-photo.jpg";
     };
 
-// Replace the toggleLike function with this implementation
+    // Replace the toggleLike function with this implementation
     const toggleLike = async () => {
         if (!UserId.value) {
             router.visit('/login');
@@ -542,7 +512,7 @@
             isLiked.value = !isLiked.value;
         } catch (error) {
             console.error('Error toggling like:', error);
-            if (error.response?.status === 401) {
+            if (error.response ?.status === 401) {
                 router.visit('/login');
             } else {
                 alert('Failed to update like. Please try again.');
@@ -658,64 +628,66 @@
             const commentsArray = Array.isArray(commentData) ? commentData : [commentData];
 
             // Fetch reactions for each comment
-        const commentsWithReactions = await Promise.all(commentsArray.map(async (comment) => {
-            // Create basic comment structure
-            const commentObj = {
-                id: comment.id,
-                user: {
-                    id: comment.user_id,
-                    name: "Loading...",
-                    photo_profile: "/js/Assets/default-photo.jpg",
-                },
-                text: comment.content,
-                date: comment.created_at,
-                canDelete: comment.user_id === (currentUser.value?.id || null),
-                isLoading: false,
-                reactions: []
-            };
+            const commentsWithReactions = await Promise.all(commentsArray.map(async (comment) => {
+                // Create basic comment structure
+                const commentObj = {
+                    id: comment.id,
+                    user: {
+                        id: comment.user_id,
+                        name: "Loading...",
+                        photo_profile: "/js/Assets/default-photo.jpg",
+                    },
+                    text: comment.content,
+                    date: comment.created_at,
+                    canDelete: comment.user_id === (currentUser.value ?.id || null),
+                    isLoading: false,
+                    reactions: []
+                };
 
                 // Fetch user details
-            try {
-                const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-                    },
-                });
+                try {
+                    const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+                        },
+                    });
 
-                commentObj.user = {
-                    id: userResponse.data.id,
-                    name: userResponse.data.name,
-                    photo_profile: userResponse.data.photo_profile ||
-                        "/js/Assets/default-photo.jpg",
-                };
-            } catch (userError) {
-                console.error("Error fetching user:", userError);
-            }
+                    commentObj.user = {
+                        id: userResponse.data.id,
+                        name: userResponse.data.name,
+                        photo_profile: userResponse.data.photo_profile ||
+                            "/js/Assets/default-photo.jpg",
+                    };
+                } catch (userError) {
+                    console.error("Error fetching user:", userError);
+                }
 
-            // Fetch reactions for this comment
-            try {
-                const reactionsResponse = await axios.get(`/api/reaction/comment/${comment.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-                    },
-                });
+                // Fetch reactions for this comment
+                try {
+                    const reactionsResponse = await axios.get(
+                        `/api/reaction/comment/${comment.id}`, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+                            },
+                        });
 
-                // Transform the response to match our frontend structure
-                commentObj.reactions = reactionsResponse.data.map(reaction => ({
-                    id: reaction.reaction_type_id,
-                    react_type: reaction.react_type,
-                    count: reaction.count,
-                    userReacted: reaction.userReacted,
-                    user_id: reaction.userReacted ? UserId.value : null
-                }));
-            } catch (reactionsError) {
-                console.error("Error fetching reactions:", reactionsError);
-            }
+                    // Transform the response to match our frontend structure
+                    commentObj.reactions = reactionsResponse.data.map(reaction => ({
+                        id: reaction.reaction_type_id,
+                        react_type: reaction.react_type,
+                        icon: reaction.icon,
+                        count: reaction.count,
+                        userReacted: reaction.userReacted,
+                        user_id: reaction.userReacted ? UserId.value : null
+                    }));
+                } catch (reactionsError) {
+                    console.error("Error fetching reactions:", reactionsError);
+                }
 
-            return commentObj;
-        }));
+                return commentObj;
+            }));
 
-        comments.value = commentsWithReactions;
+            comments.value = commentsWithReactions;
 
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -854,106 +826,85 @@
     };
 
     const toggleReaction = async (commentId, reactionType) => {
-    if (!UserId.value) {
-        return;
-    }
-
-    try {
-        // Find the reaction type from available reactions
-        const reaction = reactions.value.find(r => r.react_type === reactionType);
-        if (!reaction) {
-            console.error('Reaction type not found:', reactionType);
+        if (!UserId.value) {
             return;
         }
 
-        // Find the comment index
-        const commentIndex = comments.value.findIndex(c => c.id === commentId);
-        if (commentIndex === -1) return;
+        try {
+            const reaction = reactions.value.find(r => r.react_type === reactionType);
+            if (!reaction) {
+                console.error('Reaction type not found:', reactionType);
+                return;
+            }
 
-        // Create a copy of the comment to modify
-        const comment = { ...comments.value[commentIndex] };
+            const commentIndex = comments.value.findIndex(c => c.id === commentId);
+            if (commentIndex === -1) return;
 
-        // Initialize reactions array if it doesn't exist
-        if (!comment.reactions) {
-            comment.reactions = [];
-        }
+            const comment = {
+                ...comments.value[commentIndex]
+            };
+            if (!comment.reactions) comment.reactions = [];
 
-        // Check if user already has any reaction
-        const existingUserReactionIndex = comment.reactions.findIndex(r =>
-            r.user_id === UserId.value
-        );
+            const existingReactionIndex = comment.reactions.findIndex(r => r.userReacted);
 
-        if (existingUserReactionIndex >= 0) {
-            // User already has a reaction - check if it's the same type
-            const existingReaction = comment.reactions[existingUserReactionIndex];
-
-            if (existingReaction.react_type === reactionType) {
-                // Same reaction type - remove it
+            // Jika user sudah punya reaction, dan mengklik reaction yang sama
+            if (existingReactionIndex >= 0 && comment.reactions[existingReactionIndex].react_type ===
+                reactionType) {
+                // Hapus reaction
                 await axios.delete(`/api/reaction/comment/${commentId}`, {
                     data: {
-                        user_id: UserId.value
-                    },
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Accept': 'application/json'
+                        user_id: UserId.value,
+                        reaction_type_id: reaction.id
                     }
                 });
 
-                // Remove the reaction from local state
-                comment.reactions = comment.reactions.filter(
-                    (_, index) => index !== existingUserReactionIndex
-                );
+                // Update state lokal
+                comment.reactions = comment.reactions.map(r => ({
+                    ...r,
+                    count: r.react_type === reactionType ? Math.max(0, r.count - 1) : r.count,
+                    userReacted: r.react_type === reactionType ? false : r.userReacted
+                })).filter(r => r.count > 0);
             } else {
-                // Different reaction type - update it
-                await axios.put(`/api/reaction/comment/${commentId}`, {
+                // Tambah/update reaction baru
+                const response = await axios.post(`/api/reaction/comment/${commentId}`, {
                     user_id: UserId.value,
                     reaction_type_id: reaction.id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Accept': 'application/json'
-                    }
                 });
 
-                // Update the reaction in local state
-                comment.reactions[existingUserReactionIndex] = {
-                    ...existingReaction,
-                    reaction_type_id: reaction.id,
-                    react_type: reactionType
-                };
+                if (existingReactionIndex >= 0) {
+                    // Update reaction yang ada
+                    const oldReaction = comment.reactions[existingReactionIndex];
+                    comment.reactions = comment.reactions.map(r => ({
+                        ...r,
+                        count: r.react_type === oldReaction.react_type ? r.count - 1 : r.count
+                    })).filter(r => r.count > 0);
+                }
+
+                // Tambahkan reaction baru atau update yang ada
+                const existingReactionTypeIndex = comment.reactions.findIndex(r => r.react_type ===
+                    reactionType);
+                if (existingReactionTypeIndex >= 0) {
+                    comment.reactions[existingReactionTypeIndex] = {
+                        ...comment.reactions[existingReactionTypeIndex],
+                        count: comment.reactions[existingReactionTypeIndex].count + 1,
+                        userReacted: true
+                    };
+                } else {
+                    comment.reactions.push({
+                        ...response.data.reaction,
+                        userReacted: true
+                    });
+                }
             }
-        } else {
-            // User has no reaction - add new one
-            const response = await axios.post(`/api/reaction/comment/${commentId}`, {
-                user_id: UserId.value,
-                reaction_type_id: reaction.id
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Accept': 'application/json'
-                }
-            });
 
-            // Add the reaction to local state
-            comment.reactions = [
-                ...comment.reactions,
-                {
-                    id: response.data.id,
-                    user_id: UserId.value,
-                    reaction_type_id: reaction.id,
-                    react_type: reactionType
-                }
-            ];
+            // Update state
+            comments.value[commentIndex] = comment;
+
+        } catch (error) {
+            console.error('Error toggling reaction:', error);
+            alert('Failed to update reaction. Please try again.');
         }
-
-        // Update the comment in the comments array
-        comments.value[commentIndex] = comment;
-
-    } catch (error) {
-        console.error('Error toggling reaction:', error);
-        alert('Failed to update reaction. Please try again.');
-    }
-};
+    };
 
     // Fetch photo data
     onMounted(async () => {
@@ -976,9 +927,9 @@
                 id: photoData.id,
                 title: photoData.title,
                 description: photoData.description,
-                imageUrl: photoData.image_url
-                    ? `/storage/${photoData.image_url.replace(/^public\//, "")}`
-                    : "/js/Assets/default-photo.jpg",
+                imageUrl: photoData.image_url ?
+                    `/storage/${photoData.image_url.replace(/^public\//, "")}` :
+                    "/js/Assets/default-photo.jpg",
                 altText: photoData.alt_text || photoData.title,
                 tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
                 user: photoData.user,
@@ -987,13 +938,13 @@
                 note: photoData.note,
                 total_views: photoData.total_views || 0,
                 // Metadata fields
-                collection_date: photoData.metadata_photo?.collection_date,
-                file_size: photoData.metadata_photo?.file_size,
-                aperture: photoData.metadata_photo?.aperture,
-                location: photoData.metadata_photo?.location,
-                camera_model: photoData.metadata_photo?.model,
-                ISO: photoData.metadata_photo?.ISO,
-                dimensions: photoData.metadata_photo?.dimensions,
+                collection_date: photoData.metadata_photo ?.collection_date,
+                file_size: photoData.metadata_photo ?.file_size,
+                aperture: photoData.metadata_photo ?.aperture,
+                location: photoData.metadata_photo ?.location,
+                camera_model: photoData.metadata_photo ?.model,
+                ISO: photoData.metadata_photo ?.ISO,
+                dimensions: photoData.metadata_photo ?.dimensions,
             };
 
             // Set the actual like count from total_reactions

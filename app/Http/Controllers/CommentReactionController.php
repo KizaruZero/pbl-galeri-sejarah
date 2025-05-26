@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\UserReaction;
 use App\Models\Reaction;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CommentReactionController extends Controller
 {
@@ -17,19 +18,11 @@ class CommentReactionController extends Controller
                 'reaction_type_id' => 'required|exists:reactions,id'
             ]);
 
-            // Check if reaction already exists
-            $existingReaction = UserReaction::where([
+            // Delete any existing reaction from this user on this comment
+            UserReaction::where([
                 'user_id' => $validated['user_id'],
-                'comment_id' => $commentId,
-                'reaction_type_id' => $validated['reaction_type_id']
-            ])->first();
-
-            if ($existingReaction) {
-                return response()->json([
-                    'message' => 'Reaction already exists',
-                    'reaction' => $existingReaction
-                ], 200);
-            }
+                'comment_id' => $commentId
+            ])->delete();
 
             // Create new reaction
             $reaction = UserReaction::create([
@@ -38,9 +31,18 @@ class CommentReactionController extends Controller
                 'reaction_type_id' => $validated['reaction_type_id']
             ]);
 
+            $reactionWithType = $reaction->load('reactionType');
+
             return response()->json([
                 'message' => 'Reaction added successfully',
-                'reaction' => $reaction->load('reactionType')
+                'reaction' => [
+                    'id' => $reactionWithType->id,
+                    'reaction_type_id' => $reactionWithType->reaction_type_id,
+                    'react_type' => $reactionWithType->reactionType->react_type,
+                    'icon' => $reactionWithType->reactionType->icon,
+                    'count' => 1,
+                    'userReacted' => true
+                ]
             ], 201);
 
         } catch (\Exception $e) {
@@ -120,10 +122,32 @@ class CommentReactionController extends Controller
 
     public function index($commentId)
     {
-        $reactions = UserReaction::where('comment_id', $commentId)
-            ->with(['reactionType', 'user'])
-            ->get();
+        try {
+            $userId = request()->query('user_id', 0);
+            
+            $reactions = UserReaction::where('comment_id', $commentId)
+                ->with('reactionType')
+                ->get()
+                ->groupBy('reaction_type_id')
+                ->map(function ($group) use ($userId) {
+                    $first = $group->first();
+                    return [
+                        'reaction_type_id' => $first->reaction_type_id,
+                        'react_type' => $first->reactionType->react_type,
+                        'icon' => $first->reactionType->icon,
+                        'count' => $group->count(),
+                        'userReacted' => $group->contains('user_id', $userId)
+                    ];
+                })
+                ->values();
 
-        return response()->json($reactions);
+            return response()->json($reactions);
+        } catch (\Exception $e) {
+            Log::error('Error fetching reactions: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error fetching reactions',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
