@@ -3,8 +3,9 @@
     <MainLayout>
       <HeroSection />
       <SearchBar />
+      <ImageGrid />
       <CategoryGrid />
-      
+
       <!-- <ImageGrid /> -->
       <UpcomingEvent />
       <!-- <TrendingEvents /> -->
@@ -16,8 +17,7 @@
   import MainLayout from '@/Layouts/MainLayout.vue';
   import HeroSection from '@/Components-landing/GalleryPage/HeroSection.vue'
   import SearchBar from '@/Components-landing/GalleryPage/SearchBar.vue'
-  import ImageGrid from '@/Components-landing/GalleryPage/ImageGrid.vue'
-  // import TrendingEvents from '../components/BudayaPage/TrendingEvents.vue'
+  import ImageGrid from '@/Components-landing/GalleryPage/TrendingContent.vue'
   import UpcomingEvent from '@/Components-landing/UpcomingEvent.vue'
   import CategoryGrid from '@/Components-landing/GalleryPage/CategoryGrid.vue';
 </script>
