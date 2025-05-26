@@ -274,7 +274,7 @@
                                         <button v-for="reaction in comment.reactions" :key="reaction.id"
                                             @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                             class="flex items-center text-xxs md:text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-1.5 py-0.5 md:px-2.5 md:py-1 transition-colors"
-                                            :class="{ 
+                                            :class="{
                 'bg-blue-900/50': reaction.userReacted,
                 'cursor-default': !UserId,
                 'hover:bg-gray-700/50': !UserId
@@ -507,10 +507,47 @@
         e.target.src = "/js/Assets/default-photo.jpg";
     };
 
-    // Toggle like
-    const toggleLike = () => {
-        isLiked.value = !isLiked.value;
-        likeCount.value += isLiked.value ? 1 : -1;
+// Replace the toggleLike function with this implementation
+    const toggleLike = async () => {
+        if (!UserId.value) {
+            router.visit('/login');
+            return;
+        }
+
+        try {
+            if (isLiked.value) {
+                await axios.delete(`/api/reaction/photo/${photo.value.id}`, {
+                    data: {
+                        user_id: UserId.value,
+                        reaction_type_id: 1 // ID for "like" reaction
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                likeCount.value--;
+            } else {
+                await axios.post(`/api/reaction/photo/${photo.value.id}`, {
+                    user_id: UserId.value,
+                    reaction_type_id: 1 // ID for "like" reaction
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                likeCount.value++;
+            }
+            isLiked.value = !isLiked.value;
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            if (error.response?.status === 401) {
+                router.visit('/login');
+            } else {
+                alert('Failed to update like. Please try again.');
+            }
+        }
     };
 
     // Toggle bookmark
@@ -636,7 +673,7 @@
                 isLoading: false,
                 reactions: []
             };
-            
+
                 // Fetch user details
             try {
                 const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
@@ -662,7 +699,7 @@
                         Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                     },
                 });
-                
+
                 // Transform the response to match our frontend structure
                 commentObj.reactions = reactionsResponse.data.map(reaction => ({
                     id: reaction.reaction_type_id,
@@ -832,24 +869,24 @@
         // Find the comment index
         const commentIndex = comments.value.findIndex(c => c.id === commentId);
         if (commentIndex === -1) return;
-        
+
         // Create a copy of the comment to modify
         const comment = { ...comments.value[commentIndex] };
-        
+
         // Initialize reactions array if it doesn't exist
         if (!comment.reactions) {
             comment.reactions = [];
         }
 
         // Check if user already has any reaction
-        const existingUserReactionIndex = comment.reactions.findIndex(r => 
+        const existingUserReactionIndex = comment.reactions.findIndex(r =>
             r.user_id === UserId.value
         );
 
         if (existingUserReactionIndex >= 0) {
             // User already has a reaction - check if it's the same type
             const existingReaction = comment.reactions[existingUserReactionIndex];
-            
+
             if (existingReaction.react_type === reactionType) {
                 // Same reaction type - remove it
                 await axios.delete(`/api/reaction/comment/${commentId}`, {
@@ -911,7 +948,7 @@
 
         // Update the comment in the comments array
         comments.value[commentIndex] = comment;
-        
+
     } catch (error) {
         console.error('Error toggling reaction:', error);
         alert('Failed to update reaction. Please try again.');
@@ -930,11 +967,11 @@
                     Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                 },
             });
-            
+
             console.log('Photo data:', response.data);
 
             const photoData = response.data.photo;
-            
+
             photo.value = {
                 id: photoData.id,
                 title: photoData.title,
