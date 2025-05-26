@@ -162,7 +162,7 @@ class PhotoController extends Controller
         ], 400);
     }
 
-    // update photo
+    // update photo 
     public function updatePhotoByUser(Request $request, $id)
     {
         $photo = ContentPhoto::find($id);
@@ -170,9 +170,9 @@ class PhotoController extends Controller
             return response()->json(['message' => 'Photo not found'], 404);
         }
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Changed to nullable
             'source' => 'nullable|string|max:255',
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
@@ -180,22 +180,32 @@ class PhotoController extends Controller
         ]);
         $slug = Str::slug($validatedData['title']);
 
-        $photo->update([
+        $updateData = [
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
-            'image' => $validatedData['image'],
             'source' => $validatedData['source'],
             'alt_text' => $validatedData['alt_text'],
             'note' => $validatedData['note'],
             'tag' => $validatedData['tag'],
             'slug' => $slug,
-        ]);
+        ];
+
+        // Only update image if new one is provided
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('foto_content', $filename, 'public');
+            $updateData['image_url'] = 'foto_content/' . $filename;
+        }
+
+        $photo->update($updateData);
 
         return response()->json([
-            'message' => 'Photo status updated successfully',
+            'message' => 'Photo updated successfully',
             'data' => $photo
         ], 200);
     }
+
 
     private function getGPSCoordinates($exif)
     {
@@ -274,5 +284,11 @@ class PhotoController extends Controller
         return response()->json([
             'photos' => $contentPhotos,
         ]);
+    }
+
+    public function edit($id)
+    {
+        $photo = ContentPhoto::findOrFail($id);
+        return response()->json($photo);
     }
 }

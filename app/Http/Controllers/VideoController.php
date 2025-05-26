@@ -257,13 +257,13 @@ class VideoController extends Controller
         }
 
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
             'link_youtube' => 'nullable|url|max:255',
-            'video_url' => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
-            'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
+            'video_url' => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+            'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
         ]);
 
         $slug = Str::slug($validatedData['title']);
@@ -317,5 +317,11 @@ class VideoController extends Controller
             return response()->json(['message' => 'Tidak ada konten ditemukan untuk kategori ini'], 404);
         }
         return response()->json($contentVideos);
+    }
+
+    public function edit($id)
+    {
+        $video = ContentVideo::findOrFail($id);
+        return response()->json($video);
     }
 }

@@ -98,6 +98,8 @@ Route::middleware('web')->group(function () {
     // user post
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
     Route::post('/api/content-video', [VideoController::class, 'store']);
+    Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']); // Add this line
+    Route::put('/api/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']); // Add this line
 
     // get popular content
     Route::get('/api/popular-photo', [PhotoController::class, 'getPopularPhotos']);
@@ -111,5 +113,6 @@ Route::middleware('web')->group(function () {
 
 });
 
+    Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'));
 require __DIR__ . '/auth.php';
 require __DIR__ . '/api.php';
