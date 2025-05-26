@@ -69,7 +69,6 @@ Route::post('/comment/video/{id}', [CommentController::class, 'storeVideoComment
 Route::get('/comment/video/{id}', [CommentController::class, 'getCommentByContentVideo']);
 Route::delete('/user-comments/{id}', [CommentController::class, 'destroyPhotoComment']);
 Route::delete('/user-comments/{id}', [CommentController::class, 'destroyVideoComment']);
-
 // Reaction
 Route::post('/reaction/photo/{id}', [ContentReactionController::class, 'storePhotoReaction']);
 Route::delete('/reaction/photo/{id}', [ContentReactionController::class, 'deletePhotoReaction']);

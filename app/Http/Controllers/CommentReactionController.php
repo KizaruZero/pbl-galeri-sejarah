@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\UserReaction;
 use App\Models\Reaction;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 
 class CommentReactionController extends Controller
 {

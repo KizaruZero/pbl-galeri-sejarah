@@ -184,6 +184,7 @@ const truncateDescription = (desc) => {
 
 // Perform the actual search
 const performSearch = async () => {
+  // Always perform search when there's either a query or category selected
   if (!searchQuery.value.trim() && selectedCategory.value === "All categories") {
     searchResults.value = [];
     searchPerformed.value = false;
@@ -194,10 +195,17 @@ const performSearch = async () => {
   loading.value = true;
 
   try {
-    const params = {
-      ...(searchQuery.value.trim() && { query: searchQuery.value.trim() }),
-      ...(selectedCategory.value !== 'All categories' && { category: selectedCategory.value })
-    };
+    const params = {};
+    
+    // Always include category if it's not "All categories"
+    if (selectedCategory.value !== 'All categories') {
+      params.category = selectedCategory.value;
+    }
+    
+    // Include search query if it exists
+    if (searchQuery.value.trim()) {
+      params.query = searchQuery.value.trim();
+    }
 
     const response = await axios.get('/api/search', { params });
     searchResults.value = response.data.items || [];
@@ -226,6 +234,6 @@ const selectCategory = (category) => {
   selectedCategory.value = category;
   showDropdown.value = false;
   showSidebar.value = false;
-  handleSearch();
+  performSearch(); // Trigger search when category changes
 };
 </script>

@@ -15,62 +15,66 @@ class SearchController extends Controller
         $query = $request->input('query');
         $category = $request->input('category');
 
+        // If no search criteria, return just categories
         if (empty($query) && (empty($category) || $category === 'All categories')) {
             return response()->json([
-                'photos' => [],
-                'videos' => [],
+                'items' => [],
                 'categories' => Category::pluck('category_name')->toArray()
             ]);
         }
 
-        // Search in ContentPhoto with related metadata and categories
-        $photoQuery = ContentPhoto::where('status', 'approved')
-            ->where(function ($q) use ($query, $category) {
-                if (!empty($query)) {
-                    $q->where('title', 'like', "%{$query}%")
-                        ->orWhere('description', 'like', "%{$query}%")
-                        ->orWhere('alt_text', 'like', "%{$query}%")
-                        ->orWhere('tag', 'like', "%{$query}%")
-                        ->orWhere('note', 'like', "%{$query}%")
-                        ->orWhereHas('metadataPhoto', function ($q) use ($query) {
-                            $q->where('location', 'like', "%{$query}%")
-                                ->orWhere('model', 'like', "%{$query}%");
-                        });
-                }
-                
-                if (!empty($category) && $category !== 'All categories') {
-                    $q->whereHas('categoryContents.category', function ($q) use ($category) {
-                        $q->where('category_name', $category);
+        // Base query for photos
+        $photoQuery = ContentPhoto::where('status', 'approved');
+        
+        // Apply category filter if specified
+        if (!empty($category) && $category !== 'All categories') {
+            $photoQuery->whereHas('categoryContents.category', function ($q) use ($category) {
+                $q->where('category_name', $category);
+            });
+        }
+
+        // Apply search term filter if specified
+        if (!empty($query)) {
+            $photoQuery->where(function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhere('alt_text', 'like', "%{$query}%")
+                    ->orWhere('tag', 'like', "%{$query}%")
+                    ->orWhere('note', 'like', "%{$query}%")
+                    ->orWhereHas('metadataPhoto', function ($q) use ($query) {
+                        $q->where('location', 'like', "%{$query}%")
+                            ->orWhere('model', 'like', "%{$query}%");
                     });
-                }
-            })
-            ->with(['metadataPhoto', 'categoryContents.category']);
+            });
+        }
 
-        $photos = $photoQuery->get();
+        $photos = $photoQuery->with(['metadataPhoto', 'categoryContents.category'])->get();
 
-        // Search in ContentVideo with related metadata and categories
-        $videoQuery = ContentVideo::where('status', 'approved')
-            ->where(function ($q) use ($query, $category) {
-                if (!empty($query)) {
-                    $q->where('title', 'like', "%{$query}%")
-                        ->orWhere('description', 'like', "%{$query}%")
-                        ->orWhere('tag', 'like', "%{$query}%")
-                        ->orWhere('note', 'like', "%{$query}%")
-                        ->orWhereHas('metadataVideo', function ($q) use ($query) {
-                            $q->where('location', 'like', "%{$query}%")
-                                ->orWhere('codec_video_audio', 'like', "%{$query}%");
-                        });
-                }
-                
-                if (!empty($category) && $category !== 'All categories') {
-                    $q->whereHas('categoryContents.category', function ($q) use ($category) {
-                        $q->where('category_name', $category);
+        // Base query for videos
+        $videoQuery = ContentVideo::where('status', 'approved');
+        
+        // Apply category filter if specified
+        if (!empty($category) && $category !== 'All categories') {
+            $videoQuery->whereHas('categoryContents.category', function ($q) use ($category) {
+                $q->where('category_name', $category);
+            });
+        }
+
+        // Apply search term filter if specified
+        if (!empty($query)) {
+            $videoQuery->where(function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhere('tag', 'like', "%{$query}%")
+                    ->orWhere('note', 'like', "%{$query}%")
+                    ->orWhereHas('metadataVideo', function ($q) use ($query) {
+                        $q->where('location', 'like', "%{$query}%")
+                            ->orWhere('codec_video_audio', 'like', "%{$query}%");
                     });
-                }
-            })
-            ->with(['metadataVideo', 'categoryContents.category']);
+            });
+        }
 
-        $videos = $videoQuery->get();
+        $videos = $videoQuery->with(['metadataVideo', 'categoryContents.category'])->get();
 
         // Format results for frontend
         $formattedResults = [];
