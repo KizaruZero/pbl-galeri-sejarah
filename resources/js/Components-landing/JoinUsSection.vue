@@ -1,5 +1,5 @@
 <template>
-    <section class="relative bg-black text-white py-24 px-6 overflow-hidden border-y border-white">
+    <section v-if="!auth.user" class="relative bg-black text-white py-24 px-6 overflow-hidden border-y border-white">
         <!-- Subtle background shapes -->
         <div class="absolute top-10 left-10 w-72 h-72 bg-white/5 rounded-full blur-2xl"></div>
         <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -22,7 +22,7 @@
                     share your creativity with the world.
                 </p>
 
-                <Link href="/register"
+                <Link href="/member"
                     class="inline-block bg-white text-black font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
                 Join Us
                 </Link>
@@ -33,9 +33,11 @@
 
 <script setup>
     import {
-        Link
+        Link,
+        usePage
     } from '@inertiajs/vue3';
 
+    const auth = usePage().props.auth;
 </script>
 
 <style scoped>
