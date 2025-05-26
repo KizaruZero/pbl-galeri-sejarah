@@ -4,7 +4,9 @@
       <!-- Judul -->
       <div class="flex flex-col items-center text-white mb-12">
         <span class="w-full h-0.5 bg-white mb-6"></span>
-        <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Tema</h1>
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">
+          Trending Content
+        </h1>
         <span class="w-full h-0.5 bg-white mt-6"></span>
       </div>
       <div
