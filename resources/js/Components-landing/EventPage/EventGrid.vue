@@ -48,9 +48,6 @@ import axios from "axios";
 const photos = ref([]);
 const loading = ref(true);
 const error = ref(null);
-const isLiked = ref(false);
-const isSaved = ref(false);
-const likeCount = ref(Math.floor(Math.random() * 100) + 5); // Random initial like count
 const getDetailPage = (slug) => {
     window.location.href = `/events/${slug}`;
 };
@@ -71,27 +68,40 @@ onMounted(async () => {
             ? response.data
             : response.data.data || [];
 
-        photos.value = photoArray.map((photo) => ({
-            imageUrl: photo.image_url
-                ? photo.image_url.startsWith("http")
-                    ? photo.image_url
-                    : `/storage/${photo.image_url.replace(/^public\//, "")}`
-                : "/js/Assets/default-photo.jpg",
-            title: photo.title || "Untitled",
-            titleSize: "base",
-            description: photo.description || "No description available",
-            slug: photo.slug,
-            date_start: photo.date_start,
-            date_end: photo.date_end,
-            instagramUrl: photo.instagram_url,
-            youtubeUrl: photo.youtube_url,
-            websiteUrl: photo.website_url,
-            contactPerson: photo.contact_person,
-            location: photo.location,
-            googleMapsUrl: photo.google_maps_url,
-            altText: photo.alt_text || "",
-            tags: photo.tags || [],
-        }));
+        // Get current date
+        const currentDate = new Date();
+
+        // Filter and map the events
+        photos.value = photoArray
+            .filter(photo => {
+                // Convert date_start to Date object
+                const startDate = new Date(photo.date_start);
+                // Only include events where start date is in the future
+                return startDate >= currentDate;
+            })
+            // Add sorting here
+            .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))
+            .map((photo) => ({
+                imageUrl: photo.image_url
+                    ? photo.image_url.startsWith("http")
+                        ? photo.image_url
+                        : `/storage/${photo.image_url.replace(/^public\//, "")}`
+                    : "/js/Assets/default-photo.jpg",
+                title: photo.title || "Untitled",
+                titleSize: "base",
+                description: photo.description || "No description available",
+                slug: photo.slug,
+                date_start: photo.date_start,
+                date_end: photo.date_end,
+                instagramUrl: photo.instagram_url,
+                youtubeUrl: photo.youtube_url,
+                websiteUrl: photo.website_url,
+                contactPerson: photo.contact_person,
+                location: photo.location,
+                googleMapsUrl: photo.google_maps_url,
+                altText: photo.alt_text || "",
+                tags: photo.tags || [],
+            }));
     } catch (err) {
         if (err.response && err.response.status === 404) {
             error.value = "Event tidak ditemukan";
