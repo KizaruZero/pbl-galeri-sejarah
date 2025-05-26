@@ -13,11 +13,9 @@
             </div>
 
             <!-- Grid Card -->
-            <div
-                class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
+            <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <CategoryCard
-                    v-for="category in categorys"
+                    v-for="category in paginatedCategories"
                     :key="category.slug"
                     :categoryImage="category.categoryImage"
                     :categoryName="category.categoryName"
@@ -29,18 +27,52 @@
                     @click="navigateToCategory(category.slug)"
                 />
             </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-8 gap-2">
+                <button
+                    @click="currentPage--"
+                    :disabled="currentPage === 1"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                >
+                    Previous
+                </button>
+                <div class="flex items-center px-4 text-white">
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+                <button
+                    @click="currentPage++"
+                    :disabled="currentPage >= totalPages"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                >
+                    Next
+                </button>
+            </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import CategoryCard from "./CategoryCard.vue";
 import axios from "axios";
 
 const categorys = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const currentPage = ref(1);
+const itemsPerPage = 9;
+
+// Computed properties for pagination
+const totalPages = computed(() => {
+    return Math.ceil(categorys.value.length / itemsPerPage);
+});
+
+const paginatedCategories = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return categorys.value.slice(start, end);
+});
 
 // Direct navigation function
 const navigateToCategory = (slug) => {
