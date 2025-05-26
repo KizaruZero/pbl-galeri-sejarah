@@ -78,7 +78,7 @@ const articles = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const currentPage = ref(1);
-const itemsPerPage = 20;
+const itemsPerPage = 12;
 
 // Computed property for paginated articles
 const paginatedArticles = computed(() => {
@@ -130,21 +130,6 @@ onMounted(async () => {
         loading.value = false;
     }
 });
-
-// Toggle like status
-const toggleLike = () => {
-    if (isLiked.value) {
-        likeCount.value--;
-    } else {
-        likeCount.value++;
-    }
-    isLiked.value = !isLiked.value;
-};
-
-// Toggle save status
-const toggleSave = () => {
-    isSaved.value = !isSaved.value;
-};
 </script>
 
 <style scoped>
