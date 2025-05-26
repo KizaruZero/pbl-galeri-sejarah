@@ -22,8 +22,39 @@ class PhotoController extends Controller
         if (!$contentPhoto) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
+        //  popularity
+
         return response()->json($contentPhoto);
     }
+
+    public function getPopularPhotos()
+    {
+        $popularPhotos = ContentPhoto::with([
+            'metadataPhoto',
+            'userComments',
+            'user',
+            'categoryContents',
+            'contentReactions',
+            'contentReactions.reactionType',
+            'userFavorite'
+        ])
+        ->where('status', 'approved')
+        ->withCount([
+            'contentReactions',
+            'userComments',
+            'userFavorite'
+        ])
+        ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
+        ->take(3)
+        ->get();
+
+        if ($popularPhotos->isEmpty()) {
+            return response()->json(['message' => 'No popular photos found'], 404);
+        }
+
+        return response()->json($popularPhotos);
+    }
+
 
     public function show($slug)
     {
@@ -123,7 +154,7 @@ class PhotoController extends Controller
         ], 400);
     }
 
-    // update photo 
+    // update photo
     public function updatePhotoByUser(Request $request, $id)
     {
         $photo = ContentPhoto::find($id);

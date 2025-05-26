@@ -99,6 +99,11 @@ Route::middleware('web')->group(function () {
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
     Route::post('/api/content-video', [VideoController::class, 'store']);
 
+    // get popular content
+    Route::get('/api/popular-photo', [PhotoController::class, 'getPopularPhotos']);
+
+    Route::get('/api/popular-video', [VideoController::class, 'getPopularVideos']);
+
     Route::get('/api/notifications', [NotificationController::class, 'index']);
     Route::post('/api/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
     Route::post('/api/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);

@@ -51,6 +51,33 @@ class VideoController extends Controller
         ]);
     }
 
+     public function getPopularVideos()
+    {
+        $popularVideos = ContentVideo::with([
+            'metadataVideo',
+            'userComments',
+            'user',
+            'categoryContents',
+            'contentReactions',
+            'contentReactions.reactionType',
+            'userFavorite'
+        ])
+        ->where('status', 'approved')
+        ->withCount([
+            'contentReactions',
+            'userComments',
+            'userFavorite'
+        ])
+        ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
+        ->take(3)
+        ->get();
+
+        if ($popularVideos->isEmpty()) {
+            return response()->json(['message' => 'No popular photos found'], 404);
+        }
+        return response()->json($popularVideos);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

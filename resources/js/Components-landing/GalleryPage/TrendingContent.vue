@@ -13,13 +13,14 @@
         class="grid grid-cols-3 gap-14 mx-auto max-w-[1192px] max-md:grid-cols-2 max-sm:grid-cols-1"
       >
         <ImageCard
-          v-for="event in events"
-          :key="event.slug"
-          :imageUrl="event.imageUrl"
-          :title="event.title"
-          :titleSize="event.titleSize"
-          :description="event.description"
-          :videoUrl="event.videoUrl"
+          v-for="content in trendingContent"
+          :key="content.slug"
+          :imageUrl="content.imageUrl"
+          :title="content.title"
+          :titleSize="content.titleSize"
+          :description="content.description"
+          :videoUrl="content.videoUrl"
+          :totalLikes="content.totalLikes"
           @play-video="openVideoPlayer"
         />
       </div>
@@ -40,7 +41,7 @@ import axios from "axios";
 import ImageCard from "./ImageCard.vue";
 import VideoPlayer from "@/Components-landing/VideoPlayer.vue";
 
-const events = ref([]);
+const trendingContent = ref([]);
 const isVideoPlayerOpen = ref(false);
 const currentVideoUrl = ref("");
 
@@ -55,37 +56,55 @@ const closeVideoPlayer = () => {
 };
 
 onMounted(async () => {
-  const options = {
-    method: "GET",
-    url: "/api/content-video",
-    headers: {
-      Accept: "application/json",
-      Authorization: "Bearer 123", // sesuaikan token jika diperlukan
-    },
-  };
-
   try {
-    const { data } = await axios.request(options);
+    // Fetch popular photos
+    const photoResponse = await axios.get("/api/popular-photo", {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer 123",
+      },
+    });
 
-    // map ke struktur event
-    events.value = data.map((video) => ({
+    // Fetch popular videos
+    const videoResponse = await axios.get("/api/popular-video", {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer 123",
+      },
+    });
+
+    // Combine and process photos and videos
+    const photos = (photoResponse.data || []).map((photo) => ({
+      type: "photo",
+      slug: photo.slug,
+      imageUrl: photo.image_url
+        ? photo.image_url.startsWith("http")
+          ? photo.image_url
+          : `/storage/${photo.image_url.replace(/^public\//, "")}`
+        : "/js/Assets/default-photo.jpg",
+      title: photo.title || "Untitled",
+      titleSize: "base",
+      description: photo.description || "No description",
+    }));
+
+    const videos = (videoResponse.data || []).map((video) => ({
+      type: "video",
+      slug: video.slug,
       imageUrl: video.thumbnail
         ? video.thumbnail.startsWith("http")
           ? video.thumbnail
           : `/storage/${video.thumbnail.replace(/^public\//, "")}`
         : "/js/Assets/default-photo.jpg",
-      title: video.title,
+      title: video.title || "Untitled",
       titleSize: "base",
-      description: video.description,
-      slug: video.slug,
-      videoUrl: video.video_url
-        ? video.video_url.startsWith("http")
-          ? video.video_url
-          : `/storage/${video.video_url.replace(/^public\//, "")}`
-        : "",
+      description: video.description || "No description",
+      videoUrl: video.video_url,
     }));
+
+    // Take top 3 from each and combine
+    trendingContent.value = [...photos.slice(0, 3), ...videos.slice(0, 3)];
   } catch (error) {
-    console.error("Gagal mengambil data video:", error);
+    console.error("Error fetching content:", error);
   }
 });
 </script>
