@@ -17,7 +17,7 @@
       >
         <!-- Skeleton loading cards -->
         <div
-          v-for="i in 3"
+          v-for="i in 6"
           :key="i"
           class="bg-zinc-900 rounded-lg overflow-hidden shadow-lg h-[400px]"
         >
@@ -49,6 +49,7 @@
           :videoUrl="content.videoUrl"
           :totalLikes="content.totalLikes"
           @play-video="openVideoPlayer"
+          @click="getDetailPage(content.slug)"
         />
       </div>
     </div>
@@ -72,6 +73,11 @@ const trendingContent = ref([]);
 const isVideoPlayerOpen = ref(false);
 const currentVideoUrl = ref("");
 const loading = ref(true); // Add loading state
+const slug = window.location.pathname.split("/").pop(); // ambil slug dari URL
+
+const getDetailPage = (slug) => {
+  window.location.href = `/gallery-photo/${slug}`;
+};
 
 const openVideoPlayer = (videoUrl) => {
   currentVideoUrl.value = videoUrl;
