@@ -85,6 +85,7 @@ class PhotoController extends Controller
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
             'tag' => 'nullable|string|max:255',
+            'category_id' => 'required|exists:categories,id', // Add validation for category_id
         ]);
 
         $userId = Auth::user()->id;
@@ -119,6 +120,13 @@ class PhotoController extends Controller
                 'status' => 'pending',
             ]);
 
+            // Create category content association
+            CategoryContent::create([
+                'category_id' => $request->category_id,
+                'content_photo_id' => $photo->id,
+                'content_video_id' => null
+            ]);
+
             // Extract EXIF metadata
             try {
                 $exif = exif_read_data($file->getPathname());
@@ -145,7 +153,7 @@ class PhotoController extends Controller
 
             return response()->json([
                 'message' => 'Photo uploaded successfully',
-                'data' => $photo->load('metadataPhoto')
+                'data' => $photo->load(['metadataPhoto', 'categoryContents'])
             ], 201);
         }
 
@@ -154,7 +162,7 @@ class PhotoController extends Controller
         ], 400);
     }
 
-    // update photo
+    // update photo 
     public function updatePhotoByUser(Request $request, $id)
     {
         $photo = ContentPhoto::find($id);
@@ -162,32 +170,52 @@ class PhotoController extends Controller
             return response()->json(['message' => 'Photo not found'], 404);
         }
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Changed to nullable
             'source' => 'nullable|string|max:255',
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
             'tag' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
         $slug = Str::slug($validatedData['title']);
 
-        $photo->update([
+        $updateData = [
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
-            'image' => $validatedData['image'],
             'source' => $validatedData['source'],
             'alt_text' => $validatedData['alt_text'],
             'note' => $validatedData['note'],
             'tag' => $validatedData['tag'],
+            'category_id' => $validatedData['category_id'],
             'slug' => $slug,
-        ]);
+        ];
+
+        // Only update image if new one is provided
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('foto_content', $filename, 'public');
+            $updateData['image_url'] = 'foto_content/' . $filename;
+        }
+
+        $photo->update($updateData);
+
+        // Update category if provided
+    if ($request->has('category_id')) {
+        $photo->categoryContents()->updateOrCreate(
+            ['content_photo_id' => $photo->id],
+            ['category_id' => $request->category_id]
+        );
+    }
 
         return response()->json([
-            'message' => 'Photo status updated successfully',
+            'message' => 'Photo updated successfully',
             'data' => $photo
         ], 200);
     }
+
 
     private function getGPSCoordinates($exif)
     {
@@ -266,5 +294,11 @@ class PhotoController extends Controller
         return response()->json([
             'photos' => $contentPhotos,
         ]);
+    }
+
+    public function edit($id)
+    {
+        $photo = ContentPhoto::findOrFail($id);
+        return response()->json($photo);
     }
 }

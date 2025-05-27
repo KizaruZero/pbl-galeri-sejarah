@@ -20,7 +20,7 @@
         Back to Profile
       </button>
       <h2 class="text-2xl font-bold text-center text-white mt-10 mb-8">
-        CREATE CONTENT VIDEO
+        UPDATE CONTENT VIDEO
       </h2>
 
       <div class="space-y-6">
@@ -30,9 +30,7 @@
           <div class="space-y-6">
             <!-- Title Field -->
             <div>
-              <label for="title" class="block text-sm font-medium text-white mb-2"
-                >Title*</label
-              >
+              <label for="title" class="block text-sm font-medium text-white mb-2">Title*</label>
               <input
                 type="text"
                 id="title"
@@ -130,15 +128,13 @@
           <div class="space-y-6">
             <!-- Tag Field -->
             <div>
-              <label for="tag" class="block text-sm font-medium text-white mb-2"
-                >Tag</label
-              >
+              <label for="tag" class="block text-sm font-medium text-white mb-2">Tag</label>
               <input
                 type="text"
                 id="tag"
                 v-model="form.tag"
                 class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter tags"
+                placeholder="Tag"
               />
             </div>
 
@@ -255,9 +251,7 @@
 
         <!-- Description Field (full width) -->
         <div>
-          <label for="description" class="block text-sm font-medium text-white mb-2"
-            >Description</label
-          >
+          <label for="description" class="block text-sm font-medium text-white mb-2">Description</label>
           <textarea
             id="description"
             v-model="form.description"
@@ -272,9 +266,7 @@
           <div class="space-y-6">
             <!-- Source Field -->
             <div>
-              <label for="source" class="block text-sm font-medium text-white mb-2"
-                >Source*</label
-              >
+              <label for="source" class="block text-sm font-medium text-white mb-2">Source*</label>
               <input
                 type="text"
                 id="source"
@@ -318,7 +310,7 @@
             @click="submitForm"
             class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm"
           >
-            Create
+            Update
           </button>
         </div>
       </div>
@@ -332,6 +324,7 @@ import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+
 const form = ref({
   title: "",
   video: null,
@@ -343,102 +336,145 @@ const form = ref({
   category_id: "",
 });
 
-const visitBacktoProfile = () => {
-  window.history.back();
-};
+// Add refs for existing data
+const videoId = ref(window.location.pathname.split('/').pop());
+const existingVideoUrl = ref('');
+const existingThumbnailUrl = ref('');
 
+// Add categories ref
+const categories = ref([]);
+const loading = ref(false);
 const videoName = ref("");
 const videoPreview = ref("");
 const thumbnailName = ref("");
 const thumbnailPreview = ref("");
 
-const handleVideoUpload = (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  // Check if the file is a video
-  if (!file.type.startsWith("video/")) {
-    alert("Please upload a video file only.");
-    return;
-  }
-
-  form.value.video = file;
-  videoName.value = file.name;
-
-  // Create preview
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    videoPreview.value = e.target.result;
-  };
-  reader.readAsDataURL(file);
+const visitBacktoProfile = () => {
+  window.location.href = "/profile-page";
 };
 
-const handleThumbnailUpload = (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  // Check if the file is an image
-  if (!file.type.startsWith("image/")) {
-    alert("Please upload an image file for thumbnail.");
-    return;
-  }
-
-  form.value.thumbnail = file;
-  thumbnailName.value = file.name;
-
-  // Create preview
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    thumbnailPreview.value = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-const fileInput = ref(null);
-const loading = ref(false);
+// Modify submitForm to handle updates
 const submitForm = async () => {
   try {
     const formData = new FormData();
+    
+    // Always append these fields
     formData.append("title", form.value.title);
     formData.append("description", form.value.description);
-    formData.append("video_url", form.value.video);
-    formData.append("thumbnail", form.value.thumbnail);
     formData.append("source", form.value.source);
     formData.append("link_youtube", form.value.link_youtube);
     formData.append("tag", form.value.tag);
     formData.append("category_id", form.value.category_id);
+    
+    // Only append files if they were changed
+    if (form.value.video instanceof File) {
+      formData.append("video_url", form.value.video_url);
+    }
+    if (form.value.thumbnail instanceof File) {
+      formData.append("thumbnail", form.value.thumbnail);
+    }
 
     loading.value = true;
 
-    const response = await axios.post("/api/content-video", formData, {
+    const response = await axios.post(`/api/content-video/${videoId.value}`, formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      }
     });
 
-    if (response.status === 201) {
+    if (response.status === 200) {
       Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Video uploaded successfully",
+        icon: 'success',
+        title: 'Success',
+        text: 'Video updated successfully'
       });
-
-      resetForm();
-      // Reset file input
-      if (fileInput.value) {
-        fileInput.value.value = "";
-      }
-
-      router.visit("/upload-video");
+      router.visit('/profile-page');
     }
   } catch (error) {
     console.error(error);
     Swal.fire({
-      icon: "error",
-      title: "Upload Failed",
-      text: error.response?.data?.message || "An error occurred",
+      icon: 'error',
+      title: 'Update Failed',
+      text: error.response?.data?.message || 'An error occurred'
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Modify the loadVideoData function to include proper categories loading
+const loadData = async () => {
+  try {
+    // Load categories
+    const categoriesResponse = await axios.get('/api/categories');
+    categories.value = categoriesResponse.data.data || [];
+    categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
+
+    // Load video data
+    const videoResponse = await axios.get(`/api/content-video/edit/${videoId.value}`);
+    const videoData = videoResponse.data;
+    
+    // Populate form
+    form.value = {
+      title: videoData.video.title,
+      description: videoData.video.description,
+      source: videoData.video.source,
+      tag: videoData.video.tag,
+      link_youtube: videoData.video.link_youtube,
+      category_id: videoData.category_id,
+      video: videoData.video.video_url,
+      thumbnail: videoData.video.thumbnail,
+    };
+
+    // Set previews
+    if (videoData.video.video_url) {
+      existingVideoUrl.value = `/storage/${videoData.video.video_url}`;
+      videoPreview.value = existingVideoUrl.value;
+    }
+    if (videoData.video.thumbnail) {
+      existingThumbnailUrl.value = `/storage/${videoData.video.thumbnail}`;
+      thumbnailPreview.value = existingThumbnailUrl.value;
+    }
+
+  } catch (error) {
+    console.error('Error loading data:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to load data. Please try again.'
     });
   }
+};
+
+const handleVideoUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.value.video = file;
+    videoName.value = file.name;
+    videoPreview.value = URL.createObjectURL(file);
+  }
+};
+
+const handleThumbnailUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.value.thumbnail = file;
+    thumbnailName.value = file.name;
+    thumbnailPreview.value = URL.createObjectURL(file);
+  }
+};
+
+const removeVideo = () => {
+  form.value.video = null;
+  videoName.value = "";
+  videoPreview.value = existingVideoUrl.value || "";
+};
+
+const removeThumbnail = () => {
+  form.value.thumbnail = null;
+  thumbnailName.value = "";
+  thumbnailPreview.value = existingThumbnailUrl.value || "";
 };
 
 const resetForm = () => {
@@ -458,74 +494,8 @@ const resetForm = () => {
   thumbnailPreview.value = "";
 };
 
-const videoInput = ref(null);
-const thumbnailInput = ref(null);
-
-const handleVideoDrop = (event) => {
-  const file = event.dataTransfer.files[0];
-  if (!file || !file.type.startsWith("video/")) {
-    Swal.fire("Oops!", "Please upload a video file only.", "error");
-    return;
-  }
-  form.value.video = file;
-  videoName.value = file.name;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    videoPreview.value = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-const handleThumbnailDrop = (event) => {
-  const file = event.dataTransfer.files[0];
-  if (!file || !file.type.startsWith("image/")) {
-    Swal.fire("Oops!", "Please upload an image file for thumbnail.", "error");
-    return;
-  }
-  form.value.thumbnail = file;
-  thumbnailName.value = file.name;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    thumbnailPreview.value = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-// New methods to remove video and thumbnail
-const removeVideo = () => {
-  form.value.video = null;
-  videoName.value = "";
-  videoPreview.value = "";
-  if (videoInput.value) {
-    videoInput.value.value = "";
-  }
-};
-
-const removeThumbnail = () => {
-  form.value.thumbnail = null;
-  thumbnailName.value = "";
-  thumbnailPreview.value = "";
-  if (thumbnailInput.value) {
-    thumbnailInput.value.value = "";
-  }
-};
-
-// Category handling
-const categories = ref([]);
-onMounted(async () => {
-  try {
-    const response = await axios.get("/api/categories");
-    categories.value = response.data.data || [];
-    categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Failed to load categories. Please refresh the page.",
-    });
-  }
+// Update onMounted to use the new loadData function
+onMounted(() => {
+  loadData();
 });
 </script>

@@ -146,6 +146,28 @@
                 placeholder="Tag"
               />
             </div>
+
+            <!-- Category Field -->
+            <div>
+              <label for="category" class="block text-sm font-medium text-white mb-2"
+                >Category*</label
+              >
+              <select
+                id="category"
+                v-model="form.category_id"
+                required
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="" disabled>Select a category</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.category_name }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
         <!-- Description Field (full width) -->
@@ -220,7 +242,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
@@ -233,13 +255,13 @@ const form = ref({
   source: "",
   tag: "",
   altText: "",
+  category_id: "", // Add this line
 });
 
 const fileInput = ref(null);
 
 const visitBacktoProfile = () => {
-  showModal.value = false;
-  router.visit("/profile-page");
+  window.history.back();
 };
 
 const fileName = ref("");
@@ -299,6 +321,7 @@ const submitForm = async () => {
     formData.append("alt_text", form.value.altText || "");
     formData.append("note", form.value.note || "");
     formData.append("tag", form.value.tag || "");
+    formData.append("category_id", form.value.category_id); // Add this line
 
     // Show loading state
     loading.value = true;
@@ -313,29 +336,14 @@ const submitForm = async () => {
 
     // Handle successful upload
     if (response.status === 201) {
-      // Show success message sweetalert
+      // Remove the separate category association since it's now handled in the controller
       Swal.fire({
         icon: "success",
         title: "Photo uploaded successfully",
       });
 
-      // Reset form
-      form.value = {
-        title: "",
-        description: "",
-        media: null,
-        source: "",
-        altText: "",
-        note: "",
-        tag: "",
-      };
-
-      // Reset file input
-      if (fileInput.value) {
-        fileInput.value.value = "";
-      }
-
-      // Redirect to photos page or show preview
+      // Reset form and redirect
+      resetForm();
       router.push("/photos");
     }
   } catch (error) {
@@ -371,6 +379,7 @@ const resetForm = () => {
     source: "",
     tag: "",
     altText: "",
+    category_id: "", // Add this line
   };
   fileName.value = "";
   filePreview.value = "";
@@ -385,4 +394,24 @@ const removeImage = () => {
     fileInput.value.value = "";
   }
 };
+
+// Fetch categories on component mount
+const categories = ref([]);
+onMounted(async () => {
+  try {
+    const response = await axios.get("/api/categories");
+    // Ensure we're getting the data property from the response
+    categories.value = response.data.data || [];
+
+    // Sort categories alphabetically by name if needed
+    categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to load categories. Please refresh the page.",
+    });
+  }
+});
 </script>

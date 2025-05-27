@@ -73,7 +73,7 @@ class VideoController extends Controller
         ->get();
 
         if ($popularVideos->isEmpty()) {
-            return response()->json(['message' => 'No popular photos found'], 404);
+            return response()->json(['message' => 'No popular video found'], 404);
         }
         return response()->json($popularVideos);
     }
@@ -88,6 +88,8 @@ class VideoController extends Controller
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
             'link_youtube' => 'nullable|url|max:255',
+            'category_id' => 'required|exists:categories,id', // Add validation for category_id
+
         ]);
 
         $userId = Auth::user()->id;
@@ -129,12 +131,20 @@ class VideoController extends Controller
                 'status' => 'pending',
             ]);
 
+
+            // Create category content association
+            CategoryContent::create([
+                'category_id' => $request->category_id,
+                'content_photo_id' => null,
+                'content_video_id' => $video->id,
+            ]);
+
             // Extract video metadata using MediaAnalyzer facade
             $this->extractAndSaveVideoMetadata($videoFile, $video->id);
 
             return response()->json([
                 'message' => 'Video uploaded successfully',
-                'data' => $video
+                'data' => $video->load(['metadataVideo', 'categoryContents'])
             ], 201);
         }
 
@@ -241,38 +251,78 @@ class VideoController extends Controller
 
     public function updateVideoByUser(Request $request, $id)
     {
-        $video = ContentVideo::find($id);
-        if (!$video) {
-            return response()->json(['message' => 'Video not found'], 404);
+        $video = ContentVideo::findOrFail($id);
+    
+    $request->validate([
+        'title' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
+        'video_url' => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+        'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
+        'source' => 'nullable|string|max:255',
+        'tag' => 'nullable|string|max:255',
+        'link_youtube' => 'nullable|url|max:255',
+        'category_id' => 'nullable|exists:categories,id',
+    ]);
+
+    $data = [];
+    
+    // Handle video file if uploaded
+    if ($request->hasFile('video_url')) {
+        // Delete old video
+        if ($video->video_url) {
+            Storage::disk('public')->delete($video->video_url);
         }
+        
+        $videoFile = $request->file('video_url');
+        $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
+        $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
+        $data['video_url'] = 'video_content/' . $videoFilename;
+        
+        // Update metadata for new video
+        $this->extractAndSaveVideoMetadata($videoFile, $video->id);
+    }
 
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'source' => 'nullable|string|max:255',
-            'tag' => 'nullable|string|max:255',
-            'link_youtube' => 'nullable|url|max:255',
-            'video_url' => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
-            'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
-        ]);
+    // Handle thumbnail if uploaded
+    if ($request->hasFile('thumbnail')) {
+        // Delete old thumbnail
+        if ($video->thumbnail) {
+            Storage::disk('public')->delete($video->thumbnail);
+        }
+        
+        $thumbnailFile = $request->file('thumbnail');
+        $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
+        $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
+        $data['thumbnail'] = 'thumbnail_video/' . $thumbnailFilename;
+    }
 
-        $slug = Str::slug($validatedData['title']);
+    // Update text fields
+    $fields = ['title', 'description', 'source', 'tag', 'link_youtube'];
+    foreach ($fields as $field) {
+        if ($request->has($field)) {
+            $data[$field] = $request->input($field);
+        }
+    }
 
-        $video->update([
-            'title' => $validatedData['title'],
-            'description' => $validatedData['description'],
-            'source' => $validatedData['source'],
-            'tag' => $validatedData['tag'],
-            'link_youtube' => $validatedData['link_youtube'],
-            'video_url' => $validatedData['video_url'],
-            'thumbnail' => $validatedData['thumbnail'],
-            'slug' => $slug,
-        ]);
+    // Update slug if title is changed
+    if (isset($data['title'])) {
+        $data['slug'] = Str::slug($data['title']);
+    }
 
-        return response()->json([
-            'message' => 'Video updated successfully',
-            'data' => $video
-        ], 200);
+    // Update video
+    $video->update($data);
+
+    // Update category if provided
+    if ($request->has('category_id')) {
+        $video->categoryContents()->updateOrCreate(
+            ['content_video_id' => $video->id],
+            ['category_id' => $request->category_id]
+        );
+    }
+
+    return response()->json([
+        'message' => 'Video updated successfully',
+        'data' => $video->fresh(['metadataVideo', 'categoryContents'])
+    ]);
     }
 
 
@@ -308,4 +358,87 @@ class VideoController extends Controller
         }
         return response()->json($contentVideos);
     }
+
+    public function edit($id)
+{
+    $video = ContentVideo::with(['categoryContents'])->findOrFail($id);
+    
+    return response()->json([
+        'video' => $video,
+        'category_id' => $video->categoryContents->first()?->category_id
+    ]);
+}
+
+    // public function update(Request $request, $id)
+    // {
+    //     $video = ContentVideo::findOrFail($id);
+        
+    //     $request->validate([
+    //         'title' => 'nullable|string|max:255',
+    //         'description' => 'nullable|string',
+    //         'video_url' => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+    //         'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
+    //         'source' => 'nullable|string|max:255',
+    //         'tag' => 'nullable|string|max:255',
+    //         'link_youtube' => 'nullable|url|max:255',
+    //         'category_id' => 'nullable|exists:categories,id',
+    //     ]);
+
+    //     $data = [];
+        
+    //     // Handle video file if uploaded
+    //     if ($request->hasFile('video_url')) {
+    //         // Delete old video
+    //         if ($video->video_url) {
+    //             Storage::disk('public')->delete($video->video_url);
+    //         }
+            
+    //         $videoFile = $request->file('video_url');
+    //         $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
+    //         $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
+    //         $data['video_url'] = $videoPath;
+            
+    //         // Update metadata for new video
+    //         $this->extractAndSaveVideoMetadata($videoFile, $video->id);
+    //     }
+
+    //     // Handle thumbnail if uploaded
+    //     if ($request->hasFile('thumbnail')) {
+    //         // Delete old thumbnail
+    //         if ($video->thumbnail) {
+    //             Storage::disk('public')->delete($video->thumbnail);
+    //         }
+            
+    //         $thumbnailFile = $request->file('thumbnail');
+    //         $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
+    //         $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
+    //         $data['thumbnail'] = $thumbnailPath;
+    //     }
+
+    //     // Update text fields
+    //     $fields = ['title', 'description', 'source', 'tag', 'link_youtube'];
+    //     foreach ($fields as $field) {
+    //         if ($request->has($field)) {
+    //             $data[$field] = $request->input($field);
+    //         }
+    //     }
+
+    //     // Update slug if title is changed
+    //     if (isset($data['title'])) {
+    //         $data['slug'] = Str::slug($data['title']);
+    //     }
+
+    //     // Update video
+    //     $video->update($data);
+
+    //     // Update category if provided
+    //     if ($request->has('category_id')) {
+    //         $video->categoryContents()->update(['category_id' => $request->category_id]);
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Video updated successfully',
+    //         'data' => $video->fresh(['metadataVideo', 'categoryContents'])
+    //     ]);
+    // }
 }

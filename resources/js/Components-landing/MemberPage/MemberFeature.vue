@@ -27,7 +27,7 @@
 
     <!-- Features Section -->
     <div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-10">
+      <div class="grid grid-cols-3 md:grid-cols-3 gap-8 text-center mb-10">
         <div class="flex flex-col items-center">
           <div class="bg-gray-800 p-4 rounded-md inline-block mb-4">
             <svg
@@ -97,20 +97,20 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
 
 // Define props
 const props = defineProps({
   isAuthenticated: {
     type: Boolean,
-    required: true
-  }
+    required: true,
+  },
 });
 
 // Get user data from Inertia page props
 const username = computed(() => {
   const user = usePage().props.auth.user;
-  return user ? user.name : 'Member';
+  return user ? user.name : "Member";
 });
 </script>
