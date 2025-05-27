@@ -80,7 +80,7 @@
     <option
         v-for="category in categories"
         :key="category.id"
-        :value="Number(category.id)"
+        :value="Number(category.category_name)"
     >
         {{ category.category_name }}
     </option>
@@ -170,13 +170,13 @@
 
             // Initialize form with photo data
             form.value = {
-              title: photo.title || '',
-              description: photo.description || '',
-              source: photo.source || '',
-              tag: photo.tag || '',
-              category_id: Number(photo.category_id) || '', // Use the photo's category_id
-              altText: photo.alt_text || '',
-              media: null
+                title: photo.title || '',
+                description: photo.description || '',
+                source: photo.source || '',
+                tag: photo.tag || '',
+                category_id: photo.category_id || '',
+                altText: photo.alt_text || '',
+                media: null
             };
 
             console.log('Form data after initialization:', form.value);
