@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-black text-white mb-4 py-3 px-4 md:px-6 shadow-md fixed top-0 left-0 w-full z-50 font-poppins"
+    class="bg-black text-white py-3 px-4 md:px-6 shadow-md fixed top-0 left-0 w-full z-50 font-poppins"
   >
     <div class="max-w-screen-xl mx-auto flex justify-between items-center w-full">
       <!-- Mobile: Menu & Logo -->
