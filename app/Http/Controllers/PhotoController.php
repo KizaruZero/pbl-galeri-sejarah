@@ -177,6 +177,7 @@ class PhotoController extends Controller
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
             'tag' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
         $slug = Str::slug($validatedData['title']);
 
@@ -187,6 +188,7 @@ class PhotoController extends Controller
             'alt_text' => $validatedData['alt_text'],
             'note' => $validatedData['note'],
             'tag' => $validatedData['tag'],
+            'category_id' => $validatedData['category_id'],
             'slug' => $slug,
         ];
 
@@ -199,6 +201,14 @@ class PhotoController extends Controller
         }
 
         $photo->update($updateData);
+
+        // Update category if provided
+    if ($request->has('category_id')) {
+        $photo->categoryContents()->updateOrCreate(
+            ['content_photo_id' => $photo->id],
+            ['category_id' => $request->category_id]
+        );
+    }
 
         return response()->json([
             'message' => 'Photo updated successfully',
