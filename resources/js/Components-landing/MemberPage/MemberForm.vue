@@ -61,7 +61,7 @@
           <button
             type="button"
             @click="resetForm"
-            class="w-full py-3 bg-black hover:bg-gray-900 text-white rounded-md transition duration-300 border border-red-700"
+            class="w-full py-3 bg-black hover:bg-red-700 text-white rounded-md transition duration-300 border border-red-700"
             :disabled="processing"
           >
             Reset
