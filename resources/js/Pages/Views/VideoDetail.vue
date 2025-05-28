@@ -2,8 +2,8 @@
     <MainLayout>
         <div class="min-h-screen bg-black">
             <!-- Back Button - Adjusted padding for mobile -->
-            <div class="p-4 mt-8">
-                <button @click="goBack" class="flex mt-8 items-center text-gray-400 hover:text-white">
+            <div class="p-4">
+                <button @click="goBack" class="flex items-center text-gray-400 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                         fill="currentColor">
                         <path fill-rule="evenodd"

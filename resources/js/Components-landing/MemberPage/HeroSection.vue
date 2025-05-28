@@ -39,6 +39,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import defaultPhoto from '@/Assets/default-photo.jpg';
 
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
@@ -64,19 +65,22 @@ const fetchCompanyProfile = async () => {
         const data = response.data.data;
         console.log('Company profile response:', data);
 
-        // ✅ Hanya masukkan gambar yang tidak null
+        // Use default photo for missing images
         memberImages.value = [
-            data.bg_member_1 && `/storage/${data.bg_member_1}`,
-            data.bg_member_2 && `/storage/${data.bg_member_2}`,
-            data.bg_member_3 && `/storage/${data.bg_member_3}`,
-        ].filter(Boolean); // filter null/undefined
+            data.bg_member_1 ? `/storage/${data.bg_member_1}` : defaultPhoto,
+            data.bg_member_2 ? `/storage/${data.bg_member_2}` : defaultPhoto,
+            data.bg_member_3 ? `/storage/${data.bg_member_3}` : defaultPhoto,
+        ];
 
         companyProfile.value = data;
         startSlideshow();
     } catch (error) {
         console.error('Error fetching company profile:', error);
+        // Set default values on error
+        memberImages.value = [defaultPhoto];
+        companyProfile.value = { member_text: 'Members' };
     } finally {
-        isLoading.value = false; // ✅ Set selesai loading
+        isLoading.value = false;
     }
 };
 

@@ -94,7 +94,7 @@
               <NotificationList />
             </div>
             <img
-              :src="userAvatar || `https://ui-avatars.com/api/?name=${user.name}`"
+              :src="userAvatar || defaultPhoto"
               :alt="user.name"
               class="w-14 h-14 rounded-full object-cover cursor-pointer"
               @click="dropdownOpen = !dropdownOpen"
@@ -151,7 +151,7 @@
         <!-- User Profile Section (if logged in) -->
         <div v-if="user" class="flex flex-col items-center gap-4 mb-4">
           <img
-            :src="userAvatar || `https://ui-avatars.com/api/?name=${user.name}`"
+            :src="userAvatar || defaultPhoto"
             :alt="user.name"
             class="w-20 h-20 rounded-full object-cover"
           />
@@ -211,6 +211,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
 import NotificationList from "../Components/NotificationList.vue";
+import defaultPhoto from '@/Assets/default-photo.jpg';
 
 const dropdownRef = ref(null);
 const menuOpen = ref(false);
@@ -254,7 +255,7 @@ const fetchCompanyProfile = async () => {
 };
 
 const getMediaUrl = (url) => {
-  if (!url) return `https://ui-avatars.com/api/?name=${user.value?.name || "User"}`;
+  if (!url) return defaultPhoto;
   if (url.startsWith("http")) return url;
 
   // Simplified path cleaning
@@ -264,7 +265,7 @@ const getMediaUrl = (url) => {
 
   return cleanPath
     ? `/storage/${cleanPath}`
-    : `https://ui-avatars.com/api/?name=${user.value?.name || "User"}`;
+    : defaultPhoto;
 };
 
 const fetchUserProfile = async () => {

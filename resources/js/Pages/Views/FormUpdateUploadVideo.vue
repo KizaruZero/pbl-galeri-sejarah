@@ -1,9 +1,9 @@
 <template>
   <MainLayout>
-    <div class="mt-14 mx-auto p-6 bg-[#0d0d0d] max-w-full">
+    <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
       <button
         @click="visitBacktoProfile"
-        class="mb-6 mt-14 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
+        class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

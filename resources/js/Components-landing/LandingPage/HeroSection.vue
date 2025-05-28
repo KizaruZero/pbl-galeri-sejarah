@@ -39,6 +39,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import defaultPhoto from '@/Assets/default-photo.jpg';
 
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
@@ -62,16 +63,23 @@ const fetchCompanyProfile = async () => {
         const response = await axios.get('/api/company-profile/home');
         const data = response.data.data;
 
+        // Create array of background URLs, use default image if any is missing
         data.bg_home_urls = [
-            `/storage/${data.bg_home_1}`,
-            `/storage/${data.bg_home_2}`,
-            `/storage/${data.bg_home_3}`,
+            data.bg_home_1 ? `/storage/${data.bg_home_1}` : defaultPhoto,
+            data.bg_home_2 ? `/storage/${data.bg_home_2}` : defaultPhoto,
+            data.bg_home_3 ? `/storage/${data.bg_home_3}` : defaultPhoto,
         ];
 
         companyProfile.value = data;
         startSlideshow();
     } catch (error) {
         console.error('Error fetching company profile:', error);
+        // If there's an error, use default image
+        companyProfile.value = {
+            cms_name: 'Welcome',
+            bg_home_urls: [defaultPhoto]
+        };
+        startSlideshow();
     } finally {
         isLoading.value = false;
     }
