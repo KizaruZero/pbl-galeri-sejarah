@@ -98,7 +98,7 @@ const displayedArticles = computed(() => {
 
 // Helper function for image URL
 const getImageUrl = (imageUrl) => {
-  if (!imageUrl) return "/default-article.jpg";
+  if (!imageUrl) return "/js/Assets/default-photo.jpg";
   return imageUrl.startsWith("http")
     ? imageUrl
     : `/storage/${imageUrl.replace(/^public\//, "")}`;

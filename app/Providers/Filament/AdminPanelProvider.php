@@ -35,7 +35,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('dashboard')
             ->login()
             ->brandName('KASUNANAN')
-
             ->colors([
                 'primary' => Color::Indigo,
             ])

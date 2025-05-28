@@ -55,7 +55,7 @@
               ? article.image_url.startsWith('http')
                 ? article.image_url
                 : `/storage/${article.image_url.replace(/^public\//, '')}`
-              : '/default-article.jpg'
+              : '/js/Assets/default-photo.jpg'
           "
           :status="article.status"
           :total_views="article.total_views"

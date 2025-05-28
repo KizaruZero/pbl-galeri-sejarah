@@ -86,7 +86,9 @@ class ContentPhotoResource extends Resource
                     ->image()
                     ->directory('foto_content')
                     ->optimize('webp')
-                    ->resize(50)
+                    ->preserveFilenames()
+                    ->imageResizeMode('contain')
+                   
                     ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.') // Helper text
                     ->hintIcon('heroicon-o-information-circle') // Optional icon
                     ->hintColor('warning') // Optional color (danger, warning, success, etc.)

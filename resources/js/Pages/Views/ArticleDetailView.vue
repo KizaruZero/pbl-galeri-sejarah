@@ -244,7 +244,7 @@ const fetchArticle = async () => {
         ? articleData.image_url.startsWith("http")
           ? articleData.image_url
           : `/storage/${articleData.image_url.replace(/^public\//, "")}`
-        : "/default-article.jpg",
+        : "/js/Assets/default-photo.jpg",
       userId: articleData.user_id || null,
       thumbnailUrl: articleData.thumbnail_url || null,
       status: articleData.status || "draft",

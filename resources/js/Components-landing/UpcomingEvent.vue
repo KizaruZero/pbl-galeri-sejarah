@@ -88,9 +88,10 @@
             <!-- Image section (60%) -->
             <div class="relative w-full h-[300px] bg-black">
               <img
-                :src="slotProps.data.imageUrl"
+                :src="slotProps.data.imageUrl ? slotProps.data.imageUrl : '/js/Assets/default-photo.jpg'"
                 :alt="slotProps.data.altText || slotProps.data.title"
                 class="object-cover w-full h-full transition-opacity duration-300"
+                @error="$event.target.src = '/js/Assets/default-photo.jpg'"
               />
               <div class="absolute inset-0 bg-black bg-opacity-60"></div>
             </div>
