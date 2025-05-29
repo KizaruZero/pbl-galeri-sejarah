@@ -38,15 +38,15 @@ class PhotoController extends Controller
             'contentReactions.reactionType',
             'userFavorite'
         ])
-        ->where('status', 'approved')
-        ->withCount([
-            'contentReactions',
-            'userComments',
-            'userFavorite'
-        ])
-        ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
-        ->take(3)
-        ->get();
+            ->where('status', 'approved')
+            ->withCount([
+                'contentReactions',
+                'userComments',
+                'userFavorite'
+            ])
+            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
+            ->take(3)
+            ->get();
 
         if ($popularPhotos->isEmpty()) {
             return response()->json(['message' => 'No popular photos found'], 404);
@@ -80,7 +80,7 @@ class PhotoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10485760',
             'source' => 'nullable|string|max:255',
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
@@ -162,7 +162,7 @@ class PhotoController extends Controller
         ], 400);
     }
 
-    // update photo 
+    // update photo
     public function updatePhotoByUser(Request $request, $id)
     {
         $photo = ContentPhoto::find($id);
@@ -203,12 +203,12 @@ class PhotoController extends Controller
         $photo->update($updateData);
 
         // Update category if provided
-    if ($request->has('category_id')) {
-        $photo->categoryContents()->updateOrCreate(
-            ['content_photo_id' => $photo->id],
-            ['category_id' => $request->category_id]
-        );
-    }
+        if ($request->has('category_id')) {
+            $photo->categoryContents()->updateOrCreate(
+                ['content_photo_id' => $photo->id],
+                ['category_id' => $request->category_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Photo updated successfully',
@@ -258,9 +258,6 @@ class PhotoController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        if ($contentPhotos->isEmpty()) {
-            return response()->json(['message' => 'Photo not found'], 404);
-        }
 
         return response()->json([
             'photos' => $contentPhotos,

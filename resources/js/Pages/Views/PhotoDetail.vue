@@ -277,7 +277,7 @@
                                         <button v-for="reaction in comment.reactions" :key="reaction.reaction_type_id"
                                             @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                             class="flex items-center text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-2 py-1 transition-colors"
-                                            :class="{ 
+                                            :class="{
                                                     'bg-blue-900/50': reaction.userReacted,
                                                     'cursor-default': !UserId,
                                                     'hover:bg-gray-700/50': !UserId
@@ -586,32 +586,98 @@
     };
 
     // Add this new function to check bookmark status
-    const checkIfBookmarked = async () => {
-        if (!currentUser.value ?.id || !photo.value.id) return;
+    const checkIfBookmarked = async (photoId = null) => {
+    const currentPhotoId = photoId || photo.value.id;
+    const userId = currentUser.value?.id;
 
-        try {
-            const response = await axios.get(`/api/favorite/photo/user/${currentUser.value.id}`, {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ?.getAttribute(
-                        'content'),
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                withCredentials: true
-            });
+    console.log('Checking bookmark with:', { currentPhotoId, userId });
 
-            const isBookmarkedPhoto = response.data.some(favorite =>
-                favorite.content_photo_id === photo.value.id
-            );
+    if (!userId || !currentPhotoId) {
+        console.log('Missing userId or photoId, skipping bookmark check');
+        return;
+    }
 
-            isBookmarked.value = isBookmarkedPhoto;
-        } catch (error) {
-            console.error('Error checking bookmark status:', error);
-            if (error.response ?.status === 401) {
-                router.visit('/login');
+    try {
+        const response = await axios.get(`/api/favorite/photo/user/${userId}`, {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            withCredentials: true
+        });
+
+        console.log('Bookmark response:', response.data);
+        console.log('Response type:', typeof response.data);
+        console.log('Is array:', Array.isArray(response.data));
+
+        // Handle different response formats
+        let bookmarkData = [];
+
+        if (Array.isArray(response.data)) {
+            bookmarkData = response.data;
+        } else if (response.data && typeof response.data === 'object') {
+            // Check if it's wrapped in a data property
+            if (Array.isArray(response.data.data)) {
+                bookmarkData = response.data.data;
+            } else if (Array.isArray(response.data.favorites)) {
+                bookmarkData = response.data.favorites;
+            } else if (response.data.success && Array.isArray(response.data.bookmarks)) {
+                bookmarkData = response.data.bookmarks;
+            } else {
+                // If it's a single object, convert to array
+                bookmarkData = [response.data];
             }
         }
-    };
+
+        console.log('Processed bookmark data:', bookmarkData);
+
+        const isBookmarkedPhoto = bookmarkData.some(favorite => {
+            const favoritePhotoId = favorite.content_photo_id || favorite.photo_id || favorite.id;
+            return favoritePhotoId === parseInt(currentPhotoId);
+        });
+
+        console.log('Is bookmarked:', isBookmarkedPhoto);
+        isBookmarked.value = isBookmarkedPhoto;
+
+    } catch (error) {
+        console.error('Error checking bookmark status:', error);
+
+        // Try alternative endpoint if the first one fails
+        if (error.response?.status !== 401) {
+            try {
+                console.log('Trying alternative bookmark check...');
+                const altResponse = await axios.get(`/api/user-favorite/check`, {
+                    params: {
+                        user_id: userId,
+                        content_photo_id: currentPhotoId
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    withCredentials: true
+                });
+
+                isBookmarked.value = altResponse.data.is_bookmarked || false;
+                console.log('Alternative bookmark check result:', isBookmarked.value);
+                return;
+            } catch (altError) {
+                console.error('Alternative bookmark check also failed:', altError);
+            }
+        }
+
+        if (error.response?.status === 401) {
+            router.visit('/login');
+        } else if (error.response?.status === 404) {
+            // User has no bookmarks yet
+            console.log('No bookmarks found for user');
+            isBookmarked.value = false;
+        }
+        // Jangan reset isBookmarked jika error lain, biarkan state sebelumnya
+    }
+};
 
     // Fetch comments for the photo
     const fetchComments = async (photoId) => {
@@ -908,67 +974,82 @@
 
     // Fetch photo data
     onMounted(async () => {
+    try {
+        // Fetch reactions first
         await fetchReactions();
 
-        try {
-            const slug = window.location.pathname.split("/").pop();
-            const response = await axios.get(`/api/content-photo/${slug}`, {
-                headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-                },
-            });
+        const slug = window.location.pathname.split("/").pop();
+        const response = await axios.get(`/api/content-photo/${slug}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+            },
+        });
 
-            console.log('Photo data:', response.data);
+        console.log('Photo data:', response.data);
 
-            const photoData = response.data.photo;
+        const photoData = response.data.photo;
 
-            photo.value = {
-                id: photoData.id,
-                title: photoData.title,
-                description: photoData.description,
-                imageUrl: photoData.image_url ?
-                    `/storage/${photoData.image_url.replace(/^public\//, "")}` :
-                    "/js/Assets/default-photo.jpg",
-                altText: photoData.alt_text || photoData.title,
-                tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
-                user: photoData.user,
-                created_at: photoData.created_at,
-                source: photoData.source,
-                note: photoData.note,
-                total_views: photoData.total_views || 0,
-                // Metadata fields
-                collection_date: photoData.metadata_photo ?.collection_date,
-                file_size: photoData.metadata_photo ?.file_size,
-                aperture: photoData.metadata_photo ?.aperture,
-                location: photoData.metadata_photo ?.location,
-                camera_model: photoData.metadata_photo ?.model,
-                ISO: photoData.metadata_photo ?.ISO,
-                dimensions: photoData.metadata_photo ?.dimensions,
-            };
+        photo.value = {
+            id: photoData.id,
+            title: photoData.title,
+            description: photoData.description,
+            imageUrl: photoData.image_url ?
+                `/storage/${photoData.image_url.replace(/^public\//, "")}` :
+                "/js/Assets/default-photo.jpg",
+            altText: photoData.alt_text || photoData.title,
+            tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
+            user: photoData.user,
+            created_at: photoData.created_at,
+            source: photoData.source,
+            note: photoData.note,
+            total_views: photoData.total_views || 0,
+            // Metadata fields
+            collection_date: photoData.metadata_photo?.collection_date,
+            file_size: photoData.metadata_photo?.file_size,
+            aperture: photoData.metadata_photo?.aperture,
+            location: photoData.metadata_photo?.location,
+            camera_model: photoData.metadata_photo?.model,
+            ISO: photoData.metadata_photo?.ISO,
+            dimensions: photoData.metadata_photo?.dimensions,
+        };
 
-            // Set the actual like count from total_reactions
-            likeCount.value = response.data.total_reactions || 0;
+        // Set the actual like count from total_reactions
+        likeCount.value = response.data.total_reactions || 0;
 
-            // Get existing reactions for this photo
-            const userReaction = photoData.content_reactions.find(
-                reaction => reaction.user_id === UserId.value
+        // Get existing reactions for this photo
+        const userReaction = photoData.content_reactions.find(
+            reaction => reaction.user_id === UserId.value
+        );
+        isLiked.value = !!userReaction;
+
+        // Check if bookmark data is already included in photo response
+        if (photoData.user_favorites && Array.isArray(photoData.user_favorites)) {
+            const userBookmark = photoData.user_favorites.find(
+                fav => fav.user_id === UserId.value
             );
-            isLiked.value = !!userReaction;
-
-            await checkIfBookmarked();
-
-            // Fetch comments if the photo has an ID
-            if (photo.value.id) {
-                await fetchComments(photo.value.id);
+            isBookmarked.value = !!userBookmark;
+            console.log('Bookmark status from photo data:', isBookmarked.value);
+        } else {
+            // PENTING: Check bookmark setelah photo data berhasil di-set
+            if (photo.value.id && UserId.value) {
+                console.log('Calling checkIfBookmarked with photo ID:', photo.value.id);
+                await checkIfBookmarked(photo.value.id);
             }
-        } catch (error) {
-            console.error("Error fetching photo:", error);
-            router.push("/not-found");
-        } finally {
-            loading.value = false;
         }
-    });
+
+        // Fetch comments if the photo has an ID
+        if (photo.value.id) {
+            await fetchComments(photo.value.id);
+        }
+
+    } catch (error) {
+        console.error("Error fetching photo:", error);
+        router.push("/not-found");
+    } finally {
+        loading.value = false;
+    }
+});
 
 </script>
 
