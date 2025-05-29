@@ -38,15 +38,15 @@ class PhotoController extends Controller
             'contentReactions.reactionType',
             'userFavorite'
         ])
-        ->where('status', 'approved')
-        ->withCount([
-            'contentReactions',
-            'userComments',
-            'userFavorite'
-        ])
-        ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
-        ->take(3)
-        ->get();
+            ->where('status', 'approved')
+            ->withCount([
+                'contentReactions',
+                'userComments',
+                'userFavorite'
+            ])
+            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
+            ->take(3)
+            ->get();
 
         if ($popularPhotos->isEmpty()) {
             return response()->json(['message' => 'No popular photos found'], 404);
@@ -203,12 +203,12 @@ class PhotoController extends Controller
         $photo->update($updateData);
 
         // Update category if provided
-    if ($request->has('category_id')) {
-        $photo->categoryContents()->updateOrCreate(
-            ['content_photo_id' => $photo->id],
-            ['category_id' => $request->category_id]
-        );
-    }
+        if ($request->has('category_id')) {
+            $photo->categoryContents()->updateOrCreate(
+                ['content_photo_id' => $photo->id],
+                ['category_id' => $request->category_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Photo updated successfully',
@@ -258,9 +258,6 @@ class PhotoController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        if ($contentPhotos->isEmpty()) {
-            return response()->json(['message' => 'Photo not found'], 404);
-        }
 
         return response()->json([
             'photos' => $contentPhotos,
