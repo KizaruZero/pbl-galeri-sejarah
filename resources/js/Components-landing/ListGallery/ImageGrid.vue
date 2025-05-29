@@ -82,7 +82,7 @@
           :description="photo.description || 'No description available'"
           :userId="photo.user_id"
           :userName="photo.userName || 'Unknown Photographer'"
-          :userAvatar="generateAvatar(photo.userName, photo.user?.photo_profile)"
+          :userAvatar="photo.userAvatar || '/js/Assets/default-avatar.jpg'"
           :titleSize="'lg'"
           @click="getDetailPage(photo.slug)"
         />
@@ -122,38 +122,6 @@ const getMediaUrl = (url) => {
     .replace(/^storage\//, "");
 
   return cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
-};
-
-// Add this function before onMounted
-const generateAvatar = (userName, profilePic) => {
-  // If there's a profile picture, return its URL
-  if (profilePic && profilePic.trim()) {
-    return `/storage/${profilePic.replace(/^public\//, "")}`;
-  }
-
-  // Generate letter avatar only when no profile picture exists
-  const name = userName || "Unknown";
-  const letter = name.charAt(0).toUpperCase();
-  const canvas = document.createElement("canvas");
-  canvas.width = 100;
-  canvas.height = 100;
-
-  const ctx = canvas.getContext("2d");
-
-  // Create a circular background
-  ctx.beginPath();
-  ctx.arc(50, 50, 50, 0, Math.PI * 2);
-  ctx.fillStyle = "#4B5563";
-  ctx.fill();
-
-  // Add the letter
-  ctx.fillStyle = "#FFFFFF";
-  ctx.font = "bold 40px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(letter, 50, 50);
-
-  return canvas.toDataURL();
 };
 
 onMounted(async () => {
