@@ -273,7 +273,7 @@
                                             <button v-for="reaction in comment.reactions" :key="reaction.reaction_type_id"
                                                 @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                                 class="flex items-center text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-2 py-1 transition-colors"
-                                                :class="{ 
+                                                :class="{
                                                     'bg-blue-900/50': reaction.userReacted,
                                                     'cursor-default': !UserId,
                                                     'hover:bg-gray-700/50': !UserId
@@ -851,7 +851,7 @@
 
     // Action functions
     const toggleBookmark = async () => {
-        if (!currentUser.value.id) {
+        if (!currentUser.value?.id) {
             console.log('No user logged in');
             router.visit('/login');
             return;
@@ -867,9 +867,12 @@
         try {
             if (isBookmarked.value) {
                 console.log('Attempting to delete bookmark');
-                // Use the delete video favorite route
                 await axios.delete('/api/user-favorite/video', {
-                    headers,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
                     withCredentials: true,
                     data: {
                         user_id: currentUser.value.id,
@@ -880,12 +883,15 @@
                 isBookmarked.value = false;
             } else {
                 console.log('Attempting to create bookmark');
-                // Use the create video favorite route
                 const response = await axios.post('/api/user-favorite/video', {
                     user_id: currentUser.value.id,
                     content_video_id: video.value.id
                 }, {
-                    headers,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
                     withCredentials: true
                 });
                 console.log('Bookmark created:', response.data);
@@ -893,12 +899,12 @@
             }
         } catch (error) {
             console.error('Error details:', {
-                response: error.response ?.data,
-                status: error.response ?.status,
+                response: error.response?.data,
+                status: error.response?.status,
                 message: error.message
             });
 
-            if (error.response ?.status === 401) {
+            if (error.response?.status === 401) {
                 router.visit('/login');
             } else {
                 alert('Error updating bookmark. Please try again.');
@@ -908,24 +914,90 @@
         }
     };
 
-    const checkIfBookmarked = async () => {
-        if (!currentUser.value.id || !video.value.id) return;
+    const checkIfBookmarked = async (videoId = null) => {
+        const currentVideoId = videoId || video.value.id;
+        const userId = currentUser.value?.id;
+
+        console.log('Checking bookmark with:', { currentVideoId, userId });
+
+        if (!userId || !currentVideoId) {
+            console.log('Missing userId or videoId, skipping bookmark check');
+            return;
+        }
 
         try {
-            const response = await axios.get(`/api/favorite/video/user/${currentUser.value.id}`, {
-                headers,
+            const response = await axios.get(`/api/favorite/video/user/${userId}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
                 withCredentials: true
             });
 
-            const isBookmarkedVideo = response.data.some(favorite =>
-                favorite.content_video_id === video.value.id
-            );
+            console.log('Bookmark response:', response.data);
+            console.log('Response type:', typeof response.data);
+            console.log('Is array:', Array.isArray(response.data));
 
+            // Handle different response formats
+            let bookmarkData = [];
+
+            if (Array.isArray(response.data)) {
+                bookmarkData = response.data;
+            } else if (response.data && typeof response.data === 'object') {
+                if (Array.isArray(response.data.data)) {
+                    bookmarkData = response.data.data;
+                } else if (Array.isArray(response.data.favorites)) {
+                    bookmarkData = response.data.favorites;
+                } else if (response.data.success && Array.isArray(response.data.bookmarks)) {
+                    bookmarkData = response.data.bookmarks;
+                } else {
+                    bookmarkData = [response.data];
+                }
+            }
+
+            console.log('Processed bookmark data:', bookmarkData);
+
+            const isBookmarkedVideo = bookmarkData.some(favorite => {
+                const favoriteVideoId = favorite.content_video_id || favorite.video_id || favorite.id;
+                return favoriteVideoId === parseInt(currentVideoId);
+            });
+
+            console.log('Is bookmarked:', isBookmarkedVideo);
             isBookmarked.value = isBookmarkedVideo;
+
         } catch (error) {
             console.error('Error checking bookmark status:', error);
-            if (error.response ?.status === 401) {
+
+            if (error.response?.status !== 401) {
+                try {
+                    console.log('Trying alternative bookmark check...');
+                    const altResponse = await axios.get(`/api/user-favorite/check`, {
+                        params: {
+                            user_id: userId,
+                            content_video_id: currentVideoId
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        withCredentials: true
+                    });
+
+                    isBookmarked.value = altResponse.data.is_bookmarked || false;
+                    console.log('Alternative bookmark check result:', isBookmarked.value);
+                    return;
+                } catch (altError) {
+                    console.error('Alternative bookmark check also failed:', altError);
+                }
+            }
+
+            if (error.response?.status === 401) {
                 router.visit('/login');
+            } else if (error.response?.status === 404) {
+                console.log('No bookmarks found for user');
+                isBookmarked.value = false;
             }
         }
     };
@@ -988,6 +1060,21 @@
                 reaction => reaction.user_id === UserId.value
             );
             isLiked.value = !!userReaction;
+
+            // Check if bookmark data is already included in video response
+            if (videoData.user_favorites && Array.isArray(videoData.user_favorites)) {
+                const userBookmark = videoData.user_favorites.find(
+                    fav => fav.user_id === UserId.value
+                );
+                isBookmarked.value = !!userBookmark;
+                console.log('Bookmark status from video data:', isBookmarked.value);
+            } else {
+                // Check bookmark after video data is set
+                if (video.value.id && UserId.value) {
+                    console.log('Calling checkIfBookmarked with video ID:', video.value.id);
+                    await checkIfBookmarked(video.value.id);
+                }
+            }
 
             await checkIfBookmarked();
 

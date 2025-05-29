@@ -44,7 +44,9 @@
             </div>
 
             <!-- Photo container -->
-            <div class="aspect-square overflow-hidden relative" @click="navigateToPhotoDetail(photo)">
+            <div class="aspect-square overflow-hidden relative"
+                @click="photo.status !== 'pending' && navigateToPhotoDetail(photo)"
+                :class="{'cursor-not-allowed': photo.status === 'pending', 'cursor-pointer': photo.status !== 'pending'}">
                 <img :src="photo.image_url" :alt="photo.title"
                     :onerror="(e) => (e.target.src = '/js/Assets/default-photo.jpg')"
                     class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
@@ -93,7 +95,9 @@
             </div>
 
             <!-- Video container -->
-            <div class="aspect-square overflow-hidden relative" @click="openVideo(video)">
+            <div class="aspect-square overflow-hidden relative"
+                @click="video.status !== 'pending' && navigateToVideoDetail(video)"
+                :class="{'cursor-not-allowed': video.status === 'pending', 'cursor-pointer': video.status !== 'pending'}">
                 <img :src="video.thumbnail" :alt="video.title"
                     :onerror="(e) => (e.target.src = '/js/Assets/default-photo.jpg')"
                     class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" />
@@ -144,10 +148,11 @@
 
                 <!-- Combined Favorites Grid -->
                 <div v-if="(photoFavorites && photoFavorites.length > 0) || (videoFavorites && videoFavorites.length > 0)"
-                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-4">
+                    class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4">
                     <!-- Photo Favorites -->
                     <div v-for="favorite in photoFavorites" :key="'photo-' + favorite.id"
-                        class="aspect-square overflow-hidden rounded-md sm:rounded-lg shadow-md cursor-pointer">
+                        class="aspect-square overflow-hidden rounded-md sm:rounded-lg shadow-md cursor-pointer"
+                        @click="navigateToPhotoDetail(favorite.content_photo || favorite)">
                         <img :src="'/storage/' + (favorite.content_photo?.image_url || favorite.image_url)"
                             :alt="favorite.content_photo?.title || 'Favorite photo'"
                             class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105" />
@@ -156,7 +161,7 @@
                     <!-- Video Favorites -->
                     <div v-for="favorite in videoFavorites" :key="'video-' + favorite.id"
                         class="aspect-square overflow-hidden relative rounded-md sm:rounded-lg shadow-md cursor-pointer"
-                        @click="openVideo(favorite.content_video || favorite)">
+                        @click="navigateToVideoDetail(favorite.content_video || favorite)">
                         <img :src="'/storage/' + (favorite.content_video?.thumbnail || favorite.thumbnail)"
                             :alt="favorite.content_video?.title || favorite.title"
                             class="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105" />
@@ -169,31 +174,6 @@
                             </svg>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Video Modal -->
-        <div v-if="showVideoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
-            @click.self="closeVideo">
-            <div class="relative w-full max-w-4xl mx-4 aspect-video">
-                <!-- Close button -->
-                <button @click="closeVideo"
-                    class="absolute -top-8 sm:-top-10 right-0 text-white hover:text-gray-300 transition-colors focus:outline-none"
-                    aria-label="Close video">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
-                <!-- Video Player Container with Fixed Aspect Ratio -->
-                <div class="w-full h-full bg-black rounded-lg overflow-hidden shadow-xl">
-                    <video v-if="activeVideo" :src="activeVideo.video_url" class="w-full h-full object-contain" controls
-                        autoplay @click.stop>
-                        Your browser does not support the video tag.
-                    </video>
                 </div>
             </div>
         </div>
@@ -253,26 +233,18 @@
             icon: FavoriteIcon
         },
     ];
+    const slug = window.location.pathname.split("/").pop(); // ambil slug dari URL
 
-    const showVideoModal = ref(false);
-    const activeVideo = ref(null);
 
-    const openVideo = (video) => {
-        // Add storage path to video URL if it doesn't already have it
-        if (video.video_url && !video.video_url.startsWith("/storage/")) {
-            video.video_url = "/storage/" + video.video_url;
-        }
-        activeVideo.value = video;
-        showVideoModal.value = true;
+    const navigateToVideoDetail = (video) => {
+        if (!video || !video.slug) return;
+        const categorySlug = video.category_contents?.[0]?.category?.slug || 'uncategorized';
+        window.location.href = `/gallery-video/${categorySlug}/${video.slug}`;
     };
 
     const navigateToPhotoDetail = (photo) => {
+        if (!photo || !photo.slug) return;
         window.location.href = `/gallery-photo/${photo.slug}`;
-    };
-
-    const closeVideo = () => {
-        showVideoModal.value = false;
-        activeVideo.value = null;
     };
 
     const editPhoto = (photo) => {
