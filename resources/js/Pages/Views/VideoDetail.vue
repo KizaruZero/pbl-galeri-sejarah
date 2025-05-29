@@ -20,17 +20,26 @@
                 <div class="relative bg-black mx-auto">
                     <!-- Desktop: 35% height, Mobile: 55% height -->
                     <div class="pt-[55%] md:pt-[35%]">
-                        <video v-if="isLocalVideo" controls :poster="video.thumbnailUrl"
-                            class="absolute top-0 left-0 w-full h-full object-contain bg-gray-950">
-                            <source :src="video.video_url" type="video/mp4" />
+                        <!-- Video player for local videos -->
+                        <video 
+                            v-if="!isYoutubeVideo" 
+                            controls 
+                            :poster="video.thumbnailUrl"
+                            class="absolute top-0 left-0 w-full h-full object-contain bg-gray-950"
+                        >
+                            <source :src="getVideoUrl(video.video_url)" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
 
-                        <iframe v-else class="absolute top-0 left-0 w-full h-full" :src="video.video_url"
+                        <!-- YouTube embed for YouTube videos -->
+                        <iframe 
+                            v-else 
+                            class="absolute top-0 left-0 w-full h-full" 
+                            :src="getYoutubeEmbedUrl(video.link_youtube)"
                             frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
+                            allowfullscreen
+                        ></iframe>
                     </div>
                 </div>
 
@@ -752,6 +761,10 @@
         return video.value.video_url && !video.value.video_url.includes('youtube.com');
     });
 
+    const isYoutubeVideo = computed(() => {
+        return !!video.value.link_youtube;
+    });
+
     // Utility functions
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -1027,9 +1040,8 @@
                 id: videoData.id,
                 title: videoData.title || "Untitled Video",
                 description: videoData.description || "No description available",
-                video_url: videoData.video_url ?
-                    `/storage/${videoData.video_url.replace(/^public\//, "")}` :
-                    convertToEmbedUrl(videoData.link_youtube) || "",
+                video_url: videoData.video_url || '',
+                link_youtube: videoData.link_youtube || '',
                 thumbnailUrl: videoData.thumbnail ?
                     `/storage/${videoData.thumbnail.replace(/^public\//, "")}` :
                     "/js/Assets/default-photo.jpg",
@@ -1089,6 +1101,19 @@
             loading.value = false;
         }
     });
+
+    // Add these computed properties and methods in the script section
+    const getVideoUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        return `/storage/${url.replace(/^public\//, '')}`;
+    };
+
+    const getYoutubeEmbedUrl = (url) => {
+        if (!url) return '';
+        const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu.be\/|youtube.com\/shorts\/)([^&\s]+)/)?.[1];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+    };
 
 </script>
 

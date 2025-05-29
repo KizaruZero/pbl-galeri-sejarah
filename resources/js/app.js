@@ -10,6 +10,7 @@ import Carousel from 'primevue/carousel'
 
 import { LoopingRhombusesSpinner } from 'epic-spinners'
 import NotificationList from './Components/NotificationList.vue'
+import 'lite-youtube-embed/src/lite-yt-embed'  // Correct import path
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
@@ -18,7 +19,6 @@ createInertiaApp({
   resolve: async (name) => {
     const pages = import.meta.glob('./Pages/**/*.vue')
     const page = (await pages[`./Pages/${name}.vue`]()).default
-
     return page
   },
   setup({ el, App, props, plugin }) {
@@ -29,7 +29,7 @@ createInertiaApp({
       .use(ZiggyVue)
       .use(PrimeVue)
       .component('Carousel', Carousel)
-      .component('LoopingRhombusesSpinner', LoopingRhombusesSpinner) // Register global spinner
+      .component('LoopingRhombusesSpinner', LoopingRhombusesSpinner)
       .component('notification-list', NotificationList)
       .mount(el)
   },

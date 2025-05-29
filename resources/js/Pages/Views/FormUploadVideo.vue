@@ -1,6 +1,6 @@
 <template>
   <MainLayout>
-    <div class=" mx-auto p-6 bg-[#0d0d0d] max-w-full">
+    <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
       <button
         @click="visitBacktoProfile"
         class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
@@ -51,8 +51,37 @@
                 @dragover.prevent
                 @drop.prevent="handleVideoDrop"
               >
+                <!-- Show YouTube video preview if exists -->
+                <div v-if="youtubeVideoId" class="h-full relative">
+                  <lite-youtube-embed
+                    :videoid="youtubeVideoId"
+                    :playlabel="form.title"
+                    class="w-full h-full"
+                  ></lite-youtube-embed>
+                  <!-- Remove Button -->
+                  <button
+                    @click="removeVideo"
+                    class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18 18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
                 <!-- Show video preview if exists -->
-                <div v-if="videoPreview" class="h-full">
+                <div v-else-if="videoPreview" class="h-full">
                   <video
                     controls
                     class="w-full h-full object-contain bg-[#1a1a1a]"
@@ -327,11 +356,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+import 'lite-youtube-embed/src/lite-yt-embed.css';
+
 const form = ref({
   title: "",
   video: null,
@@ -351,21 +382,43 @@ const videoName = ref("");
 const videoPreview = ref("");
 const thumbnailName = ref("");
 const thumbnailPreview = ref("");
+const youtubeVideoId = ref("");
+
+// YouTube URL validation function
+const getYoutubeVideoId = (url) => {
+  if (!url) return null;
+  
+  const regularMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu.be\/)([^&\s]+)/);
+  const shortMatch = url.match(/youtube.com\/shorts\/([^&\s]+)/);
+  
+  return regularMatch?.[1] || shortMatch?.[1];
+};
 
 const handleVideoUpload = (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Check if the file is a video
+  // Clear YouTube link when uploading a file
+  form.value.link_youtube = "";
+  youtubeVideoId.value = "";
+
   if (!file.type.startsWith("video/")) {
-    alert("Please upload a video file only.");
+    Swal.fire("Oops!", "Please upload a video file only.", "error");
     return;
   }
 
-  form.value.video = file;
+  if (file.size > 100 * 1024 * 1024) {
+    Swal.fire("Oops!", "Video file size should not exceed 100MB.", "error");
+    return;
+  }
+
+  // Explicitly create new File object
+  form.value.video = new File([file], file.name, {
+    type: file.type,
+    lastModified: file.lastModified,
+  });
   videoName.value = file.name;
 
-  // Create preview
   const reader = new FileReader();
   reader.onload = (e) => {
     videoPreview.value = e.target.result;
@@ -377,43 +430,78 @@ const handleThumbnailUpload = (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Check if the file is an image
   if (!file.type.startsWith("image/")) {
-    alert("Please upload an image file for thumbnail.");
+    Swal.fire("Oops!", "Please upload an image file for thumbnail.", "error");
     return;
   }
 
-  form.value.thumbnail = file;
+  if (file.size > 10 * 1024 * 1024) {
+    Swal.fire("Oops!", "Thumbnail file size should not exceed 10MB.", "error");
+    return;
+  }
+
+  // Explicitly create new File object
+  form.value.thumbnail = new File([file], file.name, {
+    type: file.type,
+    lastModified: file.lastModified,
+  });
   thumbnailName.value = file.name;
 
-  // Create preview
   const reader = new FileReader();
   reader.onload = (e) => {
     thumbnailPreview.value = e.target.result;
   };
   reader.readAsDataURL(file);
 };
+
 const fileInput = ref(null);
 const loading = ref(false);
+
 const submitForm = async () => {
   try {
+    // Validate required fields
+    if (!form.value.title || !form.value.source || !form.value.category_id) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Please fill in all required fields (Title, Source, and Category)",
+      });
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("title", form.value.title);
-    formData.append("description", form.value.description);
-    formData.append("video_url", form.value.video);
-    formData.append("thumbnail", form.value.thumbnail);
-    formData.append("source", form.value.source);
-    formData.append("link_youtube", form.value.link_youtube);
-    formData.append("tag", form.value.tag);
-    formData.append("category_id", form.value.category_id);
+    
+    // Append basic form data
+    formData.append('title', form.value.title);
+    formData.append('description', form.value.description || '');
+    formData.append('source', form.value.source);
+    formData.append('tag', form.value.tag || '');
+    formData.append('category_id', form.value.category_id);
+    formData.append('thumbnail', form.value.thumbnail);
+
+    // Handle video content
+    if (form.value.link_youtube?.trim()) {
+      // For YouTube videos
+      formData.append('link_youtube', form.value.link_youtube.trim());
+    } else if (form.value.video instanceof File) {
+      // For uploaded videos
+      formData.append('video_url', form.value.video);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Please either upload a video file or provide a YouTube link",
+      });
+      return;
+    }
 
     loading.value = true;
 
-    const response = await axios.post("/api/content-video", formData, {
+    const response = await axios.post('/api/content-video', formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
+        'Content-Type': 'multipart/form-data',
+        'Accept': 'application/json',
+      }
     });
 
     if (response.status === 201) {
@@ -422,22 +510,27 @@ const submitForm = async () => {
         title: "Success",
         text: "Video uploaded successfully",
       });
-
       resetForm();
-      // Reset file input
-      if (fileInput.value) {
-        fileInput.value.value = "";
-      }
-
       router.visit("/upload-video");
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error details:", error.response?.data || error);
+    let errorMessage = "An error occurred while uploading the video";
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.data?.errors) {
+      const errors = error.response.data.errors;
+      errorMessage = Object.values(errors).flat().join("\n");
+    }
+
     Swal.fire({
       icon: "error",
       title: "Upload Failed",
-      text: error.response?.data?.message || "An error occurred",
+      text: errorMessage,
     });
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -456,6 +549,7 @@ const resetForm = () => {
   videoPreview.value = "";
   thumbnailName.value = "";
   thumbnailPreview.value = "";
+  youtubeVideoId.value = "";
 };
 
 const videoInput = ref(null);
@@ -467,8 +561,20 @@ const handleVideoDrop = (event) => {
     Swal.fire("Oops!", "Please upload a video file only.", "error");
     return;
   }
-  form.value.video = file;
+  
+  if (file.size > 100 * 1024 * 1024) {
+    Swal.fire("Oops!", "Video file size should not exceed 100MB.", "error");
+    return;
+  }
+
+  // Explicitly create new File object
+  form.value.video = new File([file], file.name, {
+    type: file.type,
+    lastModified: file.lastModified,
+  });
+  form.value.link_youtube = "";
   videoName.value = file.name;
+  youtubeVideoId.value = "";
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -483,7 +589,17 @@ const handleThumbnailDrop = (event) => {
     Swal.fire("Oops!", "Please upload an image file for thumbnail.", "error");
     return;
   }
-  form.value.thumbnail = file;
+
+  if (file.size > 10 * 1024 * 1024) {
+    Swal.fire("Oops!", "Thumbnail file size should not exceed 10MB.", "error");
+    return;
+  }
+
+  // Explicitly create new File object
+  form.value.thumbnail = new File([file], file.name, {
+    type: file.type,
+    lastModified: file.lastModified,
+  });
   thumbnailName.value = file.name;
 
   const reader = new FileReader();
@@ -493,11 +609,12 @@ const handleThumbnailDrop = (event) => {
   reader.readAsDataURL(file);
 };
 
-// New methods to remove video and thumbnail
 const removeVideo = () => {
   form.value.video = null;
+  form.value.link_youtube = "";
   videoName.value = "";
   videoPreview.value = "";
+  youtubeVideoId.value = "";
   if (videoInput.value) {
     videoInput.value.value = "";
   }
@@ -512,9 +629,47 @@ const removeThumbnail = () => {
   }
 };
 
+// Update the watch function
+watch(() => form.value.link_youtube, async (newValue) => {
+  if (newValue) {
+    const videoId = getYoutubeVideoId(newValue);
+    if (videoId) {
+      youtubeVideoId.value = videoId;
+      videoPreview.value = "";
+      form.value.video = null; // Clear video file when using YouTube
+      videoName.value = `YouTube Video (${videoId})`;
+      
+      if (videoInput.value) {
+        videoInput.value.value = "";
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid YouTube URL",
+        text: "Please enter a valid YouTube video URL",
+      });
+      form.value.link_youtube = "";
+      youtubeVideoId.value = "";
+      videoName.value = "";
+    }
+  } else {
+    youtubeVideoId.value = "";
+    videoName.value = "";
+  }
+});
+
 // Category handling
 const categories = ref([]);
 onMounted(async () => {
+  if (form.value.video) {
+    console.log('Video file:', form.value.video);
+    console.log('Video file is File?', form.value.video instanceof File);
+  }
+  if (form.value.thumbnail) {
+    console.log('Thumbnail file:', form.value.thumbnail);
+    console.log('Thumbnail file is File?', form.value.thumbnail instanceof File);
+  }
+  
   try {
     const response = await axios.get("/api/categories");
     categories.value = response.data.data || [];
