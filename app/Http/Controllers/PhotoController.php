@@ -85,7 +85,8 @@ class PhotoController extends Controller
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
             'tag' => 'nullable|string|max:255',
-            'category_id' => 'required|exists:categories,id', // Add validation for category_id
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'required|exists:categories,id',
         ]);
 
         $userId = Auth::user()->id;
@@ -120,12 +121,14 @@ class PhotoController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Create category content association
-            CategoryContent::create([
-                'category_id' => $request->category_id,
-                'content_photo_id' => $photo->id,
-                'content_video_id' => null
-            ]);
+            // Create category content associations for each selected category
+            foreach ($request->category_ids as $categoryId) {
+                CategoryContent::create([
+                    'category_id' => $categoryId,
+                    'content_photo_id' => $photo->id,
+                    'content_video_id' => null
+                ]);
+            }
 
             // Extract EXIF metadata
             try {
@@ -169,6 +172,13 @@ class PhotoController extends Controller
         if (!$photo) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
+
+        $status = $photo->status;
+        if ($status == 'rejected') {
+            $photo->status = 'pending';
+            $photo->save();
+        }
+
         $validatedData = $request->validate([
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
