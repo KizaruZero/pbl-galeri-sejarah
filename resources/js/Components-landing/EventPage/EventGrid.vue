@@ -1,129 +1,136 @@
 <template>
     <section class="w-full bg-black py-16 px-6 md:px-10">
         <div class="max-w-[1192px] mx-auto">
-            <!-- Judul -->
+            <!-- Title Section -->
             <div class="flex flex-col items-center text-white mb-12">
                 <span class="w-full h-0.5 bg-white mb-6"></span>
-                <h1
-                    class="text-3xl md:text-4xl lg:text-5xl font-serif text-center"
-                >
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">
                     Highlight Events
                 </h1>
                 <span class="w-full h-0.5 bg-white mt-6"></span>
             </div>
 
-            <!-- Grid Card -->
-            <div
-                class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
-                <EventCard
-                    v-for="photo in photos"
-                    :key="photo.slug"
-                    :imageUrl="photo.imageUrl"
-                    :title="photo.title"
-                    :description="
-                        photo.description || 'No description available'
-                    "
-                    :location="photo.location || 'No location available'"
-                    :date_start="photo.date_start || 'No date available'"
-                    :date_end="photo.date_end || 'No date available'"
-                    :instagramUrl="photo.instagramUrl"
-                    :youtubeUrl="photo.youtubeUrl"
-                    :websiteUrl="photo.websiteUrl"
-                    :contactPerson="photo.contactPerson"
-                    :googleMapsUrl="photo.googleMapsUrl"
-                    :titleSize="'lg'"
-                    @click="getDetailPage(photo.slug)"
-                />
+            <!-- Events Grid -->
+            <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <EventCard v-for="event in paginatedEvents" :key="event.slug" :imageUrl="event.imageUrl"
+                    :title="event.title" :description="event.description" :location="event.location"
+                    :date_start="event.date_start" :date_end="event.date_end" :instagramUrl="event.instagramUrl"
+                    :youtubeUrl="event.youtubeUrl" :websiteUrl="event.websiteUrl" :contact_person="event.contactPerson"
+                    :googleMapsUrl="event.googleMapsUrl" :is_upcoming="event.isUpcoming"
+                    @click="navigateToEvent(event.slug)" />
+            </div>
+            <!-- Pagination -->
+            <div v-if="!loading && !error && events.length > 0" class="flex justify-center mt-8 gap-2">
+                <button @click="currentPage--" :disabled="currentPage === 1"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300">
+                    Previous
+                </button>
+                <div class="flex items-center px-4 text-white">
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+                <button @click="currentPage++" :disabled="currentPage >= totalPages"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300">
+                    Next
+                </button>
             </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import EventCard from "./EventCard.vue";
-import axios from "axios";
+    import {
+        ref,
+        onMounted,
+        computed
+    } from 'vue';
+    import EventCard from './EventCard.vue';
+    import axios from 'axios';
 
-const photos = ref([]);
-const loading = ref(true);
-const error = ref(null);
-const getDetailPage = (slug) => {
-    window.location.href = `/events/${slug}`;
-};
+    const events = ref([]);
+    const loading = ref(true);
+    const error = ref(null);
+    const currentPage = ref(1);
+    const itemsPerPage = 9;
 
-onMounted(async () => {
-    const options = {
-        method: "GET",
-        url: "/api/events",
-        headers: {
-            Accept: "application/json",
-            Authorization: "Bearer 123",
-        },
+    const navigateToEvent = (slug) => {
+        window.location.href = `/events/${slug}`;
     };
 
-    try {
-        const response = await axios.request(options);
-        const photoArray = Array.isArray(response.data)
-            ? response.data
-            : response.data.data || [];
+    // Computed property for paginated event
+    const paginatedEvents = computed(() => {
+        const start = (currentPage.value - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return events.value.slice(start, end);
+    });
 
-        // Get current date
-        const currentDate = new Date();
+    // Computed property for total pages
+    const totalPages = computed(() => {
+        return Math.ceil(events.value.length / itemsPerPage);
+    });
 
-        // Filter and map the events
-        photos.value = photoArray
-            .filter(photo => {
-                // Convert date_start to Date object
-                const startDate = new Date(photo.date_start);
-                // Only include events where start date is in the future
-                return startDate >= currentDate;
-            })
-            // Add sorting here
-            .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))
-            .map((photo) => ({
-                imageUrl: photo.image_url
-                    ? photo.image_url.startsWith("http")
-                        ? photo.image_url
-                        : `/storage/${photo.image_url.replace(/^public\//, "")}`
-                    : "/js/Assets/default-photo.jpg",
-                title: photo.title || "Untitled",
-                titleSize: "base",
-                description: photo.description || "No description available",
-                slug: photo.slug,
-                date_start: photo.date_start,
-                date_end: photo.date_end,
-                instagramUrl: photo.instagram_url,
-                youtubeUrl: photo.youtube_url,
-                websiteUrl: photo.website_url,
-                contactPerson: photo.contact_person,
-                location: photo.location,
-                googleMapsUrl: photo.google_maps_url,
-                altText: photo.alt_text || "",
-                tags: photo.tags || [],
-            }));
-    } catch (err) {
-        if (err.response && err.response.status === 404) {
-            error.value = "Event tidak ditemukan";
-        } else {
-            error.value = "Gagal mengambil data";
+    const getDateStatus = (dateString) => {
+        if (!dateString) return false;
+        const eventDate = new Date(dateString);
+        const today = new Date();
+        return eventDate > today;
+    };
+
+    onMounted(async () => {
+        try {
+            const response = await axios.get('/api/events', {
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: 'Bearer 123'
+                }
+            });
+
+            const eventData = Array.isArray(response.data) ?
+                response.data :
+                response.data.data || [];
+
+            events.value = eventData.map(event => ({
+                imageUrl: event.image_url ?
+                    event.image_url.startsWith('http') ?
+                    event.image_url :
+                    `/storage/${event.image_url.replace(/^public\//, '')}` :
+                    '/js/Assets/default-photo.jpg',
+                title: event.title || 'Untitled',
+                description: event.description || 'No description available',
+                slug: event.slug,
+                date_start: event.date_start,
+                date_end: event.date_end,
+                instagramUrl: event.instagram_url,
+                youtubeUrl: event.youtube_url,
+                websiteUrl: event.website_url,
+                contactPerson: event.contact_person,
+                location: event.location || 'No location available',
+                googleMapsUrl: event.google_maps_url,
+                isUpcoming: getDateStatus(event.date_start)
+            })).sort((a, b) => {
+                const dateA = new Date(a.date_start);
+                const dateB = new Date(b.date_start);
+                const now = new Date();
+
+                // Future events first (closest first)
+                if (dateA > now && dateB > now) {
+                    return dateA - dateB;
+                }
+                // Past events (most recent first)
+                if (dateA <= now && dateB <= now) {
+                    return dateB - dateA;
+                }
+                // Future before past
+                return dateA > now ? -1 : 1;
+            });
+
+        } catch (err) {
+            error.value = err.response ?.status === 404 ?
+                'Event tidak ditemukan' :
+                'Gagal mengambil data';
+            console.error('Error fetching events:', err);
+        } finally {
+            loading.value = false;
         }
-        console.error("Error:", err);
-    } finally {
-        loading.value = false;
-    }
-});
+    });
+
 </script>
-
-<style scoped>
-/* Tambahan animasi untuk modal */
-.modal-enter-active,
-.modal-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-    opacity: 0;
-}
-</style>
