@@ -80,7 +80,7 @@ class PhotoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10485760',
             'source' => 'nullable|string|max:255',
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
@@ -162,7 +162,7 @@ class PhotoController extends Controller
         ], 400);
     }
 
-    // update photo 
+    // update photo
     public function updatePhotoByUser(Request $request, $id)
     {
         $photo = ContentPhoto::find($id);
