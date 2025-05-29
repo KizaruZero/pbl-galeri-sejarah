@@ -4,9 +4,10 @@
       <!-- Profile Info -->
       <div class="flex flex-col col-span-1 items-center md:items-start">
         <div class="relative w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-3 sm:mb-4">
-          <img :src="userData?.photo_profile ? `/storage/${userData.photo_profile}` : defaultPhoto"
+          <img :src="userData?.photo_profile ? `/storage/${userData.photo_profile}` : (userData?.profile_photo_url || defaultPhoto)"
             alt="Profile Photo"
-            class="w-full h-full object-cover rounded-full z-10 relative" />
+            class="w-full h-full object-cover rounded-full z-10 relative"
+            @error="handleImageError"/>
           <div class="absolute top-0 left-0 w-full h-full border-4 border-white rounded-full blur-sm z-0" />
           <div class="absolute top-0 left-0 w-full h-full border border-white rounded-full z-10" />
         </div>
@@ -54,8 +55,8 @@
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Profile Photo</label>
           <input type="file" @change="handlePhotoChange" accept="image/*" class="w-full">
-          <img 
-            :src="previewPhoto || (userData?.photo_profile ? `/storage/${userData.photo_profile}` : defaultPhoto)" 
+          <img
+            :src="previewPhoto || (userData?.photo_profile ? `/storage/${userData.photo_profile}` : defaultPhoto)"
             class="mt-2 w-32 h-32 object-cover rounded-full"
           >
         </div>
@@ -84,7 +85,15 @@ import axios from 'axios';
 import defaultPhoto from '@/Assets/default-photo.jpg';
 
 const props = defineProps({
-  userData: Object,
+  userData: {
+    type: Object,
+    default: () => ({
+      name: '',
+      email: '',
+      role: '',
+      profile_photo_url: null
+    })
+  },
   stats: {
     type: Object,
     required: true,
@@ -147,5 +156,9 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Error updating profile:', error);
   }
+};
+
+const handleImageError = (e) => {
+  e.target.src = defaultPhoto;
 };
 </script>

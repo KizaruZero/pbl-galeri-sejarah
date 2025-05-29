@@ -33,10 +33,10 @@
                 No description available
             </p>
             <div class="flex flex-wrap justify-center gap-2 mb-2">
-                <p v-if="date_start" class="text-xs text-gray-300">
+                <p v-if="date_start" :class="dateColorClass">
                     {{ formatDate(date_start) }}
                 </p>
-                <p v-if="date_end" class="text-xs text-gray-300">
+                <p v-if="date_end" :class="dateColorClass">
                     - {{ formatDate(date_end) }}
                 </p>
             </div>
@@ -56,6 +56,7 @@
                     :href="instagramUrl"
                     target="_blank"
                     class="text-pink-500 hover:text-pink-400"
+                    @click.stop
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -73,6 +74,7 @@
                     :href="youtubeUrl"
                     target="_blank"
                     class="text-red-500 hover:text-red-400"
+                    @click.stop
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -90,6 +92,7 @@
                     :href="websiteUrl"
                     target="_blank"
                     class="text-blue-400 hover:text-blue-300"
+                    @click.stop
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -111,6 +114,7 @@
                     :href="googleMapsUrl"
                     target="_blank"
                     class="text-green-500 hover:text-green-400"
+                    @click.stop
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +133,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
 const props = defineProps({
     imageUrl: {
@@ -185,6 +189,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    dateClass: {
+        type: String,
+        default: '',
+    },
 });
 
 const titleClass = computed(() => {
@@ -197,6 +205,21 @@ const titleClass = computed(() => {
             xl: "text-2xl",
         }[props.titleSize] || "text-lg"
     );
+});
+
+const dateColorClass = computed(() => {
+    // Use the explicitly passed dateClass if provided
+    if (props.dateClass) return props.dateClass;
+    
+    // Otherwise calculate based on date
+    if (!props.date_start) return "text-xs text-gray-300";
+    
+    const eventDate = new Date(props.date_start);
+    const today = new Date();
+    
+    return eventDate > today 
+        ? "text-xs text-green-500 font-medium" 
+        : "text-xs text-red-500 font-medium";
 });
 
 const formatDate = (dateString) => {
@@ -213,3 +236,20 @@ const handleImageError = (e) => {
     e.target.src = "/js/Assets/default-photo.jpg";
 };
 </script>
+
+<style scoped>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+</style>

@@ -6,7 +6,8 @@
     </section>
 
     <!-- Slideshow -->
-    <section v-else class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+    <section v-else class="relative flex items-center justify-center w-full h-screen max-lg:aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+
         <!-- Slideshow Container -->
         <div class="relative w-full h-full">
             <!-- Slideshow Image with slide transition -->

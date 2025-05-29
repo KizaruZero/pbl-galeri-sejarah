@@ -58,7 +58,7 @@
             <!-- Back Button -->
             <button
               @click="goBack"
-              class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-10"
+              class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -118,19 +118,7 @@
         <!-- Main article Card -->
         <div class="bg-black rounded-lg shadow-xl overflow-hidden">
           <!-- article Details -->
-          <div class="p-6 py-20 md:px-24">
-            <!-- Title -->
-            <h1 class="text-xl md:text-3xl font-bold text-white mb-4">
-              {{ article.title }}
-            </h1>
-
-            <!-- Content -->
-            <div
-              class="prose prose-invert max-w-none mb-6"
-              v-html="formattedContent"
-            ></div>
-
-            <!-- Article Stats -->
+          <div class="p-6 md:px-24">
             <div class="flex items-center gap-4 text-sm text-gray-400">
               <div class="flex items-center gap-1">
                 <svg
@@ -156,6 +144,57 @@
                 <span>{{ article.totalViews || 0 }} views</span>
               </div>
             </div>
+            <!-- Title -->
+            <h1 class="text-xl md:text-3xl font-bold text-white mb-4">
+              {{ article.title }}
+            </h1>
+
+            <!-- Content -->
+            <div
+              class="prose prose-invert max-w-none mb-6"
+              v-html="formattedContent"
+            ></div>
+
+            <!-- Article Stats -->
+          </div>
+        </div>
+
+        <!-- Recent Articles Section -->
+        <div class="bg-black py-16">
+          <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col items-center text-white mb-12">
+        <span class="w-full h-0.5 bg-white mb-6"></span>
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Artikel Terbaru</h1>
+        <span class="w-full h-0.5 bg-white mt-6"></span>
+      </div>
+            
+            <!-- Loading State -->
+            <div v-if="loadingRecent" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div v-for="i in 3" :key="i" class="bg-black rounded-lg overflow-hidden animate-pulse">
+                <div class="h-48 bg-zinc-800"></div>
+                <div class="p-4">
+                  <div class="h-4 bg-zinc-800 rounded w-3/4 mb-2"></div>
+                  <div class="h-3 bg-zinc-800 rounded w-1/2"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div v-for="article in recentArticles" 
+                   :key="article.id" 
+                   class="bg-zinc-900 rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer"
+                   @click="goToArticle(article.slug)">
+                <img :src="article.imageUrl" 
+                     :alt="article.title"
+                     class="w-full h-48 object-cover"
+                     @error="$event.target.src = '/js/Assets/default-photo.jpg'">
+                <div class="p-4">
+                  <h3 class="text-white font-semibold mb-2 line-clamp-2">{{ article.title }}</h3>
+                  <p class="text-gray-400 text-sm">{{ formatDate(article.publishedAt) }}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -176,6 +215,8 @@ const article = ref({});
 const loading = ref(true);
 const error = ref(null);
 const imageError = ref(false);
+const recentArticles = ref([]);
+const loadingRecent = ref(true);
 
 const formatDate = (dateString) => {
   const options = {
@@ -261,8 +302,43 @@ const fetchArticle = async () => {
   }
 };
 
+// Add new function to fetch recent articles
+const fetchRecentArticles = async () => {
+  loadingRecent.value = true;
+  try {
+    const response = await axios.get('/api/articles/', {
+      params: { limit: 3, exclude: slug },
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer 123'
+      }
+    });
+
+    recentArticles.value = response.data.map(article => ({
+      id: article.id,
+      slug: article.slug,
+      title: article.title,
+      imageUrl: article.image_url ? 
+        (article.image_url.startsWith('http') ? 
+          article.image_url : 
+          `/storage/${article.image_url.replace(/^public\//, '')}`
+        ) : '/js/Assets/default-photo.jpg',
+      publishedAt: article.published_at
+    }));
+  } catch (err) {
+    console.error('Error fetching recent articles:', err);
+  } finally {
+    loadingRecent.value = false;
+  }
+};
+
+const goToArticle = (articleSlug) => {
+  window.location.href = `/articles/${articleSlug}`;
+};
+
 onMounted(() => {
   fetchArticle();
+  fetchRecentArticles();
 });
 
 const formattedContent = computed(() => formatContent(article.value.content));

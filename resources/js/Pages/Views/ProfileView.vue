@@ -87,8 +87,13 @@ onMounted(async () => {
         const { data: userDataResponse } = await axios.get(
             `/api/users/${userId}`
         );
-        userData.value = userDataResponse;
-        profilePhoto.value = getMediaUrl(userDataResponse.profile_photo_url);
+
+        // Include both photo_profile and profile_photo_url
+        userData.value = {
+            ...userDataResponse,
+        };
+        // Remove this line as we're handling it in the component
+        // profilePhoto.value = getMediaUrl(userDataResponse.profile_photo_url);
 
         // Get photos
         const { data: photosResponse } = await axios.get(
