@@ -139,7 +139,7 @@
   </nav>
 
   <!-- Add this spacer div after the nav element -->
-  <div class="h-[60px] md:h-[70px]"></div>
+  <div class="h-[60px]"></div>
 
   <!-- Sidebar (Mobile) -->
   <transition name="slide">

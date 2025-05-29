@@ -7,7 +7,7 @@
 
     <!-- Slideshow -->
     <section v-else
-        class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+        class="relative flex items-center justify-center w-full h-screen max-lg:aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
 
         <!-- Slideshow Container -->
         <div class="relative w-full h-full">
@@ -44,7 +44,7 @@ import defaultPhoto from '@/Assets/default-photo.jpg';
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
 const eventImages = ref([]);
-const isLoading = ref(true); 
+const isLoading = ref(true);
 let slideInterval = null;
 
 const startSlideshow = () => {
