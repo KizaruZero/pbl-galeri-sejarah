@@ -19,7 +19,7 @@
         <div class="mt-6 sm:mt-8 md:mt-12 container mx-auto px-2 sm:px-4">
     <!-- Photo Grid -->
     <div v-if="activeTab === 'photo'"
-        class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+        class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
         <div v-for="photo in props.photos" :key="'photo-' + photo.id"
             class="rounded-md sm:rounded-lg shadow-md cursor-pointer relative group">
             <!-- Edit button and status in top right corner - Improved responsive layout -->
@@ -70,7 +70,7 @@
 
     <!-- Video Grid -->
     <div v-if="activeTab === 'video'"
-        class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+        class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
         <div v-for="video in props.videos" :key="'video-' + video.id"
             class="rounded-md sm:rounded-lg shadow-md cursor-pointer relative group">
             <!-- Edit button and status in top right corner - Improved responsive layout -->
@@ -148,7 +148,7 @@
 
                 <!-- Combined Favorites Grid -->
                 <div v-if="(photoFavorites && photoFavorites.length > 0) || (videoFavorites && videoFavorites.length > 0)"
-                    class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4">
+                    class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4">
                     <!-- Photo Favorites -->
                     <div v-for="favorite in photoFavorites" :key="'photo-' + favorite.id"
                         class="aspect-square overflow-hidden rounded-md sm:rounded-lg shadow-md cursor-pointer"
