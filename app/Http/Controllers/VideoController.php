@@ -83,7 +83,7 @@ class VideoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'video_url' => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+            'video_url' => 'required_without:link_youtube|nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
             'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
@@ -98,62 +98,69 @@ class VideoController extends Controller
         }
 
         // Handle file upload
-        if ($request->hasFile('video_url') && $request->hasFile('thumbnail')) {
+        if ($request->hasFile('video_url')) {
             $slug = Str::slug($request->title);
             $videoFile = $request->file('video_url');
-            $thumbnailFile = $request->file('thumbnail');
             $extension = $videoFile->getClientOriginalExtension();
+
+            // Generate filename
+            $videoFilename = time() . '_' . $slug . '.' . $extension;
+
+            // Store file in public storage
+            $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
+
+            // Save relative path to DB
+            $videoUrl = 'video_content/' . $videoFilename;
+        }
+
+        // Handle thumbnail upload
+        if ($request->hasFile('thumbnail')) {
+            $slug = Str::slug($request->title);
+            $thumbnailFile = $request->file('thumbnail');
             $extensionThumbnail = $thumbnailFile->getClientOriginalExtension();
 
-            // Generate filenames
-            $videoFilename = time() . '_' . $slug . '.' . $extension;
+            // Generate filename
             $thumbnailFilename = time() . '_' . $slug . '.' . $extensionThumbnail;
 
-            // Store files in public storage
-            $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
+            // Store file in public storage
             $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
 
-            // Save relative paths to DB
-            $videoUrl = 'video_content/' . $videoFilename;
+            // Save relative path to DB
             $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
+        }
 
+        // Create new video record
+        $video = ContentVideo::create([
+            'title' => $request->title,
+            'slug' => $slug,
+            'description' => $request->description,
+            'source' => $request->source,
+            'tag' => $request->tag,
+            'user_id' => $userId,
+            'video_url' => $videoUrl ?? null,
+            'thumbnail' => $thumbnailUrl ?? null,
+            'link_youtube' => $request->link_youtube,
+            'status' => 'pending',
+        ]);
 
-
-            // Create new video record
-            $video = ContentVideo::create([
-                'title' => $request->title,
-                'slug' => $slug,
-                'description' => $request->description,
-                'source' => $request->source,
-                'tag' => $request->tag,
-                'user_id' => $userId,
-                'video_url' => $videoUrl,
-                'thumbnail' => $thumbnailUrl,
-                'link_youtube' => $request->link_youtube,
-                'status' => 'pending',
+        // Create category content associations for each selected category
+        foreach ($request->category_ids as $categoryId) {
+            CategoryContent::create([
+                'category_id' => $categoryId,
+                'content_photo_id' => null,
+                'content_video_id' => $video->id,
             ]);
+        }
 
-            // Create category content associations for each selected category
-            foreach ($request->category_ids as $categoryId) {
-                CategoryContent::create([
-                    'category_id' => $categoryId,
-                    'content_photo_id' => null,
-                    'content_video_id' => $video->id,
-                ]);
-            }
-
-            // Extract video metadata using MediaAnalyzer facade
+        // Extract video metadata if video file was uploaded
+        if ($request->hasFile('video_url')) {
             $this->extractAndSaveVideoMetadata($videoFile, $video->id);
-
-            return response()->json([
-                'message' => 'Video uploaded successfully',
-                'data' => $video->load(['metadataVideo', 'categoryContents'])
-            ], 201);
         }
 
         return response()->json([
-            'message' => 'No video or thumbnail file provided'
-        ], 400);
+            'message' => 'Video uploaded successfully',
+            'data' => $video->load(['metadataVideo', 'categoryContents'])
+        ], 201);
     }
 
     /**
