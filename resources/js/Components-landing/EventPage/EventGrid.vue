@@ -70,9 +70,9 @@
 
     const getDateStatus = (dateString) => {
         if (!dateString) return false;
-        const eventDate = new Date(dateString);
+        const eventEndDate = new Date(dateString);
         const today = new Date();
-        return eventDate > today;
+        return eventEndDate > today;
     };
 
     onMounted(async () => {
@@ -105,17 +105,17 @@
                 contactPerson: event.contact_person,
                 location: event.location || 'No location available',
                 googleMapsUrl: event.google_maps_url,
-                isUpcoming: getDateStatus(event.date_start)
+                isUpcoming: getDateStatus(event.date_end) // Changed from date_start to date_end
             })).sort((a, b) => {
-                const dateA = new Date(a.date_start);
-                const dateB = new Date(b.date_start);
+                const dateA = new Date(a.date_end); // Changed from date_start to date_end
+                const dateB = new Date(b.date_end); // Changed from date_start to date_end
                 const now = new Date();
 
-                // Future events first (closest first)
+                // Future events first (closest to ending first)
                 if (dateA > now && dateB > now) {
                     return dateA - dateB;
                 }
-                // Past events (most recent first)
+                // Past events (most recently ended first)
                 if (dateA <= now && dateB <= now) {
                     return dateB - dateA;
                 }
