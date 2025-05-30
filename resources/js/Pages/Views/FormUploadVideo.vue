@@ -44,11 +44,27 @@
                                 placeholder="Enter content title"
                             />
                         </div>
+                        <!-- Link Youtube Field -->
+                        <div>
+                            <label
+                                for="link_youtube"
+                                class="block text-sm font-medium text-white mb-2"
+                                >Link Youtube</label
+                            >
+                            <input
+                                type="text"
+                                id="link-youtube"
+                                v-model="form.link_youtube"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Enter Link youtube"
+                            />
+                        </div>
+                        
 
                         <!-- Video Upload Field -->
                         <div>
                             <label
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-white mt-3 mb-2"
                                 >Video*</label
                             >
                             <div
@@ -191,7 +207,66 @@
                                 placeholder="Enter tags"
                             />
                         </div>
-
+<!-- Category Field -->
+                        <div>
+                            <label
+                                for="category"
+                                class="block text-sm font-medium text-white mb-2"
+                                >Categories*</label
+                            >
+                            <div class="relative">
+                                <div
+                                    class="flex flex-wrap gap-2 p-1 bg-gray-500 border border-[#333333] rounded-lg min-h-[42px]"
+                                >
+                                    <!-- Selected Categories -->
+                                    <div
+                                        v-for="categoryId in form.category_ids"
+                                        :key="categoryId"
+                                        class="flex items-center gap-1 bg-blue-600 text-white px-2 py-1 rounded-md text-sm"
+                                    >
+                                        {{
+                                            categories.find(
+                                                (c) => c.id === categoryId
+                                            )?.category_name
+                                        }}
+                                        <button
+                                            @click="removeCategory(categoryId)"
+                                            class="hover:text-red-300"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <!-- Select dropdown -->
+                                    <select
+                                        v-model="selectedCategory"
+                                        @change="addSelectedCategory"
+                                        class="flex-1 bg-gray-500 text-white focus:outline-none min-w-[200px]"
+                                    >
+                                        <option value="" disabled selected>
+                                            Select a category
+                                        </option>
+                                        <option
+                                            v-for="category in availableCategories"
+                                            :key="category.id"
+                                            :value="category.id"
+                                        >
+                                            {{ category.category_name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Thumbnail Upload Field -->
                         <div>
                             <label
@@ -292,69 +367,7 @@
                             </p>
                         </div>
 
-                        <!-- Category Field -->
-                        <div>
-                            <label
-                                for="category"
-                                class="block text-sm font-medium text-white mb-2"
-                                >Categories*</label
-                            >
-                            <div class="relative">
-                                <div
-                                    class="flex flex-wrap gap-2 p-2 bg-gray-500 border border-[#333333] rounded-lg min-h-[42px]"
-                                >
-                                    <!-- Selected Categories -->
-                                    <div
-                                        v-for="categoryId in form.category_ids"
-                                        :key="categoryId"
-                                        class="flex items-center gap-1 bg-blue-600 text-white px-2 py-1 rounded-md text-sm"
-                                    >
-                                        {{
-                                            categories.find(
-                                                (c) => c.id === categoryId
-                                            )?.category_name
-                                        }}
-                                        <button
-                                            @click="removeCategory(categoryId)"
-                                            class="hover:text-red-300"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                    clip-rule="evenodd"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <!-- Select dropdown -->
-                                    <select
-                                        v-model="selectedCategory"
-                                        @change="addSelectedCategory"
-                                        class="flex-1 bg-transparent text-white focus:outline-none min-w-[200px]"
-                                    >
-                                        <option value="" disabled selected>
-                                            Select a category
-                                        </option>
-                                        <option
-                                            v-for="category in availableCategories"
-                                            :key="category.id"
-                                            :value="category.id"
-                                        >
-                                            {{ category.category_name }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-400">
-                                Select categories from the dropdown
-                            </p>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -374,7 +387,7 @@
                 </div>
 
                 <!-- Two Column Layout for most fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="gap-6">
                     <!-- Left Column -->
                     <div class="space-y-6">
                         <!-- Source Field -->
@@ -391,25 +404,6 @@
                                 required
                                 class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter content source"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="space-y-6">
-                        <!-- Link Youtube Field -->
-                        <div>
-                            <label
-                                for="link_youtube"
-                                class="block text-sm font-medium text-white mb-2"
-                                >Link Youtube</label
-                            >
-                            <input
-                                type="text"
-                                id="link-youtube"
-                                v-model="form.link_youtube"
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Enter Link youtube"
                             />
                         </div>
                     </div>
