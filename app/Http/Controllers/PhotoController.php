@@ -168,8 +168,12 @@ class PhotoController extends Controller
     // update photo
     public function updatePhotoByUser(Request $request, $id)
     {
+        \Log::info('Updating photo with ID: ' . $id);
+        \Log::info('Request data:', $request->all());
+
         $photo = ContentPhoto::find($id);
         if (!$photo) {
+            \Log::error('Photo not found with ID: ' . $id);
             return response()->json(['message' => 'Photo not found'], 404);
         }
 
@@ -179,54 +183,83 @@ class PhotoController extends Controller
             $photo->save();
         }
 
-        $validatedData = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Changed to nullable
-            'source' => 'nullable|string|max:255',
-            'alt_text' => 'nullable|string|max:255',
-            'note' => 'nullable|string',
-            'tag' => 'nullable|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
-        ]);
-        $slug = Str::slug($validatedData['title']);
+        try {
+            $validatedData = $request->validate([
+                'title' => 'nullable|string|max:255',
+                'description' => 'nullable|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'source' => 'nullable|string|max:255',
+                'alt_text' => 'nullable|string|max:255',
+                'note' => 'nullable|string',
+                'tag' => 'nullable|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'metadata.collection_date' => 'nullable|date',
+                'metadata.model' => 'nullable|string',
+                'metadata.ISO' => 'nullable|string',
+                'metadata.aperture' => 'nullable|string',
+                'metadata.location' => 'nullable|string',
+                'metadata.dimensions' => 'nullable|string',
+            ]);
 
-        $updateData = [
-            'title' => $validatedData['title'],
-            'description' => $validatedData['description'],
-            'source' => $validatedData['source'],
-            'alt_text' => $validatedData['alt_text'],
-            'note' => $validatedData['note'],
-            'tag' => $validatedData['tag'],
-            'category_id' => $validatedData['category_id'],
-            'slug' => $slug,
-        ];
+            \Log::info('Validated data:', $validatedData);
 
-        // Only update image if new one is provided
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . $slug . '.' . $extension;
-            $path = $file->storeAs('foto_content', $filename, 'public');
-            $updateData['image_url'] = 'foto_content/' . $filename;
+            $slug = Str::slug($validatedData['title']);
+
+            $updateData = [
+                'title' => $validatedData['title'],
+                'description' => $validatedData['description'],
+                'source' => $validatedData['source'],
+                'alt_text' => $validatedData['alt_text'],
+                'note' => $validatedData['note'],
+                'tag' => $validatedData['tag'],
+                'slug' => $slug,
+            ];
+
+            // Only update image if new one is provided
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $extension = $file->getClientOriginalExtension();
+                $filename = time() . '_' . $slug . '.' . $extension;
+                $path = $file->storeAs('foto_content', $filename, 'public');
+                $updateData['image_url'] = 'foto_content/' . $filename;
+            }
+
+            $photo->update($updateData);
+
+            // Update category if provided
+            if ($request->has('category_id')) {
+                $photo->categoryContents()->updateOrCreate(
+                    ['content_photo_id' => $photo->id],
+                    ['category_id' => $request->category_id]
+                );
+            }
+
+                    // Update metadata
+            if ($request->has('metadata')) {
+                $metadata = $photo->metadataPhoto()->updateOrCreate(
+                    ['content_photo_id' => $photo->id],
+                    [
+                        'collection_date' => $request->input('metadata.collection_date'),
+                        'model' => $request->input('metadata.model'),
+                        'ISO' => $request->input('metadata.ISO'),
+                        'aperture' => $request->input('metadata.aperture'),
+                        'location' => $request->input('metadata.location'),
+                        'dimensions' => $request->input('metadata.dimensions'),
+                    ]
+                );
+            }
+
+            return response()->json([
+                'message' => 'Photo and metadata updated successfully',
+                'data' => $photo->load('metadataPhoto')
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed:', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+            throw $e;
         }
-
-
-
-        $photo->update($updateData);
-
-        // Update category if provided
-        if ($request->has('category_id')) {
-            $photo->categoryContents()->updateOrCreate(
-                ['content_photo_id' => $photo->id],
-                ['category_id' => $request->category_id]
-            );
-        }
-
-        return response()->json([
-            'message' => 'Photo updated successfully',
-            'data' => $photo
-        ], 200);
     }
 
 
@@ -308,7 +341,8 @@ class PhotoController extends Controller
 
     public function edit($id)
     {
-        $photo = ContentPhoto::findOrFail($id);
+        $photo = ContentPhoto::with(['metadataPhoto', 'categoryContents'])
+            ->findOrFail($id);
         return response()->json($photo);
     }
 }

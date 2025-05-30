@@ -269,10 +269,15 @@ class VideoController extends Controller
             'tag' => 'nullable|string|max:255',
             'link_youtube' => 'nullable|url|max:255',
             'category_id' => 'nullable|exists:categories,id',
+            'metadata.collection_date' => 'nullable|date',
+            'metadata.model' => 'nullable|string',
+            'metadata.ISO' => 'nullable|string',
+            'metadata.location' => 'nullable|string',
+            'metadata.frame_rate' => 'nullable|string',
+            'metadata.resolution' => 'nullable|string',
         ]);
 
         $data = [];
-
         $slug = Str::slug($request->title);
 
         // Handle video file if uploaded
@@ -322,6 +327,21 @@ class VideoController extends Controller
         // Update video
         $video->update($data);
 
+        // Update metadata if provided
+        if ($request->has('metadata')) {
+            $metadata = $video->metadataVideo()->updateOrCreate(
+                ['content_video_id' => $video->id],
+                [
+                    'collection_date' => $request->input('metadata.collection_date'),
+                    'model' => $request->input('metadata.model'),
+                    'ISO' => $request->input('metadata.ISO'),
+                    'location' => $request->input('metadata.location'),
+                    'frame_rate' => $request->input('metadata.frame_rate'),
+                    'resolution' => $request->input('metadata.resolution'),
+                ]
+            );
+        }
+
         // Update category if provided
         if ($request->has('category_id')) {
             $video->categoryContents()->updateOrCreate(
@@ -331,7 +351,7 @@ class VideoController extends Controller
         }
 
         return response()->json([
-            'message' => 'Video updated successfully',
+            'message' => 'Video and metadata updated successfully',
             'data' => $video->fresh(['metadataVideo', 'categoryContents'])
         ]);
     }

@@ -80,7 +80,7 @@
     <option
         v-for="category in categories"
         :key="category.id"
-        :value="Number(category.category_name)"
+        :value="category.id"
     >
         {{ category.category_name }}
     </option>
@@ -113,6 +113,48 @@
                             <input type="text" id="alt-text" v-model="form.altText"
                                 class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter alt text for accessibility" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add metadata section -->
+                <div v-if="showMetadataForm" class="space-y-6 mt-8 border-t border-[#333333] pt-8">
+                    <h3 class="text-xl font-bold text-white mb-6">Update Photo Metadata</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">Collection Date</label>
+                            <input type="datetime-local" v-model="metadataForm.collection_date"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">Camera Model</label>
+                            <input type="text" v-model="metadataForm.model"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Camera model" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">ISO</label>
+                            <input type="text" v-model="metadataForm.ISO"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="ISO value" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">Aperture</label>
+                            <input type="text" v-model="metadataForm.aperture"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="f/2.8" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">Location</label>
+                            <input type="text" v-model="metadataForm.location"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="GPS coordinates or location name" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">Dimensions</label>
+                            <input type="text" v-model="metadataForm.dimensions"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="1920x1080" />
                         </div>
                     </div>
                 </div>
@@ -156,6 +198,23 @@
     const filePreview = ref("");
     const photoId = window.location.pathname.split('/').pop();
 
+    // Add these new refs
+    const showMetadataForm = ref(true);
+    const metadataForm = ref({
+        collection_date: '',
+        model: '',
+        ISO: '',
+        aperture: '',
+        location: '',
+        dimensions: '',
+    });
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+    };
+
     onMounted(async () => {
         try {
             // Load categories first
@@ -168,13 +227,17 @@
             const photo = response.data;
             console.log('Photo data received:', photo);
 
+            // Find the first category content entry
+            const categoryContent = photo.category_contents?.[0];
+            const categoryId = categoryContent ? categoryContent.category_id : '';
+
             // Initialize form with photo data
             form.value = {
                 title: photo.title || '',
                 description: photo.description || '',
                 source: photo.source || '',
                 tag: photo.tag || '',
-                category_id: photo.category_id || '',
+                category_id: categoryId, // Set category_id from categoryContent
                 altText: photo.alt_text || '',
                 media: null
             };
@@ -183,6 +246,18 @@
 
             if (photo.image_url) {
                 filePreview.value = `/storage/${photo.image_url}`;
+            }
+
+            // Add this after loading photo data
+            if (photo.metadata_photo) {
+                metadataForm.value = {
+                    collection_date: formatDateForInput(photo.metadata_photo.collection_date),
+                    model: photo.metadata_photo.model,
+                    ISO: photo.metadata_photo.ISO,
+                    aperture: photo.metadata_photo.aperture,
+                    location: photo.metadata_photo.location,
+                    dimensions: photo.metadata_photo.dimensions,
+                };
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -222,9 +297,17 @@
 
     const submitForm = async () => {
         try {
+            console.log('Form data before submission:', {
+                formData: form.value,
+                metadataForm: metadataForm.value,
+                categoryId: form.value.category_id
+            });
+
             const categoriesResponse = await axios.get('/api/categories');
             categories.value = categoriesResponse.data.data || [];
             categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
+
+            console.log('Available categories:', categories.value);
 
             const formData = new FormData();
             formData.append("title", form.value.title);
@@ -235,9 +318,24 @@
             formData.append("category_id", form.value.category_id);
             formData.append("note", "");
 
+            // Log FormData contents
+            console.log('FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+
             if (form.value.media) {
                 formData.append("image", form.value.media);
+                console.log('Media file attached:', form.value.media.name);
             }
+
+            // Add metadata to formData
+            formData.append("metadata[collection_date]", metadataForm.value.collection_date);
+            formData.append("metadata[model]", metadataForm.value.model);
+            formData.append("metadata[ISO]", metadataForm.value.ISO);
+            formData.append("metadata[aperture]", metadataForm.value.aperture);
+            formData.append("metadata[location]", metadataForm.value.location);
+            formData.append("metadata[dimensions]", metadataForm.value.dimensions);
 
             const response = await axios.post(`/api/content-photo/${photoId}?_method=PUT`, formData, {
                 headers: {
@@ -247,6 +345,7 @@
             });
 
             if (response.status === 200) {
+                
                 await Swal.fire({
                     icon: "success",
                     title: "Photo updated successfully"
@@ -255,10 +354,14 @@
             }
         } catch (error) {
             console.error("Update error:", error);
+            console.error("Error response data:", error.response?.data);
+            console.error("Error status:", error.response?.status);
+            console.error("Validation errors:", error.response?.data?.errors);
+
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: error.response ?.data ?.message || "Failed to update photo"
+                text: error.response?.data?.message || "Failed to update photo"
             });
         }
     };
