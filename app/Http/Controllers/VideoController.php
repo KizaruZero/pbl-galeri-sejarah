@@ -87,7 +87,7 @@ class VideoController extends Controller
             'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
-            'link_youtube' => 'nullable|url|max:255',
+            'link_youtube' => 'required_without:video_url|nullable|string|max:255',
             'category_ids' => 'required|array',
             'category_ids.*' => 'required|exists:categories,id',
         ]);
@@ -99,12 +99,15 @@ class VideoController extends Controller
 
         // Handle file upload
         if ($request->hasFile('video_url') && $request->hasFile('thumbnail')) {
+            $slug = Str::slug($request->title);
             $videoFile = $request->file('video_url');
             $thumbnailFile = $request->file('thumbnail');
+            $extension = $videoFile->getClientOriginalExtension();
+            $extensionThumbnail = $thumbnailFile->getClientOriginalExtension();
 
             // Generate filenames
-            $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
-            $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
+            $videoFilename = time() . '_' . $slug . '.' . $extension;
+            $thumbnailFilename = time() . '_' . $slug . '.' . $extensionThumbnail;
 
             // Store files in public storage
             $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
@@ -114,8 +117,7 @@ class VideoController extends Controller
             $videoUrl = 'video_content/' . $videoFilename;
             $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
 
-            // Create slug from title
-            $slug = Str::slug($request->title);
+
 
             // Create new video record
             $video = ContentVideo::create([
@@ -271,6 +273,8 @@ class VideoController extends Controller
 
         $data = [];
 
+        $slug = Str::slug($request->title);
+
         // Handle video file if uploaded
         if ($request->hasFile('video_url')) {
             // Delete old video
@@ -279,7 +283,8 @@ class VideoController extends Controller
             }
 
             $videoFile = $request->file('video_url');
-            $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
+            $extension = $videoFile->getClientOriginalExtension();
+            $videoFilename = time() . '_' . $slug . '.' . $extension;
             $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
             $data['video_url'] = 'video_content/' . $videoFilename;
 
@@ -295,7 +300,8 @@ class VideoController extends Controller
             }
 
             $thumbnailFile = $request->file('thumbnail');
-            $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
+            $extensionThumbnail = $thumbnailFile->getClientOriginalExtension();
+            $thumbnailFilename = time() . '_' . $slug . $extensionThumbnail;
             $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
             $data['thumbnail'] = 'thumbnail_video/' . $thumbnailFilename;
         }

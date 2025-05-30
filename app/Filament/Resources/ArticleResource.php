@@ -51,11 +51,6 @@ class ArticleResource extends Resource
                     ->optimize('webp')
                     ->resize(50)
                     ->image(),
-                Forms\Components\FileUpload::make('thumbnail_url')
-                    ->disk('public')
-                    ->optimize('webp')
-                    ->resize(50)
-                    ->image(),
                 Forms\Components\Select::make('status')
                     ->options([
                         'draft' => 'Draft',
@@ -80,7 +75,6 @@ class ArticleResource extends Resource
                 Tables\Columns\TextColumn::make('author.name')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_url'),
-                Tables\Columns\ImageColumn::make('thumbnail_url'),
                 Tables\Columns\TextColumn::make('published_at')
                     ->dateTime()
                     ->sortable(),

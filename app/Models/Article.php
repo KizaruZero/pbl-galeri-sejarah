@@ -20,7 +20,6 @@ class Article extends Model
         'content',
         'user_id',
         'image_url',
-        'thumbnail_url',
         'status',
         'published_at',
         'total_views',

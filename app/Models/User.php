@@ -15,9 +15,10 @@ use Filament\Notifications\Notification;
 
 
 
+
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasRoles, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -30,6 +31,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'password',
         'photo_profile',
         'google_id',
+        'status',
     ];
 
     /**

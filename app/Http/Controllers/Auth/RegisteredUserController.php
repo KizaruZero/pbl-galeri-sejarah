@@ -49,8 +49,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // Login the user and redirect to verification notice
         Auth::login($user);
 
-        return redirect(route('/', absolute: false));
+        return redirect(route('verification.notice'));
     }
 }

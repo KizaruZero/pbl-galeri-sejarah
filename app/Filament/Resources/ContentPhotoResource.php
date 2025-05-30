@@ -21,9 +21,9 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\ContentPhotoResource\Widgets\ContentPhotoOverview;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\SpatieMediaLibraryImageEditor;
 use App\Notifications\PhotoStatus;
+use Illuminate\Http\UploadedFile;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 
 
@@ -86,14 +86,21 @@ class ContentPhotoResource extends Resource
                     ->image()
                     ->directory('foto_content')
                     ->optimize('webp')
-                    ->preserveFilenames()
                     ->imageResizeMode('contain')
-                   
-                    ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.') // Helper text
-                    ->hintIcon('heroicon-o-information-circle') // Optional icon
-                    ->hintColor('warning') // Optional color (danger, warning, success, etc.)
+                    ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.')
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->hintColor('warning')
                     ->disk('public')
-                    ->maxSize(10000),
+                    ->maxSize(10000)
+                    ->storeFileNamesIn('original_filename') // Store original filenames if needed
+                    ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/heic'])
+                    ->getUploadedFileNameForStorageUsing(
+                        function (TemporaryUploadedFile $file, callable $get): string {
+                            $slug = $get('slug') ?? Str::slug($get('title'));
+                            $extension = $file->getClientOriginalExtension();
+                            return $slug . '_' . time() . '.' . $extension;
+                        }
+                    ),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('source')
@@ -134,38 +141,38 @@ class ContentPhotoResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->limit(length: 20)
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('image_url')
-                    ->disk('public'),
+                // Tables\Columns\TextColumn::make('description')
+                //     ->limit(length: 20)
+                //     ->searchable(),
+                // Tables\Columns\ImageColumn::make('image_url')
+                //     ->disk('public'),
                 Tables\Columns\TextColumn::make('categoryContents.category.category_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tag')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('total_comments') // Accessor
-                    ->label('Total Comments')
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        // Urutkan berdasarkan jumlah komentar
-                        $query->withCount('userComments')->orderBy('user_comments_count', $direction);
-                    }),
-                Tables\Columns\TextColumn::make('total_reactions') // Accessor
-                    ->label('Total Likes')
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        // Urutkan berdasarkan jumlah komentar
-                        $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
-                    }),
+                // Tables\Columns\TextColumn::make('total_comments') // Accessor
+                //     ->label('Total Comments')
+                //     ->sortable(query: function (Builder $query, string $direction) {
+                //         // Urutkan berdasarkan jumlah komentar
+                //         $query->withCount('userComments')->orderBy('user_comments_count', $direction);
+                //     }),
+                // Tables\Columns\TextColumn::make('total_reactions') // Accessor
+                //     ->label('Total Likes')
+                //     ->sortable(query: function (Builder $query, string $direction) {
+                //         // Urutkan berdasarkan jumlah komentar
+                //         $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
+                //     }),
                 Tables\Columns\TextColumn::make('total_views')
                     ->limit(length: 20)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user_favorites')
-                    ->limit(length: 20)
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        // Urutkan berdasarkan jumlah komentar
-                        $query->withCount('userFavorite')->orderBy('user_favorite_count', $direction);
-                    })
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('user_favorites')
+                //     ->limit(length: 20)
+                //     ->sortable(query: function (Builder $query, string $direction) {
+                //         // Urutkan berdasarkan jumlah komentar
+                //         $query->withCount('userFavorite')->orderBy('user_favorite_count', $direction);
+                //     })
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('popularity')
                     ->label('Popularity')
                     ->sortable(query: function (Builder $query, string $direction) {

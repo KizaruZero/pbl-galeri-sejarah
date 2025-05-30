@@ -96,16 +96,16 @@ class PhotoController extends Controller
 
         // Handle file upload
         if ($request->hasFile('image')) {
+            $slug = Str::slug($request->title);
             $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . $slug . '.' . $extension;
 
             $path = $file->storeAs('foto_content', $filename, 'public');
 
             // Save only the relative path (without 'public/') to DB
             $imageUrl = 'foto_content/' . $filename;
 
-            // Create slug from title
-            $slug = Str::slug($request->title);
 
             // Create new photo record
             $photo = ContentPhoto::create([
@@ -205,10 +205,13 @@ class PhotoController extends Controller
         // Only update image if new one is provided
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . $slug . '.' . $extension;
             $path = $file->storeAs('foto_content', $filename, 'public');
             $updateData['image_url'] = 'foto_content/' . $filename;
         }
+
+
 
         $photo->update($updateData);
 
