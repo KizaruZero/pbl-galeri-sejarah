@@ -29,7 +29,7 @@ class EventResource extends Resource
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->required()
-                ->maxLength(255),
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\TextInput::make('description')
                     ->required()
@@ -63,6 +63,8 @@ class EventResource extends Resource
                     ->nullable()
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('image_url')
+                    ->disk('public')
+                    ->directory('events')
                     ->image(),
             ]);
     }
