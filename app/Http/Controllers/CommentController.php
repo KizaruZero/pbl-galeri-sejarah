@@ -11,19 +11,28 @@ use App\Notifications\PhotoComment;
 use App\Notifications\VideoComment;
 class CommentController extends Controller
 {
-    //
     public function getCommentByContentPhoto(Request $request, $id)
     {
-        // $request->validate([
-        //     'content_photo_id' => 'required|exists:content_photo,id',
-        // ]);
-
         $contentPhoto = ContentPhoto::find($id);
         if (!$contentPhoto) {
             return response()->json(['message' => 'Content photo not found'], 404);
         }
 
-        $comments = UserComment::where('content_photo_id', $id)->with('userReactions', 'userReactions.reactionType')->get();
+        // Get user ID from request
+        $currentUserId = $request->user_id;
+
+        // Get published comments and user's own hidden comments
+        $comments = UserComment::where('content_photo_id', $id)
+            ->where(function($query) use ($currentUserId) {
+                $query->where('status', 'published')
+                    ->orWhere(function($q) use ($currentUserId) {
+                        $q->where('status', 'hidden')
+                            ->where('user_id', $currentUserId);
+                    });
+            })
+            ->with('userReactions', 'userReactions.reactionType')
+            ->get();
+
         return response()->json([
             'status' => 'success',
             'data' => $comments
@@ -41,7 +50,21 @@ class CommentController extends Controller
             return response()->json(['message' => 'Content video not found'], 404);
         }
 
-        $comments = UserComment::where('content_video_id', $id)->with('userReactions', 'userReactions.reactionType')->get();
+        // Get user ID from request
+        $currentUserId = $request->user_id;
+
+        // Get published comments and user's own hidden comments
+        $comments = UserComment::where('content_video_id', $id)
+            ->where(function($query) use ($currentUserId) {
+                $query->where('status', 'published')
+                    ->orWhere(function($q) use ($currentUserId) {
+                        $q->where('status', 'hidden')
+                            ->where('user_id', $currentUserId);
+                    });
+            })
+            ->with('userReactions', 'userReactions.reactionType')
+            ->get();
+
         return response()->json([
             'status' => 'success',
             'data' => $comments
@@ -73,13 +96,22 @@ class CommentController extends Controller
             $photoOwner->notify(new PhotoComment($contentPhoto->title, $request->content, $reactingUser));
         }
 
+        // Create comment with 'hidden' status by default
         $comment = UserComment::create([
             'content' => $request->content,
             'content_photo_id' => $id,
             'user_id' => $request->user_id,
+            'status' => 'hidden' // Set default status to hidden
         ]);
 
-        return response()->json($comment);
+        // Add user data to response for immediate display
+        $comment->load('user');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Comment submitted for moderation',
+            'data' => $comment
+        ]);
     }
 
     public function destroyPhotoComment(Request $request, $id)
@@ -140,5 +172,27 @@ class CommentController extends Controller
         $comment->delete();
 
         return response()->json(['message' => 'Comment deleted successfully']);
+    }
+
+    // Add new method for admin to approve comments
+    public function approveComment(Request $request, $id)
+    {
+        $comment = UserComment::find($id);
+        if (!$comment) {
+            return response()->json(['message' => 'Comment not found'], 404);
+        }
+
+        // Check if user is admin (you should implement proper admin check)
+        if (!$request->user()->is_admin) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $comment->update(['status' => 'published']);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Comment approved successfully',
+            'data' => $comment
+        ]);
     }
 }
