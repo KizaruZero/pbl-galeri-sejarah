@@ -3,6 +3,7 @@
     <MainLayout>
       <HeroSection />
       <SearchBar />
+      <RecentUploads />
       <ImageGrid />
       <CategoryGrid />
 
@@ -16,6 +17,7 @@
 <script setup>
   import MainLayout from '@/Layouts/MainLayout.vue';
   import HeroSection from '@/Components-landing/GalleryPage/HeroSection.vue'
+  import RecentUploads from '@/Components-landing/GalleryPage/RecentUploads.vue'
   import SearchBar from '@/Components-landing/GalleryPage/SearchBar.vue'
   import ImageGrid from '@/Components-landing/GalleryPage/TrendingContent.vue'
   import UpcomingEvent from '@/Components-landing/UpcomingEvent.vue'

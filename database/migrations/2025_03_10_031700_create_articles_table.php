@@ -21,7 +21,6 @@ return new class extends Migration {
                 ->on('users')
                 ->onDelete('cascade');
             $table->string('image_url', 100)->nullable();
-            $table->string('thumbnail_url', 100)->nullable();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->timestamp('published_at')->nullable()->index();
             $table->unsignedInteger('total_views')->default(0);

@@ -38,7 +38,7 @@ class SetupProject extends Command
         $this->info('Updating .env configuration...');
         $this->updateEnvFile([
             'DB_CONNECTION' => 'mysql',
-            'SESSION_DRIVER' => 'file',
+            'SESSION_DRIVER' => 'database',
             'SESSION_LIFETIME' => '60',
         ]);
         $this->info('.env configuration updated!');

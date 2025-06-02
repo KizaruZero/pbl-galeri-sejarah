@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('title', 150);
             $table->string('slug', 160)->unique();
             $table->unsignedInteger('user_id');
-            $table->string('image_url', 100);
+            $table->string('image_url', 255);
             $table->string('description', 255)->nullable();
             $table->string('source', 50);
             $table->string('alt_text', 100)->nullable();

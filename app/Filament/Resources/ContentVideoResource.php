@@ -22,7 +22,8 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Validation\Rule;
 use Filament\Notifications\Notification;
-
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Forms\Components\FileUpload;
 
 
 class ContentVideoResource extends Resource
@@ -93,7 +94,15 @@ class ContentVideoResource extends Resource
                     ->hintColor('warning') // Optional color (danger, warning, success, etc.)
                     ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo']) // MIME types
                     ->requiredWithout('video_url,link_youtube')
-                    ->maxSize(20000),
+                    ->storeFileNamesIn('original_filename') // Store original filenames if needed
+                    ->maxSize(20000)
+                    ->getUploadedFileNameForStorageUsing(
+                        function (TemporaryUploadedFile $file, callable $get): string {
+                            $slug = $get('slug') ?? Str::slug($get('title'));
+                            $extension = $file->getClientOriginalExtension();
+                            return $slug . '_' . time() . '.' . $extension;
+                        }
+                    ),
                 Forms\Components\TextInput::make('link_youtube')
                     ->nullable(),
                 Forms\Components\FileUpload::make('thumbnail')
@@ -105,7 +114,15 @@ class ContentVideoResource extends Resource
                     ->directory('thumbnail_video')
                     ->resize(50)
                     ->disk('public')
-                    ->maxSize(10000),
+                    ->maxSize(10000)
+                    ->storeFilenamesIn('original_filename') // Store original filenames if needed
+                    ->getUploadedFileNameForStorageUsing(
+                        function (TemporaryUploadedFile $file, callable $get): string {
+                            $slug = $get('slug') ?? Str::slug($get('title'));
+                            $extension = $file->getClientOriginalExtension();
+                            return $slug . '_thumbnail_' . time() . '.' . $extension;
+                        }
+                    ),
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
@@ -127,11 +144,11 @@ class ContentVideoResource extends Resource
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('source')
                 //     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->limit(length: 20)
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('thumbnail')
-                    ->disk('public'),
+                // Tables\Columns\TextColumn::make('description')
+                //     ->limit(length: 20)
+                //     ->searchable(),
+                // Tables\Columns\ImageColumn::make('thumbnail')
+                //     ->disk('public'),
                 Tables\Columns\TextColumn::make('tag')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('link_youtube'),
@@ -145,29 +162,29 @@ class ContentVideoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('categoryContents.category.category_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('total_comments') // Accessor
-                    ->label('Total Comments')
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        // Urutkan berdasarkan jumlah komentar
-                        $query->withCount('userComments')->orderBy('user_comments_count', $direction);
-                    }),
-                Tables\Columns\TextColumn::make('total_reactions') // Accessor
-                    ->label('Total Likes')
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        // Urutkan berdasarkan jumlah komentar
-                        $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
-                    }),
+                // Tables\Columns\TextColumn::make('total_comments') // Accessor
+                //     ->label('Total Comments')
+                //     ->sortable(query: function (Builder $query, string $direction) {
+                //         // Urutkan berdasarkan jumlah komentar
+                //         $query->withCount('userComments')->orderBy('user_comments_count', $direction);
+                //     }),
+                // Tables\Columns\TextColumn::make('total_reactions') // Accessor
+                //     ->label('Total Likes')
+                //     ->sortable(query: function (Builder $query, string $direction) {
+                //         // Urutkan berdasarkan jumlah komentar
+                //         $query->withCount('contentReactions')->orderBy('content_reactions_count', $direction);
+                //     }),
                 Tables\Columns\TextColumn::make('total_views')
                     ->limit(length: 20)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user_favorites')
-                    ->limit(length: 20)
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        // Urutkan berdasarkan jumlah komentar
-                        $query->withCount('userFavorite')->orderBy('user_favorite_count', $direction);
-                    })
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('user_favorites')
+                //     ->limit(length: 20)
+                //     ->sortable(query: function (Builder $query, string $direction) {
+                //         // Urutkan berdasarkan jumlah komentar
+                //         $query->withCount('userFavorite')->orderBy('user_favorite_count', $direction);
+                //     })
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('popularity')
                     ->label('Popularity')
                     ->sortable(query: function (Builder $query, string $direction) {

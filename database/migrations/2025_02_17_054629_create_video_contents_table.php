@@ -14,9 +14,9 @@ return new class extends Migration {
             $table->unsignedInteger('id')->autoIncrement()->primary(); // UNSIGNED INT + PK + AI
             $table->string('title', 120);
             $table->string('slug', 130)->unique();
-            $table->string('video_url', 100)->nullable();
-            $table->string('thumbnail', 100);
-            $table->string('link_youtube', 50)->nullable();
+            $table->string('video_url', 255)->nullable();
+            $table->string('thumbnail', 255);
+            $table->string('link_youtube', 255)->nullable();
             $table->string('description', 255)->nullable();
             $table->string('note', 50)->nullable();
             $table->string('source', 50);

@@ -1,10 +1,10 @@
 <template>
     <MainLayout>
-        <div class="min-h-screen bg-black md:mt-8">
+        <div class="min-h-screen bg-black">
             <div class="text-white">
                 <!-- Back Button - Adjusted padding for mobile -->
-                <div class="p-4 mt-8 md:p-6">
-                    <button @click="goBack" class="flex mt-8 items-center text-gray-400 hover:text-white">
+                <div class="p-4 md:p-6">
+                    <button @click="goBack" class="flex items-center text-gray-400 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path fill-rule="evenodd"
@@ -234,7 +234,19 @@
 
                             <!-- Actual comment -->
                             <div v-else
-                                class="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
+                                :class="[
+                                    'p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700',
+                                    getCommentStatusClass(comment.status)
+                                ]"
+                            >
+                                <!-- Add status indicator for user's own hidden comments -->
+                                <div v-if="comment.status === 'hidden' && comment.user.id === UserId" 
+                                    class="text-yellow-500 text-xs mb-2 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Your comment is pending moderation</span>
+                                </div>
                                 <div class="flex justify-between items-start gap-2">
                                     <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                         <router-link :to="`/users/${comment.user.id}`" class="flex-shrink-0">
@@ -277,7 +289,7 @@
                                         <button v-for="reaction in comment.reactions" :key="reaction.reaction_type_id"
                                             @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                             class="flex items-center text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-2 py-1 transition-colors"
-                                            :class="{ 
+                                            :class="{
                                                     'bg-blue-900/50': reaction.userReacted,
                                                     'cursor-default': !UserId,
                                                     'hover:bg-gray-700/50': !UserId
@@ -347,6 +359,7 @@
     import {
         usePage
     } from "@inertiajs/vue3";
+    import Swal from 'sweetalert2'; // Add this import
 
     const props = defineProps({
         auth: {
@@ -586,32 +599,98 @@
     };
 
     // Add this new function to check bookmark status
-    const checkIfBookmarked = async () => {
-        if (!currentUser.value ?.id || !photo.value.id) return;
+    const checkIfBookmarked = async (photoId = null) => {
+    const currentPhotoId = photoId || photo.value.id;
+    const userId = currentUser.value?.id;
 
-        try {
-            const response = await axios.get(`/api/favorite/photo/user/${currentUser.value.id}`, {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ?.getAttribute(
-                        'content'),
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                withCredentials: true
-            });
+    console.log('Checking bookmark with:', { currentPhotoId, userId });
 
-            const isBookmarkedPhoto = response.data.some(favorite =>
-                favorite.content_photo_id === photo.value.id
-            );
+    if (!userId || !currentPhotoId) {
+        console.log('Missing userId or photoId, skipping bookmark check');
+        return;
+    }
 
-            isBookmarked.value = isBookmarkedPhoto;
-        } catch (error) {
-            console.error('Error checking bookmark status:', error);
-            if (error.response ?.status === 401) {
-                router.visit('/login');
+    try {
+        const response = await axios.get(`/api/favorite/photo/user/${userId}`, {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            withCredentials: true
+        });
+
+        console.log('Bookmark response:', response.data);
+        console.log('Response type:', typeof response.data);
+        console.log('Is array:', Array.isArray(response.data));
+
+        // Handle different response formats
+        let bookmarkData = [];
+
+        if (Array.isArray(response.data)) {
+            bookmarkData = response.data;
+        } else if (response.data && typeof response.data === 'object') {
+            // Check if it's wrapped in a data property
+            if (Array.isArray(response.data.data)) {
+                bookmarkData = response.data.data;
+            } else if (Array.isArray(response.data.favorites)) {
+                bookmarkData = response.data.favorites;
+            } else if (response.data.success && Array.isArray(response.data.bookmarks)) {
+                bookmarkData = response.data.bookmarks;
+            } else {
+                // If it's a single object, convert to array
+                bookmarkData = [response.data];
             }
         }
-    };
+
+        console.log('Processed bookmark data:', bookmarkData);
+
+        const isBookmarkedPhoto = bookmarkData.some(favorite => {
+            const favoritePhotoId = favorite.content_photo_id || favorite.photo_id || favorite.id;
+            return favoritePhotoId === parseInt(currentPhotoId);
+        });
+
+        console.log('Is bookmarked:', isBookmarkedPhoto);
+        isBookmarked.value = isBookmarkedPhoto;
+
+    } catch (error) {
+        console.error('Error checking bookmark status:', error);
+
+        // Try alternative endpoint if the first one fails
+        if (error.response?.status !== 401) {
+            try {
+                console.log('Trying alternative bookmark check...');
+                const altResponse = await axios.get(`/api/user-favorite/check`, {
+                    params: {
+                        user_id: userId,
+                        content_photo_id: currentPhotoId
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    withCredentials: true
+                });
+
+                isBookmarked.value = altResponse.data.is_bookmarked || false;
+                console.log('Alternative bookmark check result:', isBookmarked.value);
+                return;
+            } catch (altError) {
+                console.error('Alternative bookmark check also failed:', altError);
+            }
+        }
+
+        if (error.response?.status === 401) {
+            router.visit('/login');
+        } else if (error.response?.status === 404) {
+            // User has no bookmarks yet
+            console.log('No bookmarks found for user');
+            isBookmarked.value = false;
+        }
+        // Jangan reset isBookmarked jika error lain, biarkan state sebelumnya
+    }
+};
 
     // Fetch comments for the photo
     const fetchComments = async (photoId) => {
@@ -730,6 +809,7 @@
                     ...currentUser.value,
                 },
                 text: newComment.value,
+                status: 'hidden',
                 date: new Date().toISOString(),
                 canDelete: true,
                 isLoading: true,
@@ -737,11 +817,13 @@
             comments.value.unshift(loadingComment);
 
             const response = await axios.post(
-                `/api/comment/photo/${photo.value.id}`, {
+                `/api/comment/photo/${photo.value.id}`,
+                {
                     content: newComment.value.trim(),
                     content_photo_id: photo.value.id,
                     user_id: UserId.value,
-                }, {
+                },
+                {
                     headers: {
                         "Content-Type": "application/json",
                         Accept: "application/json",
@@ -754,6 +836,8 @@
             comments.value = comments.value.filter(
                 (c) => c.id !== loadingComment.id
             );
+            
+            // Add the new comment with hidden status
             comments.value.unshift({
                 id: response.data.id,
                 user: {
@@ -761,13 +845,28 @@
                 },
                 text: response.data.content || newComment.value,
                 date: response.data.created_at || new Date().toISOString(),
+                status: 'hidden',
                 canDelete: true,
             });
 
             newComment.value = "";
+
+            // Show success message with SweetAlert2
+            await Swal.fire({
+                title: 'Comment Submitted!',
+                text: 'Komentar Anda telah dikirim dan sedang dalam proses pemantauan. Komentar tersebut akan terlihat oleh orang lain setelah disetujui.',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#3085d6',
+                timer: 5000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+
         } catch (error) {
             console.error("Error adding comment:", error);
-            // Remove loading comment if error occurs
             comments.value = comments.value.filter((c) => !c.isLoading);
 
             let errorMessage = "Failed to add comment. Please try again.";
@@ -776,14 +875,24 @@
                     errorMessage = "Please log in to comment.";
                     router.push("/login");
                 } else if (error.response.status === 422) {
-                    // Handle validation errors
                     const errors = error.response.data.errors;
                     errorMessage = Object.values(errors).flat().join("\n");
-                } else if (error.response.data ?.message) {
+                } else if (error.response.data?.message) {
                     errorMessage = error.response.data.message;
                 }
             }
-            alert(errorMessage);
+
+            // Show error message with SweetAlert2
+            await Swal.fire({
+                title: 'Error!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         }
     };
 
@@ -908,68 +1017,90 @@
 
     // Fetch photo data
     onMounted(async () => {
+    try {
+        // Fetch reactions first
         await fetchReactions();
 
-        try {
-            const slug = window.location.pathname.split("/").pop();
-            const response = await axios.get(`/api/content-photo/${slug}`, {
-                headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-                },
-            });
+        const slug = window.location.pathname.split("/").pop();
+        const response = await axios.get(`/api/content-photo/${slug}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+            },
+        });
 
-            console.log('Photo data:', response.data);
+        console.log('Photo data:', response.data);
 
-            const photoData = response.data.photo;
+        const photoData = response.data.photo;
 
-            photo.value = {
-                id: photoData.id,
-                title: photoData.title,
-                description: photoData.description,
-                imageUrl: photoData.image_url ?
-                    `/storage/${photoData.image_url.replace(/^public\//, "")}` :
-                    "/js/Assets/default-photo.jpg",
-                altText: photoData.alt_text || photoData.title,
-                tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
-                user: photoData.user,
-                created_at: photoData.created_at,
-                source: photoData.source,
-                note: photoData.note,
-                total_views: photoData.total_views || 0,
-                // Metadata fields
-                collection_date: photoData.metadata_photo ?.collection_date,
-                file_size: photoData.metadata_photo ?.file_size,
-                aperture: photoData.metadata_photo ?.aperture,
-                location: photoData.metadata_photo ?.location,
-                camera_model: photoData.metadata_photo ?.model,
-                ISO: photoData.metadata_photo ?.ISO,
-                dimensions: photoData.metadata_photo ?.dimensions,
-            };
+        photo.value = {
+            id: photoData.id,
+            title: photoData.title,
+            description: photoData.description,
+            imageUrl: photoData.image_url ?
+                `/storage/${photoData.image_url.replace(/^public\//, "")}` :
+                "/js/Assets/default-photo.jpg",
+            altText: photoData.alt_text || photoData.title,
+            tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
+            user: photoData.user,
+            created_at: photoData.created_at,
+            source: photoData.source,
+            note: photoData.note,
+            total_views: photoData.total_views || 0,
+            // Metadata fields
+            collection_date: photoData.metadata_photo?.collection_date,
+            file_size: photoData.metadata_photo?.file_size,
+            aperture: photoData.metadata_photo?.aperture,
+            location: photoData.metadata_photo?.location,
+            camera_model: photoData.metadata_photo?.model,
+            ISO: photoData.metadata_photo?.ISO,
+            dimensions: photoData.metadata_photo?.dimensions,
+        };
 
-            // Set the actual like count from total_reactions
-            likeCount.value = response.data.total_reactions || 0;
+        // Set the actual like count from total_reactions
+        likeCount.value = response.data.total_reactions || 0;
 
-            // Get existing reactions for this photo
-            const userReaction = photoData.content_reactions.find(
-                reaction => reaction.user_id === UserId.value
+        // Get existing reactions for this photo
+        const userReaction = photoData.content_reactions.find(
+            reaction => reaction.user_id === UserId.value
+        );
+        isLiked.value = !!userReaction;
+
+        // Check if bookmark data is already included in photo response
+        if (photoData.user_favorites && Array.isArray(photoData.user_favorites)) {
+            const userBookmark = photoData.user_favorites.find(
+                fav => fav.user_id === UserId.value
             );
-            isLiked.value = !!userReaction;
-
-            await checkIfBookmarked();
-
-            // Fetch comments if the photo has an ID
-            if (photo.value.id) {
-                await fetchComments(photo.value.id);
+            isBookmarked.value = !!userBookmark;
+            console.log('Bookmark status from photo data:', isBookmarked.value);
+        } else {
+            // PENTING: Check bookmark setelah photo data berhasil di-set
+            if (photo.value.id && UserId.value) {
+                console.log('Calling checkIfBookmarked with photo ID:', photo.value.id);
+                await checkIfBookmarked(photo.value.id);
             }
-        } catch (error) {
-            console.error("Error fetching photo:", error);
-            router.push("/not-found");
-        } finally {
-            loading.value = false;
         }
-    });
 
+        // Fetch comments if the photo has an ID
+        if (photo.value.id) {
+            await fetchComments(photo.value.id);
+        }
+
+    } catch (error) {
+        console.error("Error fetching photo:", error);
+        router.push("/not-found");
+    } finally {
+        loading.value = false;
+    }
+});
+
+    // Add this function with the other state variables and functions
+    const getCommentStatusClass = (status) => {
+        return {
+            'bg-gray-800/50': status === 'published' || !status,
+            'bg-yellow-800/30 border-yellow-800/50': status === 'hidden'
+        };
+    };
 </script>
 
 <style scoped>

@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('content_photo_id')->nullable();
             $table->unsignedInteger('content_video_id')->nullable();
-            $table->enum('status', ['published', 'hidden', 'deleted'])->default('published');
+            $table->enum('status', ['published', 'hidden', 'deleted'])->default('hidden');
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('id')

@@ -28,4 +28,18 @@ class ArticleController extends Controller
         $article->updateTotalViews();
         return response()->json($article);
     }
+
+    public function getPopularArticle()
+    {
+        $article = Article::where('status', 'published')
+            ->orderBy('views', 'desc')
+            ->take(4)
+            ->get();
+
+        if ($article->isEmpty()) {
+            return response()->json(['message' => 'No popular articles found'], 404);
+        }
+
+        return response()->json($article);
+    }
 }

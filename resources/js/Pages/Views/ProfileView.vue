@@ -1,7 +1,7 @@
 <template>
     <MainLayout>
         <div class="bg-[#0d0d0d] min-h-screen w-full">
-            <div class="max-w-7xl mx-auto px-4 py-8 mt-14 sm:py-12 lg:py-16">
+            <div class="max-w-7xl mx-auto px-4 py-8 sm:py-12 lg:py-16">
                 <ProfileHeaderSection
                     :user-data="userData"
                     :profile-photo="profilePhoto"
@@ -87,8 +87,13 @@ onMounted(async () => {
         const { data: userDataResponse } = await axios.get(
             `/api/users/${userId}`
         );
-        userData.value = userDataResponse;
-        profilePhoto.value = getMediaUrl(userDataResponse.profile_photo_url);
+
+        // Include both photo_profile and profile_photo_url
+        userData.value = {
+            ...userDataResponse,
+        };
+        // Remove this line as we're handling it in the component
+        // profilePhoto.value = getMediaUrl(userDataResponse.profile_photo_url);
 
         // Get photos
         const { data: photosResponse } = await axios.get(

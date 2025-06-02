@@ -1,9 +1,9 @@
 <template>
   <MainLayout>
-    <div class="mt-14 mx-auto p-6 bg-[#0d0d0d] max-w-full">
+    <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
       <button
         @click="visitBacktoProfile"
-        class="mb-6 mt-14 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
+        class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -296,6 +296,57 @@
           </div>
         </div>
 
+        <!-- Add metadata section before Action Buttons -->
+        <div v-if="showMetadataForm" class="space-y-6 mt-8 border-t border-[#333333] pt-8">
+          <h3 class="text-xl font-bold text-white mb-6">Update Video Metadata</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">Collection Date</label>
+              <input
+                type="datetime-local"
+                v-model="metadataForm.collection_date"
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">Model</label>
+              <input
+                type="text"
+                v-model="metadataForm.model"
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Camera/Device model"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">Resolution</label>
+              <input
+                type="text"
+                v-model="metadataForm.resolution"
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="1920x1080"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">Frame Rate</label>
+              <input
+                type="text"
+                v-model="metadataForm.frame_rate"
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="30 fps"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">Location</label>
+              <input
+                type="text"
+                v-model="metadataForm.location"
+                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Location where video was taken"
+              />
+            </div>
+          </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="flex justify-end gap-3 pt-6">
           <button
@@ -349,6 +400,21 @@ const videoPreview = ref("");
 const thumbnailName = ref("");
 const thumbnailPreview = ref("");
 
+// Add these new refs
+const showMetadataForm = ref(true);
+const metadataForm = ref({
+  collection_date: '',
+  model: '',
+  resolution: '',
+  frame_rate: '',
+  location: '',
+});
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+    };
+
 const visitBacktoProfile = () => {
   window.location.href = "/profile-page";
 };
@@ -357,7 +423,7 @@ const visitBacktoProfile = () => {
 const submitForm = async () => {
   try {
     const formData = new FormData();
-    
+
     // Always append these fields
     formData.append("title", form.value.title);
     formData.append("description", form.value.description);
@@ -365,7 +431,7 @@ const submitForm = async () => {
     formData.append("link_youtube", form.value.link_youtube);
     formData.append("tag", form.value.tag);
     formData.append("category_id", form.value.category_id);
-    
+
     // Only append files if they were changed
     if (form.value.video instanceof File) {
       formData.append("video_url", form.value.video_url);
@@ -373,6 +439,13 @@ const submitForm = async () => {
     if (form.value.thumbnail instanceof File) {
       formData.append("thumbnail", form.value.thumbnail);
     }
+
+    // Add metadata to formData
+    formData.append("metadata[collection_date]", metadataForm.value.collection_date);
+    formData.append("metadata[model]", metadataForm.value.model);
+    formData.append("metadata[resolution]", metadataForm.value.resolution);
+    formData.append("metadata[frame_rate]", metadataForm.value.frame_rate);
+    formData.append("metadata[location]", metadataForm.value.location);
 
     loading.value = true;
 
@@ -414,7 +487,7 @@ const loadData = async () => {
     // Load video data
     const videoResponse = await axios.get(`/api/content-video/edit/${videoId.value}`);
     const videoData = videoResponse.data;
-    
+
     // Populate form
     form.value = {
       title: videoData.video.title,
@@ -435,6 +508,17 @@ const loadData = async () => {
     if (videoData.video.thumbnail) {
       existingThumbnailUrl.value = `/storage/${videoData.video.thumbnail}`;
       thumbnailPreview.value = existingThumbnailUrl.value;
+    }
+
+    // Add this after loading video data
+    if (videoData.video.metadata_video) {
+      metadataForm.value = {
+        collection_date: formatDateForInput(videoData.video.metadata_video.collection_date),
+        model: videoData.video.metadata_video.model,
+        resolution: videoData.video.metadata_video.resolution,
+        frame_rate: videoData.video.metadata_video.frame_rate,
+        location: videoData.video.metadata_video.location,
+      };
     }
 
   } catch (error) {

@@ -62,13 +62,17 @@ class InstallController extends Controller
                 'DB_USERNAME' => $validated['db_user'],
                 'DB_PASSWORD' => $validated['db_pass'] ?? '',
                 'DB_HOST' => $validated['db_host'],
-                'SESSION_DRIVER' => 'file',
             ]);
 
             // Rebuild config cache
             Artisan::call('config:cache');
 
             // call migrate user table
+            Artisan::
+                call('migrate', [
+                    '--path' => 'database/migrations/0001_01_01_000000_create_users_table.php'
+                ]);
+            Artisan::call('session:table');
 
             if (!$request->hasSession()) {
                 $request->setLaravelSession(app('session')->driver());
@@ -88,15 +92,7 @@ class InstallController extends Controller
         }
     }
 
-    public function migrateFresh()
-    {
-        // update env
-        Artisan::call('migrate:fresh', ['--force' => true]);
-        Artisan::call('storage:link');
-        // db seed
-        Artisan::call('db:seed');
-        return response()->json(['message' => 'Database migrated successfully.']);
-    }
+
 
     public function install(Request $request)
     {
@@ -132,6 +128,7 @@ class InstallController extends Controller
         try {
             // Step 1: Test database connection
             // Step 5: Run migrations
+            Artisan::call('session:table');
             Artisan::call('migrate:fresh', ['--force' => true]);
 
             // Step 6: Create storage link
@@ -193,6 +190,16 @@ class InstallController extends Controller
 
             return back()->withErrors(['error' => 'Installation failed: ' . $e->getMessage()])->withInput();
         }
+    }
+
+    public function migrateFresh()
+    {
+        // update env
+        Artisan::call('migrate:fresh', ['--force' => true]);
+        Artisan::call('storage:link');
+        // db seed
+        Artisan::call('db:seed');
+        return response()->json(['message' => 'Database migrated successfully.']);
     }
 
     private function testDatabaseConnection($database, $username, $password)

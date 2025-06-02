@@ -2,9 +2,14 @@
 import Navbar from "@/Components-landing/Navbar.vue";
 import Footer from "@/Components-landing/Footer.vue";
 import BaseLoading from "@/Components/BaseLoading.vue";
+import 'lite-youtube-embed/src/lite-yt-embed.css'
 </script>
 
 <template>
+    <lite-youtube-embed
+    videoid="YOUR_VIDEO_ID"
+    playlabel="Play Video"
+  />
     <BaseLoading />
     <Navbar />
     <main>
@@ -12,3 +17,4 @@ import BaseLoading from "@/Components/BaseLoading.vue";
     </main>
     <Footer />
 </template>
+

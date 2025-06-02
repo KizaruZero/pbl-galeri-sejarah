@@ -2,8 +2,8 @@
     <MainLayout>
         <div class="min-h-screen bg-black">
             <!-- Back Button - Adjusted padding for mobile -->
-            <div class="p-4 mt-8">
-                <button @click="goBack" class="flex mt-8 items-center text-gray-400 hover:text-white">
+            <div class="p-4">
+                <button @click="goBack" class="flex items-center text-gray-400 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                         fill="currentColor">
                         <path fill-rule="evenodd"
@@ -20,17 +20,26 @@
                 <div class="relative bg-black mx-auto">
                     <!-- Desktop: 35% height, Mobile: 55% height -->
                     <div class="pt-[55%] md:pt-[35%]">
-                        <video v-if="isLocalVideo" controls :poster="video.thumbnailUrl"
-                            class="absolute top-0 left-0 w-full h-full object-contain bg-gray-950">
-                            <source :src="video.video_url" type="video/mp4" />
+                        <!-- Video player for local videos -->
+                        <video 
+                            v-if="!isYoutubeVideo" 
+                            controls 
+                            :poster="video.thumbnailUrl"
+                            class="absolute top-0 left-0 w-full h-full object-contain bg-gray-950"
+                        >
+                            <source :src="getVideoUrl(video.video_url)" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
 
-                        <iframe v-else class="absolute top-0 left-0 w-full h-full" :src="video.video_url"
+                        <!-- YouTube embed for YouTube videos -->
+                        <iframe 
+                            v-else 
+                            class="absolute top-0 left-0 w-full h-full" 
+                            :src="getYoutubeEmbedUrl(video.link_youtube)"
                             frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
+                            allowfullscreen
+                        ></iframe>
                     </div>
                 </div>
 
@@ -231,7 +240,11 @@
 
                                 <!-- Actual comment -->
                                 <div v-else
-                                    class="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
+                                :class="[
+                                    'p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700',
+                                    getCommentStatusClass(comment.status)
+                                ]"
+                            >
                                     <div class="flex justify-between items-start gap-2">
                                         <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                             <router-link :to="`/users/${comment.user.id}`" class="flex-shrink-0">
@@ -273,7 +286,7 @@
                                             <button v-for="reaction in comment.reactions" :key="reaction.reaction_type_id"
                                                 @click.stop="UserId ? toggleReaction(comment.id, reaction.react_type) : null"
                                                 class="flex items-center text-xs bg-gray-700/50 hover:bg-gray-600 rounded-full px-2 py-1 transition-colors"
-                                                :class="{ 
+                                                :class="{
                                                     'bg-blue-900/50': reaction.userReacted,
                                                     'cursor-default': !UserId,
                                                     'hover:bg-gray-700/50': !UserId
@@ -344,6 +357,7 @@
     import {
         usePage
     } from "@inertiajs/vue3";
+    import Swal from 'sweetalert2';
 
     const props = defineProps({
         auth: {
@@ -526,6 +540,7 @@
                     ...currentUser.value,
                 },
                 text: newComment.value,
+                status: 'hidden',
                 date: new Date().toISOString(),
                 canDelete: true,
                 isLoading: true,
@@ -557,10 +572,25 @@
                 },
                 text: response.data.content || newComment.value,
                 date: response.data.created_at || new Date().toISOString(),
+                status: 'hidden',
                 canDelete: true,
             });
 
             newComment.value = "";
+
+            // Show success message with SweetAlert2
+            await Swal.fire({
+                title: 'Comment Submitted!',
+                text: 'Komentar Anda telah dikirim dan sedang dalam proses pemantauan. Komentar tersebut akan terlihat oleh orang lain setelah disetujui.',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#3085d6',
+                timer: 5000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         } catch (error) {
             console.error("Error adding comment:", error);
             // Remove loading comment if error occurs
@@ -579,7 +609,17 @@
                     errorMessage = error.response.data.message;
                 }
             }
-            alert(errorMessage);
+            // Show error message with SweetAlert2
+            await Swal.fire({
+                title: 'Error!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         }
     };
 
@@ -752,6 +792,10 @@
         return video.value.video_url && !video.value.video_url.includes('youtube.com');
     });
 
+    const isYoutubeVideo = computed(() => {
+        return !!video.value.link_youtube;
+    });
+
     // Utility functions
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -851,7 +895,7 @@
 
     // Action functions
     const toggleBookmark = async () => {
-        if (!currentUser.value.id) {
+        if (!currentUser.value?.id) {
             console.log('No user logged in');
             router.visit('/login');
             return;
@@ -867,9 +911,12 @@
         try {
             if (isBookmarked.value) {
                 console.log('Attempting to delete bookmark');
-                // Use the delete video favorite route
                 await axios.delete('/api/user-favorite/video', {
-                    headers,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
                     withCredentials: true,
                     data: {
                         user_id: currentUser.value.id,
@@ -880,12 +927,15 @@
                 isBookmarked.value = false;
             } else {
                 console.log('Attempting to create bookmark');
-                // Use the create video favorite route
                 const response = await axios.post('/api/user-favorite/video', {
                     user_id: currentUser.value.id,
                     content_video_id: video.value.id
                 }, {
-                    headers,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
                     withCredentials: true
                 });
                 console.log('Bookmark created:', response.data);
@@ -893,12 +943,12 @@
             }
         } catch (error) {
             console.error('Error details:', {
-                response: error.response ?.data,
-                status: error.response ?.status,
+                response: error.response?.data,
+                status: error.response?.status,
                 message: error.message
             });
 
-            if (error.response ?.status === 401) {
+            if (error.response?.status === 401) {
                 router.visit('/login');
             } else {
                 alert('Error updating bookmark. Please try again.');
@@ -908,32 +958,104 @@
         }
     };
 
-    const checkIfBookmarked = async () => {
-        if (!currentUser.value.id || !video.value.id) return;
+    const checkIfBookmarked = async (videoId = null) => {
+        const currentVideoId = videoId || video.value.id;
+        const userId = currentUser.value?.id;
+
+        console.log('Checking bookmark with:', { currentVideoId, userId });
+
+        if (!userId || !currentVideoId) {
+            console.log('Missing userId or videoId, skipping bookmark check');
+            return;
+        }
 
         try {
-            const response = await axios.get(`/api/favorite/video/user/${currentUser.value.id}`, {
-                headers,
+            const response = await axios.get(`/api/favorite/video/user/${userId}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
                 withCredentials: true
             });
 
-            const isBookmarkedVideo = response.data.some(favorite =>
-                favorite.content_video_id === video.value.id
-            );
+            console.log('Bookmark response:', response.data);
+            console.log('Response type:', typeof response.data);
+            console.log('Is array:', Array.isArray(response.data));
 
+            // Handle different response formats
+            let bookmarkData = [];
+
+            if (Array.isArray(response.data)) {
+                bookmarkData = response.data;
+            } else if (response.data && typeof response.data === 'object') {
+                if (Array.isArray(response.data.data)) {
+                    bookmarkData = response.data.data;
+                } else if (Array.isArray(response.data.favorites)) {
+                    bookmarkData = response.data.favorites;
+                } else if (response.data.success && Array.isArray(response.data.bookmarks)) {
+                    bookmarkData = response.data.bookmarks;
+                } else {
+                    bookmarkData = [response.data];
+                }
+            }
+
+            console.log('Processed bookmark data:', bookmarkData);
+
+            const isBookmarkedVideo = bookmarkData.some(favorite => {
+                const favoriteVideoId = favorite.content_video_id || favorite.video_id || favorite.id;
+                return favoriteVideoId === parseInt(currentVideoId);
+            });
+
+            console.log('Is bookmarked:', isBookmarkedVideo);
             isBookmarked.value = isBookmarkedVideo;
+
         } catch (error) {
             console.error('Error checking bookmark status:', error);
-            if (error.response ?.status === 401) {
+
+            if (error.response?.status !== 401) {
+                try {
+                    console.log('Trying alternative bookmark check...');
+                    const altResponse = await axios.get(`/api/user-favorite/check`, {
+                        params: {
+                            user_id: userId,
+                            content_video_id: currentVideoId
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        withCredentials: true
+                    });
+
+                    isBookmarked.value = altResponse.data.is_bookmarked || false;
+                    console.log('Alternative bookmark check result:', isBookmarked.value);
+                    return;
+                } catch (altError) {
+                    console.error('Alternative bookmark check also failed:', altError);
+                }
+            }
+
+            if (error.response?.status === 401) {
                 router.visit('/login');
+            } else if (error.response?.status === 404) {
+                console.log('No bookmarks found for user');
+                isBookmarked.value = false;
             }
         }
     };
 
-
-
     const goBack = () => {
         window.history.back();
+    };
+
+    // Add this function with the other state variables and functions
+    const getCommentStatusClass = (status) => {
+        return {
+            'bg-gray-800/50': status === 'published' || !status,
+            'bg-yellow-800/30 border-yellow-800/50': status === 'hidden'
+        };
     };
 
     // Initialize component
@@ -955,9 +1077,8 @@
                 id: videoData.id,
                 title: videoData.title || "Untitled Video",
                 description: videoData.description || "No description available",
-                video_url: videoData.video_url ?
-                    `/storage/${videoData.video_url.replace(/^public\//, "")}` :
-                    convertToEmbedUrl(videoData.link_youtube) || "",
+                video_url: videoData.video_url || '',
+                link_youtube: videoData.link_youtube || '',
                 thumbnailUrl: videoData.thumbnail ?
                     `/storage/${videoData.thumbnail.replace(/^public\//, "")}` :
                     "/js/Assets/default-photo.jpg",
@@ -989,6 +1110,21 @@
             );
             isLiked.value = !!userReaction;
 
+            // Check if bookmark data is already included in video response
+            if (videoData.user_favorites && Array.isArray(videoData.user_favorites)) {
+                const userBookmark = videoData.user_favorites.find(
+                    fav => fav.user_id === UserId.value
+                );
+                isBookmarked.value = !!userBookmark;
+                console.log('Bookmark status from video data:', isBookmarked.value);
+            } else {
+                // Check bookmark after video data is set
+                if (video.value.id && UserId.value) {
+                    console.log('Calling checkIfBookmarked with video ID:', video.value.id);
+                    await checkIfBookmarked(video.value.id);
+                }
+            }
+
             await checkIfBookmarked();
 
             // Fetch comments if the video has an ID
@@ -1002,6 +1138,19 @@
             loading.value = false;
         }
     });
+
+    // Add these computed properties and methods in the script section
+    const getVideoUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        return `/storage/${url.replace(/^public\//, '')}`;
+    };
+
+    const getYoutubeEmbedUrl = (url) => {
+        if (!url) return '';
+        const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu.be\/|youtube.com\/shorts\/)([^&\s]+)/)?.[1];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+    };
 
 </script>
 

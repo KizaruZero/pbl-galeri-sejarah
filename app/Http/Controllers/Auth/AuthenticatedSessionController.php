@@ -44,6 +44,12 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        if ($user->status == 'inactive') {
+            throw ValidationException::withMessages([
+                'email' => 'Your account is inactive. Please contact the administrator.',
+            ]);
+        }
+
         $request->authenticate();
 
 
@@ -83,39 +89,39 @@ class AuthenticatedSessionController extends Controller
     {
         try {
 
-        $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->user();
 
-        // First try to find user by google_id
-        $user = User::where('google_id', $googleUser->id)->first();
+            // First try to find user by google_id
+            $user = User::where('google_id', $googleUser->id)->first();
 
-        // If not found, try to find by email
-        if (!$user) {
-            $user = User::where('email', $googleUser->email)->first();
+            // If not found, try to find by email
+            if (!$user) {
+                $user = User::where('email', $googleUser->email)->first();
 
-            // If user exists but doesn't have google_id, update it
-            if ($user) {
-                $user->update([
+                // If user exists but doesn't have google_id, update it
+                if ($user) {
+                    $user->update([
+                        'google_id' => $googleUser->id,
+                    ]);
+                }
+            }
+
+            // If user still not found, create a new one
+            if (!$user) {
+                $user = User::create([
+                    'name' => $googleUser->name,
+                    'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
+                    'password' => bcrypt(Str::random(16)), // Generate a random password
+                    'email_verified_at' => now(),
                 ]);
             }
-        }
-
-        // If user still not found, create a new one
-        if (!$user) {
-            $user = User::create([
-                'name' => $googleUser->name,
-                'email' => $googleUser->email,
-                'google_id' => $googleUser->id,
-                'password' => bcrypt(Str::random(16)), // Generate a random password
-                'email_verified_at' => now(),
+        } catch (\Exception $e) {
+            \Log::error('Google OAuth Error: ' . $e->getMessage());
+            return redirect()->route('login')->withErrors([
+                'google' => 'Failed to authenticate with Google. Please try again.'
             ]);
         }
-    } catch (\Exception $e) {
-        \Log::error('Google OAuth Error: ' . $e->getMessage());
-        return redirect()->route('login')->withErrors([
-            'google' => 'Failed to authenticate with Google. Please try again.'
-        ]);
-    }
         Auth::login($user, true);
         return redirect()->intended(route('/'));  // Make sure 'home' is a valid route name
     }

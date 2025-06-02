@@ -7,7 +7,7 @@
 
     <!-- Slideshow -->
     <section v-else
-        class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+        class="relative flex items-center justify-center w-full h-screen max-lg:aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
 
         <!-- Slideshow Container -->
         <div class="relative w-full h-full">
@@ -39,11 +39,12 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import defaultPhoto from '@/Assets/default-photo.jpg';
 
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
 const eventImages = ref([]);
-const isLoading = ref(true); // ✅ Tambahan: loading state
+const isLoading = ref(true);
 let slideInterval = null;
 
 const startSlideshow = () => {
@@ -64,17 +65,20 @@ const fetchCompanyProfile = async () => {
         const data = response.data.data;
         console.log('Company profile response:', data);
 
-        // ✅ Hanya masukkan gambar yang tidak null
+        // Use default photo if image is missing
         eventImages.value = [
-            data.bg_events_1 && `/storage/${data.bg_events_1}`,
-            data.bg_events_2 && `/storage/${data.bg_events_2}`,
-            data.bg_events_3 && `/storage/${data.bg_events_3}`,
-        ].filter(Boolean); // filter null/undefined
+            data.bg_events_1 ? `/storage/${data.bg_events_1}` : defaultPhoto,
+            data.bg_events_2 ? `/storage/${data.bg_events_2}` : defaultPhoto,
+            data.bg_events_3 ? `/storage/${data.bg_events_3}` : defaultPhoto,
+        ];
 
         companyProfile.value = data;
         startSlideshow();
     } catch (error) {
         console.error('Error fetching company profile:', error);
+        // Use default photo if API fails
+        eventImages.value = [defaultPhoto];
+        companyProfile.value = { events_text: 'Events' };
     } finally {
         isLoading.value = false; // ✅ Set selesai loading
     }

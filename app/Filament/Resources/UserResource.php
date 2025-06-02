@@ -47,12 +47,11 @@ class UserResource extends Resource
                     ->dehydrated(fn($state) => filled($state)) // Hanya simpan jika diisi
                     ->maxLength(255)
                     ->rules(['nullable', 'min:6']),
-                // Select::make('role')
-                //     ->options([
-                //         'admin' => 'Admin',
-                //         'direktur' => 'Direktur',
-                //         'member' => 'Member',
-                //     ]),
+                Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                    ]),
                 Select::make('roles')
                     ->relationship('roles', 'name')
                     ->required()
@@ -80,6 +79,8 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('photo_profile')
                     ->searchable(),
+                // status
+                Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -109,6 +110,8 @@ class UserResource extends Resource
                             ->optionsLimit(10)
                             ->getOptionLabelFromRecordUsing(fn($record) => $record->name),
                     ]),
+
+
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

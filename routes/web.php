@@ -82,14 +82,14 @@ Route::middleware('web')->group(function () {
     Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 
     Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
-        // ->middleware('auth', 'role:member')
-    ;
+        ->middleware('auth')->name('profile-page');
 
     /**
      * Routing untuk pengguna terautentikasi
      */
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
         // Halaman profile (auth bawaan Laravel Breeze/Jetstream)
+        Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))->name('profile-page');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -111,10 +111,9 @@ Route::middleware('web')->group(function () {
     Route::post('/api/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
     Route::post('/api/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
 
-
 });
 
-    Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'));
-    Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'));
+Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'));
+Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'));
 require __DIR__ . '/auth.php';
 require __DIR__ . '/api.php';

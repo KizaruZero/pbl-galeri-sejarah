@@ -1,5 +1,13 @@
 <template>
-    <section class="relative flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+    <!-- Loading Spinner -->
+    <section v-if="isLoading"
+        class="flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] bg-black">
+        <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+    </section>
+
+    <!-- Slideshow -->
+    <section v-else class="relative flex items-center justify-center w-full h-screen max-lg:aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] overflow-hidden">
+
         <!-- Slideshow Container -->
         <div class="relative w-full h-full">
             <!-- Slideshow Image with slide transition -->
@@ -31,10 +39,12 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import defaultPhoto from '@/Assets/default-photo.jpg';
 
 const companyProfile = ref(null);
 const currentSlideIndex = ref(0);
 const articleImages = ref([]);
+const isLoading = ref(true);
 let slideInterval = null;
 
 const startSlideshow = () => {
@@ -53,19 +63,21 @@ const fetchCompanyProfile = async () => {
     try {
         const response = await axios.get('/api/company-profile/article');
         const data = response.data.data;
-        console.log('Company profile response:', data);
 
-        // Buat array gambar article
         articleImages.value = [
-            `/storage/${data.bg_article_1}`,
-            `/storage/${data.bg_article_2}`,
-            `/storage/${data.bg_article_3}`,
+            data.bg_article_1 ? `/storage/${data.bg_article_1}` : defaultPhoto,
+            data.bg_article_2 ? `/storage/${data.bg_article_2}` : defaultPhoto,
+            data.bg_article_3 ? `/storage/${data.bg_article_3}` : defaultPhoto,
         ];
 
         companyProfile.value = data;
         startSlideshow();
     } catch (error) {
         console.error('Error fetching company profile:', error);
+        articleImages.value = [defaultPhoto];
+        companyProfile.value = { article_text: 'Articles' };
+    } finally {
+        isLoading.value = false;
     }
 };
 
