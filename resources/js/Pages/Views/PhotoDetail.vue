@@ -234,7 +234,19 @@
 
                             <!-- Actual comment -->
                             <div v-else
-                                class="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
+                                :class="[
+                                    'p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700',
+                                    getCommentStatusClass(comment.status)
+                                ]"
+                            >
+                                <!-- Add status indicator for user's own hidden comments -->
+                                <div v-if="comment.status === 'hidden' && comment.user.id === UserId" 
+                                    class="text-yellow-500 text-xs mb-2 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Your comment is pending moderation</span>
+                                </div>
                                 <div class="flex justify-between items-start gap-2">
                                     <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                         <router-link :to="`/users/${comment.user.id}`" class="flex-shrink-0">
@@ -347,6 +359,7 @@
     import {
         usePage
     } from "@inertiajs/vue3";
+    import Swal from 'sweetalert2'; // Add this import
 
     const props = defineProps({
         auth: {
@@ -796,6 +809,7 @@
                     ...currentUser.value,
                 },
                 text: newComment.value,
+                status: 'hidden',
                 date: new Date().toISOString(),
                 canDelete: true,
                 isLoading: true,
@@ -803,11 +817,13 @@
             comments.value.unshift(loadingComment);
 
             const response = await axios.post(
-                `/api/comment/photo/${photo.value.id}`, {
+                `/api/comment/photo/${photo.value.id}`,
+                {
                     content: newComment.value.trim(),
                     content_photo_id: photo.value.id,
                     user_id: UserId.value,
-                }, {
+                },
+                {
                     headers: {
                         "Content-Type": "application/json",
                         Accept: "application/json",
@@ -820,6 +836,8 @@
             comments.value = comments.value.filter(
                 (c) => c.id !== loadingComment.id
             );
+            
+            // Add the new comment with hidden status
             comments.value.unshift({
                 id: response.data.id,
                 user: {
@@ -827,13 +845,28 @@
                 },
                 text: response.data.content || newComment.value,
                 date: response.data.created_at || new Date().toISOString(),
+                status: 'hidden',
                 canDelete: true,
             });
 
             newComment.value = "";
+
+            // Show success message with SweetAlert2
+            await Swal.fire({
+                title: 'Comment Submitted!',
+                text: 'Komentar Anda telah dikirim dan sedang dalam proses pemantauan. Komentar tersebut akan terlihat oleh orang lain setelah disetujui.',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#3085d6',
+                timer: 5000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+
         } catch (error) {
             console.error("Error adding comment:", error);
-            // Remove loading comment if error occurs
             comments.value = comments.value.filter((c) => !c.isLoading);
 
             let errorMessage = "Failed to add comment. Please try again.";
@@ -842,14 +875,24 @@
                     errorMessage = "Please log in to comment.";
                     router.push("/login");
                 } else if (error.response.status === 422) {
-                    // Handle validation errors
                     const errors = error.response.data.errors;
                     errorMessage = Object.values(errors).flat().join("\n");
-                } else if (error.response.data ?.message) {
+                } else if (error.response.data?.message) {
                     errorMessage = error.response.data.message;
                 }
             }
-            alert(errorMessage);
+
+            // Show error message with SweetAlert2
+            await Swal.fire({
+                title: 'Error!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         }
     };
 
@@ -1051,6 +1094,13 @@
     }
 });
 
+    // Add this function with the other state variables and functions
+    const getCommentStatusClass = (status) => {
+        return {
+            'bg-gray-800/50': status === 'published' || !status,
+            'bg-yellow-800/30 border-yellow-800/50': status === 'hidden'
+        };
+    };
 </script>
 
 <style scoped>

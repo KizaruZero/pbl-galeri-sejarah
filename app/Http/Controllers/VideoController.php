@@ -16,7 +16,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-
+use App\Imports\VideosImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VideoController extends Controller
 {
@@ -410,76 +411,36 @@ class VideoController extends Controller
         ]);
     }
 
-    // public function update(Request $request, $id)
-    // {
-    //     $video = ContentVideo::findOrFail($id);
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls|max:2048'
+    ]);
 
-    //     $request->validate([
-    //         'title' => 'nullable|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'video_url' => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
-    //         'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
-    //         'source' => 'nullable|string|max:255',
-    //         'tag' => 'nullable|string|max:255',
-    //         'link_youtube' => 'nullable|url|max:255',
-    //         'category_id' => 'nullable|exists:categories,id',
-    //     ]);
-
-    //     $data = [];
-
-    //     // Handle video file if uploaded
-    //     if ($request->hasFile('video_url')) {
-    //         // Delete old video
-    //         if ($video->video_url) {
-    //             Storage::disk('public')->delete($video->video_url);
-    //         }
-
-    //         $videoFile = $request->file('video_url');
-    //         $videoFilename = time() . '_' . $videoFile->getClientOriginalName();
-    //         $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
-    //         $data['video_url'] = $videoPath;
-
-    //         // Update metadata for new video
-    //         $this->extractAndSaveVideoMetadata($videoFile, $video->id);
-    //     }
-
-    //     // Handle thumbnail if uploaded
-    //     if ($request->hasFile('thumbnail')) {
-    //         // Delete old thumbnail
-    //         if ($video->thumbnail) {
-    //             Storage::disk('public')->delete($video->thumbnail);
-    //         }
-
-    //         $thumbnailFile = $request->file('thumbnail');
-    //         $thumbnailFilename = time() . '_' . $thumbnailFile->getClientOriginalName();
-    //         $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
-    //         $data['thumbnail'] = $thumbnailPath;
-    //     }
-
-    //     // Update text fields
-    //     $fields = ['title', 'description', 'source', 'tag', 'link_youtube'];
-    //     foreach ($fields as $field) {
-    //         if ($request->has($field)) {
-    //             $data[$field] = $request->input($field);
-    //         }
-    //     }
-
-    //     // Update slug if title is changed
-    //     if (isset($data['title'])) {
-    //         $data['slug'] = Str::slug($data['title']);
-    //     }
-
-    //     // Update video
-    //     $video->update($data);
-
-    //     // Update category if provided
-    //     if ($request->has('category_id')) {
-    //         $video->categoryContents()->update(['category_id' => $request->category_id]);
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'Video updated successfully',
-    //         'data' => $video->fresh(['metadataVideo', 'categoryContents'])
-    //     ]);
-    // }
+    try {
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+        
+        // Pass the user ID to the importer
+        $import = new VideosImport($userId);
+        
+        Excel::import($import, $request->file('file'));
+        
+        $importedCount = $import->getRowCount();
+        $skippedCount = $import->getSkippedCount();
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil mengimpor {$importedCount} video",
+            'skipped' => $skippedCount,
+            'total' => $importedCount + $skippedCount
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengimpor: ' . $e->getMessage()
+        ], 422);
+    }
+}
 }

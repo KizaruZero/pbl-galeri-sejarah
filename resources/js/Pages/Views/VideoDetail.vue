@@ -240,7 +240,11 @@
 
                                 <!-- Actual comment -->
                                 <div v-else
-                                    class="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
+                                :class="[
+                                    'p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700',
+                                    getCommentStatusClass(comment.status)
+                                ]"
+                            >
                                     <div class="flex justify-between items-start gap-2">
                                         <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                             <router-link :to="`/users/${comment.user.id}`" class="flex-shrink-0">
@@ -353,6 +357,7 @@
     import {
         usePage
     } from "@inertiajs/vue3";
+    import Swal from 'sweetalert2';
 
     const props = defineProps({
         auth: {
@@ -535,6 +540,7 @@
                     ...currentUser.value,
                 },
                 text: newComment.value,
+                status: 'hidden',
                 date: new Date().toISOString(),
                 canDelete: true,
                 isLoading: true,
@@ -566,10 +572,25 @@
                 },
                 text: response.data.content || newComment.value,
                 date: response.data.created_at || new Date().toISOString(),
+                status: 'hidden',
                 canDelete: true,
             });
 
             newComment.value = "";
+
+            // Show success message with SweetAlert2
+            await Swal.fire({
+                title: 'Comment Submitted!',
+                text: 'Komentar Anda telah dikirim dan sedang dalam proses pemantauan. Komentar tersebut akan terlihat oleh orang lain setelah disetujui.',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#3085d6',
+                timer: 5000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         } catch (error) {
             console.error("Error adding comment:", error);
             // Remove loading comment if error occurs
@@ -588,7 +609,17 @@
                     errorMessage = error.response.data.message;
                 }
             }
-            alert(errorMessage);
+            // Show error message with SweetAlert2
+            await Swal.fire({
+                title: 'Error!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         }
     };
 
@@ -1015,10 +1046,16 @@
         }
     };
 
-
-
     const goBack = () => {
         window.history.back();
+    };
+
+    // Add this function with the other state variables and functions
+    const getCommentStatusClass = (status) => {
+        return {
+            'bg-gray-800/50': status === 'published' || !status,
+            'bg-yellow-800/30 border-yellow-800/50': status === 'hidden'
+        };
     };
 
     // Initialize component

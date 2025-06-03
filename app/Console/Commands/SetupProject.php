@@ -56,6 +56,7 @@ class SetupProject extends Command
 
         // key generate
         $this->info('Generating key...');
+        $this->call('config:clear');
         $this->call('key:generate', ['--force' => true]);
         $this->info('Key generated!');
 
@@ -77,20 +78,23 @@ class SetupProject extends Command
     }
 
     protected function updateEnvFile($data)
-    {
-        $envFile = base_path('.env');
-        $envContent = file_get_contents($envFile);
+{
+    $envFile = base_path('.env');
+    $envContent = file_get_contents($envFile);
 
-        foreach ($data as $key => $value) {
-            // If key exists, replace it
-            if (preg_match("/^{$key}=/m", $envContent)) {
-                $envContent = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $envContent);
-            } else {
-                // If key doesn't exist, add it
-                $envContent .= "\n{$key}={$value}";
-            }
-        }
-
-        file_put_contents($envFile, $envContent);
+    // Pastikan APP_KEY ada
+    if (!preg_match("/^APP_KEY=/m", $envContent)) {
+        $envContent .= "\nAPP_KEY=";
     }
+
+    foreach ($data as $key => $value) {
+        if (preg_match("/^{$key}=/m", $envContent)) {
+            $envContent = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $envContent);
+        } else {
+            $envContent .= "\n{$key}={$value}";
+        }
+    }
+
+    file_put_contents($envFile, $envContent);
+}
 }
