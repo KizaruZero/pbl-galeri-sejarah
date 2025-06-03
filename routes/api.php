@@ -61,6 +61,7 @@ Route::post('/user-favorite/photo', [UserFavoriteController::class, 'CreatePhoto
 Route::post('/user-favorite/video', [UserFavoriteController::class, 'CreateVideoFavorite']);
 Route::delete('/user-favorite/photo', [UserFavoriteController::class, 'DeletePhotoFavorite']);
 Route::delete('/user-favorite/video', [UserFavoriteController::class, 'DeleteVideoFavorite']);
+Route::get('/user/totalfavorite/{userId}', [UserFavoriteController::class, 'getTotalFavoriteUserGet']);
 
 // Comment
 Route::post('/comment/photo/{id}', [CommentController::class, 'storePhotoComment']);

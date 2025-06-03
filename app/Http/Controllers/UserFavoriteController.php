@@ -19,6 +19,26 @@ class UserFavoriteController extends Controller
             'total' => $totalFavorites,
         ]);
     }
+
+    public function getTotalFavoriteUserGet($userId)
+    {
+        // Count favorites for user's photos
+        $photoFavorites = UserFavorite::whereHas('contentPhoto', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
+        // Count favorites for user's videos
+        $videoFavorites = UserFavorite::whereHas('contentVideo', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
+        // Total favorites received
+        $totalFavorites = $photoFavorites + $videoFavorites;
+
+        return response()->json([
+            'total' => $totalFavorites,
+        ]);
+    }
     public function getPhotoFavoriteByUser($userId)
     {
         $totalFavorites = UserFavorite::where('user_id', $userId)
