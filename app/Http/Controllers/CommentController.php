@@ -157,6 +157,7 @@ class CommentController extends Controller
             'content' => $request->content,
             'content_video_id' => $id,
             'user_id' => $request->user_id,
+            'status' => 'hidden' // Set default status to hidden
         ]);
 
         return response()->json($comment);

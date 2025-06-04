@@ -273,9 +273,21 @@
                                         </div>
                                     </div>
 
-                                    <!-- Actual comment -->
-                                    <div v-else
-                                        class="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700">
+                                                                    <!-- Actual comment -->
+                            <div v-else
+                                :class="[
+                                    'p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700',
+                                    getCommentStatusClass(comment.status)
+                                ]"
+                            >
+                                <!-- Add status indicator for user's own hidden comments -->
+                                <div v-if="comment.status === 'hidden' && comment.user.id === UserId"
+                                    class="text-yellow-500 text-xs mb-2 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Your comment is pending moderation</span>
+                                </div>
                                         <div class="flex justify-between items-start gap-2">
                                             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                                                 <router-link :to="`/users/${comment.user.id}`" class="flex-shrink-0">
@@ -389,6 +401,7 @@
     import {
         usePage
     } from "@inertiajs/vue3";
+    import Swal from 'sweetalert2'; // Add this import
 
     const props = defineProps({
         auth: {
@@ -487,14 +500,31 @@
                     Accept: "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
                 },
+                                params: {
+                    include_user_hidden: true, // Request to include user's own hidden comments
+                    user_id: UserId.value // Send current user ID
+                }
             });
 
             // Handle both array and single comment responses
             const commentData = response.data.data || response.data;
             const commentsArray = Array.isArray(commentData) ? commentData : [commentData];
 
+                        // Filter and process comments
+            const processedComments = commentsArray.filter(comment => {
+                // Show published comments to everyone
+                if (comment.status === 'published' || !comment.status) {
+                    return true;
+                }
+                // Show hidden comments only to the comment author
+                if (comment.status === 'hidden' && comment.user_id === UserId.value) {
+                    return true;
+                }
+                return false;
+            });
+
             // Fetch reactions for each comment
-            const commentsWithReactions = await Promise.all(commentsArray.map(async (comment) => {
+            const commentsWithReactions = await Promise.all(processedComments.map(async (comment) => {
                 // Create basic comment structure
                 const commentObj = {
                     id: comment.id,
@@ -505,27 +535,48 @@
                     },
                     text: comment.content,
                     date: comment.created_at,
+                    status: comment.status || 'published', // Add status to comment object
                     canDelete: comment.user_id === (currentUser.value ?.id || null),
                     isLoading: false,
                     reactions: []
                 };
 
-                // Fetch user details
-                try {
-                    const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
-                        },
-                    });
-
+                // Check if user data is already included in comment
+                if (comment.user) {
+                    console.log('User data found in comment:', comment.user);
                     commentObj.user = {
-                        id: userResponse.data.id,
-                        name: userResponse.data.name,
-                        photo_profile: userResponse.data.photo_profile ||
-                            "/js/Assets/default-photo.jpg",
+                        id: comment.user.id,
+                        name: comment.user.name || `User ${comment.user.id}`,
+                        photo_profile: comment.user.photo_profile ||
+                                      comment.user.profile_photo ||
+                                      "/js/Assets/default-photo.jpg",
                     };
-                } catch (userError) {
-                    console.error("Error fetching user:", userError);
+                } else {
+                    // Fetch user details separately
+                    try {
+                        console.log('Fetching user details for:', comment.user_id);
+                        const userResponse = await axios.get(`/api/users/${comment.user_id}`, {
+                            headers: {
+                                Accept: "application/json",
+                                Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+                            },
+                        });
+
+                        console.log('User response:', userResponse.data);
+
+                        commentObj.user = {
+                            id: userResponse.data.id,
+                            name: userResponse.data.name || `User ${userResponse.data.id}`,
+                            photo_profile: userResponse.data.photo_profile ||
+                                          userResponse.data.profile_photo ||
+                                          userResponse.data.avatar ||
+                                          "/js/Assets/default-photo.jpg",
+                        };
+                    } catch (userError) {
+                        console.error("Error fetching user:", userError);
+                        // Keep default user data if fetch fails
+                        commentObj.user.name = `User ${comment.user_id}`;
+                    }
                 }
 
                 // Fetch reactions for this comment
@@ -557,23 +608,68 @@
 
         } catch (error) {
             console.error("Error fetching comments:", error);
+// Try alternative endpoint if the main one fails
+            try {
+                console.log('Trying alternative comments endpoint...');
+                const altResponse = await axios.get(`/api/comments/photo/${photoId}/all`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token") || "123"}`,
+                    },
+                    params: {
+                        user_id: UserId.value
+                    }
+                });
+
+                const altComments = altResponse.data.data || altResponse.data;
+                if (Array.isArray(altComments)) {
+                    // Process alternative response
+                    const filteredComments = altComments.filter(comment => {
+                        return comment.status === 'published' ||
+                               (comment.status === 'hidden' && comment.user_id === UserId.value);
+                    }).map(comment => ({
+                        id: comment.id,
+                        user: {
+                            id: comment.user_id,
+                            name: comment.user?.name || `User ${comment.user_id}`,
+                            photo_profile: comment.user?.photo_profile || "/js/Assets/default-photo.jpg",
+                        },
+                        text: comment.content,
+                        date: comment.created_at,
+                        status: comment.status || 'published',
+                        canDelete: comment.user_id === UserId.value,
+                        isLoading: false,
+                        reactions: []
+                    }));
+                    comments.value = filteredComments;
+                    return;
+                }
+            } catch (altError) {
+                console.error("Alternative comments endpoint also failed:", altError);
+            }
+
+            // Set empty array if all attempts fail
+            comments.value = [];
         }
     };
 
     // Add comment
     const addComment = async () => {
         if (!newComment.value.trim() || !UserId.value) return;
+        const tempCommentId = "temp-" + Date.now();
 
         try {
             const loadingComment = {
-                id: "temp-" + Date.now(),
+                id: tempCommentId,
                 user: {
                     ...currentUser.value,
                 },
                 text: newComment.value,
+                status: 'hidden',
                 date: new Date().toISOString(),
                 canDelete: true,
                 isLoading: true,
+                reactions: []
             };
             comments.value.unshift(loadingComment);
 
@@ -591,25 +687,42 @@
                 }
             );
 
-            // Remove loading comment and add the real one
-            comments.value = comments.value.filter(
-                (c) => c.id !== loadingComment.id
-            );
-            comments.value.unshift({
+            // Remove loading comment
+            comments.value = comments.value.filter(c => c.id !== tempCommentId);
+
+            // Add the real comment with proper status
+            const newCommentObj = {
                 id: response.data.id,
                 user: {
                     ...currentUser.value,
                 },
                 text: response.data.content || newComment.value,
                 date: response.data.created_at || new Date().toISOString(),
+                status: response.data.status || 'hidden', // Use status from API response
                 canDelete: true,
-            });
+                isLoading: false,
+                reactions: []
+            };
 
+            comments.value.unshift(newCommentObj);
             newComment.value = "";
+                        // Show success message
+            await Swal.fire({
+                title: 'Comment Submitted!',
+                text: 'Komentar Anda telah dikirim dan sedang dalam proses pemantauan. Komentar tersebut akan terlihat oleh orang lain setelah disetujui.',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#3085d6',
+                timer: 5000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
         } catch (error) {
             console.error("Error adding comment:", error);
             // Remove loading comment if error occurs
-            comments.value = comments.value.filter((c) => !c.isLoading);
+            comments.value = comments.value.filter(c => c.id !== tempCommentId);
 
             let errorMessage = "Failed to add comment. Please try again.";
             if (error.response) {
@@ -624,8 +737,16 @@
                     errorMessage = error.response.data.message;
                 }
             }
-            alert(errorMessage);
-        }
+            await Swal.fire({
+                title: 'Error!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });        }
     };
 
     // Delete comment
@@ -767,7 +888,7 @@
             isLiked.value = !isLiked.value;
         } catch (error) {
             console.error('Error toggling like:', error);
-            
+
             // Handle specific error cases
             if (error.response?.data?.message) {
                 alert(error.response.data.message);
@@ -1151,6 +1272,14 @@
             loading.value = false;
         }
     });
+
+        // Add this function with the other state variables and functions
+    const getCommentStatusClass = (status) => {
+        return {
+            'bg-gray-800/50': status === 'published' || !status,
+            'bg-yellow-800/30 border-yellow-800/50': status === 'hidden'
+        };
+    };
 
     // Add these computed properties and methods in the script section
     const getVideoUrl = (url) => {
