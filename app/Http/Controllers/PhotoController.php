@@ -17,9 +17,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Category;
 use App\Models\ContentVideo;
 use Illuminate\Support\Facades\Log;
-
 use App\Imports\PhotosImport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class PhotoController extends Controller
 {
@@ -243,7 +241,7 @@ class PhotoController extends Controller
                 );
             }
 
-                    // Update metadata
+            // Update metadata
             if ($request->has('metadata')) {
                 $metadata = $photo->metadataPhoto()->updateOrCreate(
                     ['content_photo_id' => $photo->id],
@@ -356,37 +354,37 @@ class PhotoController extends Controller
     }
 
     public function import(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls|max:2048'
-    ]);
-
-    try {
-        // Get the authenticated user's ID
-        $userId = Auth::id();
-        
-        // Pass the user ID to the importer
-        $import = new PhotosImport($userId);
-
-        Excel::import($import, $request->file('file'));
-        
-        $importedCount = $import->getRowCount();
-        $skippedCount = $import->getSkippedCount();
-        
-        return response()->json([
-            'success' => true,
-            'message' => "Berhasil mengimpor {$importedCount} foto",
-            'skipped' => $skippedCount,
-            'total' => $importedCount + $skippedCount
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:2048'
         ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal mengimpor: ' . $e->getMessage()
-        ], 422);
+
+        try {
+            // Get the authenticated user's ID
+            $userId = Auth::id();
+
+            // Pass the user ID to the importer
+            $import = new PhotosImport($userId);
+
+            Excel::import($import, $request->file('file'));
+
+            $importedCount = $import->getRowCount();
+            $skippedCount = $import->getSkippedCount();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil mengimpor {$importedCount} foto",
+                'skipped' => $skippedCount,
+                'total' => $importedCount + $skippedCount
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengimpor: ' . $e->getMessage()
+            ], 422);
+        }
     }
-}
 
     public function bulkUpload(Request $request)
     {
@@ -424,26 +422,37 @@ class PhotoController extends Controller
                 throw new \Exception('media directory not found in ZIP file');
             }
 
+
             // Parse Excel file
             $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $metadataPath)[0];
 
             // Process each row
             foreach ($rows as $index => $row) {
-                if ($index == 0 || !isset($row[0])) continue; // Skip header row
+                if ($index == 0 || !isset($row[0]))
+                    continue; // Skip header row
 
                 $type = strtolower(trim($row[0])); // photo / video
                 $fileName = trim($row[1]);
                 $title = trim($row[2]);
-                $description = trim($row[3]);
-                $note = trim($row[4]);
-                $tag = trim($row[5]);
-                $categories = explode(',', trim($row[6]));
+                $source = trim($row[3]);
+                $alt_text = trim($row[4]);
+                $description = trim($row[5]);
+                $note = trim($row[6]);
+                $tag = trim($row[7]);
+                $categories = explode(',', trim($row[8]));
+                $link_youtube = trim($row[9]);
+                $thumbnail_url = trim($row[10]);
+
 
                 // Check if media file exists
+
                 $mediaPath = $mediaDir . '/' . $fileName;
                 if (!file_exists($mediaPath)) {
+                    if ($type === 'photo') {
+                        \Log::warning("File not found: $fileName");
+                        throw new \Exception("File tidak ditemukan:" . $fileName . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
+                    }
                     \Log::warning("File not found: $fileName");
-                    continue;
                 }
 
                 $slug = Str::slug($title);
@@ -465,7 +474,8 @@ class PhotoController extends Controller
                         'description' => $description,
                         'note' => $note,
                         'tag' => $tag,
-                        'source' => 'bulk',
+                        'source' => $source,
+                        'alt_text' => $alt_text,
                         'user_id' => $userId,
                         'image_url' => 'foto_content/' . $newFileName,
                         'total_views' => 0,
@@ -483,18 +493,37 @@ class PhotoController extends Controller
                         }
                     }
                 } elseif ($type === 'video') {
-                    // Store video file
-                    Storage::disk('public')->putFileAs(
-                        'video_content',
-                        new \Illuminate\Http\File($mediaPath),
-                        $newFileName
-                    );
+                    // Store video file only if no YouTube link is provided
+                    if (empty($link_youtube)) {
+                        $mediaPath = $mediaDir . '/' . $fileName;
+                        if (!file_exists($mediaPath)) {
+                            \Log::warning("File not found: $fileName");
+                            throw new \Exception("File tidak ditemukan:" . $fileName . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
+                        }
 
-                    // Try to find and store thumbnail if exists
-                    $thumbnailFileName = pathinfo($fileName, PATHINFO_FILENAME) . '.jpg'; // e.g. photo1.mp4 -> photo1.jpg
-                    $thumbnailPath = $mediaDir . '/' . $thumbnailFileName;
+                        Storage::disk('public')->putFileAs(
+                            'video_content',
+                            new \Illuminate\Http\File($mediaPath),
+                            $newFileName
+                        );
+                        $videoUrl = 'video_content/' . $newFileName;
+                    } else {
+                        $videoUrl = null;
+                    }
+
+                    // Handle thumbnail
                     $thumbnailUrl = null;
-                    if (file_exists($thumbnailPath)) {
+                    if (!empty($thumbnail_url)) {
+                        $thumbnailDir = $tempDir . '/thumbnail';
+                        if (!is_dir($thumbnailDir)) {
+                            throw new \Exception('thumbnail directory not found in ZIP file');
+                        }
+                        $thumbnailPath = $thumbnailDir . '/' . $thumbnail_url;
+                        if (!file_exists($thumbnailPath)) {
+                            \Log::warning("File not found: $thumbnail_url");
+                            throw new \Exception("File tidak ditemukan:" . $thumbnail_url . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
+                        }
+
                         $thumbnailNewName = time() . '_' . $slug . '.jpg';
                         Storage::disk('public')->putFileAs(
                             'thumbnail_video',
@@ -513,7 +542,8 @@ class PhotoController extends Controller
                         'tag' => $tag,
                         'source' => 'bulk',
                         'user_id' => $userId,
-                        'video_url' => 'video_content/' . $newFileName,
+                        'video_url' => $videoUrl,
+                        'link_youtube' => $link_youtube,
                         'thumbnail' => $thumbnailUrl,
                         'status' => 'pending',
                     ]);
@@ -531,7 +561,7 @@ class PhotoController extends Controller
                     }
                 }
             }
-            
+
 
             // Clean up temporary directory
             $this->deleteDirectory($tempDir);
@@ -539,7 +569,6 @@ class PhotoController extends Controller
             //  return the data that stored
             $data = [
                 'message' => 'Bulk upload completed successfully',
-                'data' => $content
             ];
 
             return response()->json($data);

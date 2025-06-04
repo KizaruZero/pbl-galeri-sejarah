@@ -25,6 +25,7 @@
                     v-model="showModal"
                     @upload-photo="visitUploadPhoto"
                     @upload-video="visitUploadVideo"
+                    @bulk-upload="visitBulkUpload"
                 />
             </div>
         </div>
@@ -75,6 +76,11 @@ const visitUploadPhoto = () => {
 const visitUploadVideo = () => {
     showModal.value = false;
     router.visit("/upload-video");
+};
+
+const visitBulkUpload = () => {
+    showModal.value = false;
+    router.visit("/bulk");
 };
 
 onMounted(async () => {
