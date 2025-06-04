@@ -115,5 +115,9 @@ Route::middleware('web')->group(function () {
 
 Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'));
 Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'));
+
+Route::get('/bulk', fn() => Inertia::render('Views/BulkUploadView'));
+Route::post('/api/bulk-upload', [PhotoController::class, 'bulkUpload']);
+
 require __DIR__ . '/auth.php';
 require __DIR__ . '/api.php';

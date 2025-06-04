@@ -19,6 +19,7 @@
         "laravel/socialite": "^5.19",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "3.5.12",
+        "maatwebsite/excel": "^3.1",
         "plutuss/getid3-laravel": "^1.1",
         "rupadana/filament-api-service": "^3.4",
         "spatie/laravel-analytics": "^5.6",

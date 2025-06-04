@@ -11,6 +11,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
+use Illuminate\Support\Facades\File;
+use App\Models\Category;
+use App\Models\ContentVideo;
+use Illuminate\Support\Facades\Log;
+
 
 class PhotoController extends Controller
 {
@@ -344,5 +351,187 @@ class PhotoController extends Controller
         $photo = ContentPhoto::with(['metadataPhoto', 'categoryContents'])
             ->findOrFail($id);
         return response()->json($photo);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'zip_file' => 'required|file|mimes:zip|max:102400', // Max 100MB
+        ]);
+        $userId = Auth::user()->id;
+
+        try {
+            // Create temporary directory with unique name
+            $tempDir = storage_path('app/temp/' . uniqid());
+            mkdir($tempDir, 0755, true);
+
+            // Extract ZIP file
+            $zip = new \ZipArchive();
+            $zipFile = $request->file('zip_file');
+            $zipPath = $zipFile->getPathname();
+
+            if ($zip->open($zipPath) !== true) {
+                throw new \Exception('Failed to open ZIP file');
+            }
+
+            $zip->extractTo($tempDir);
+            $zip->close();
+
+            // Check if metadata.xlsx exists
+            $metadataPath = $tempDir . '/metadata_template.xlsx';
+            if (!file_exists($metadataPath)) {
+                throw new \Exception('metadata_template.xlsx not found in ZIP file');
+            }
+
+            // Check if media directory exists
+            $mediaDir = $tempDir . '/media';
+            if (!is_dir($mediaDir)) {
+                throw new \Exception('media directory not found in ZIP file');
+            }
+
+            // Parse Excel file
+            $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $metadataPath)[0];
+
+            // Process each row
+            foreach ($rows as $index => $row) {
+                if ($index == 0 || !isset($row[0])) continue; // Skip header row
+
+                $type = strtolower(trim($row[0])); // photo / video
+                $fileName = trim($row[1]);
+                $title = trim($row[2]);
+                $description = trim($row[3]);
+                $note = trim($row[4]);
+                $tag = trim($row[5]);
+                $categories = explode(',', trim($row[6]));
+
+                // Check if media file exists
+                $mediaPath = $mediaDir . '/' . $fileName;
+                if (!file_exists($mediaPath)) {
+                    \Log::warning("File not found: $fileName");
+                    continue;
+                }
+
+                $slug = Str::slug($title);
+                $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+                $newFileName = time() . '_' . $slug . '.' . $extension;
+
+                if ($type === 'photo') {
+                    // Store photo file
+                    Storage::disk('public')->putFileAs(
+                        'foto_content',
+                        new \Illuminate\Http\File($mediaPath),
+                        $newFileName
+                    );
+
+                    // Create photo record
+                    $content = ContentPhoto::create([
+                        'title' => $title,
+                        'slug' => $slug,
+                        'description' => $description,
+                        'note' => $note,
+                        'tag' => $tag,
+                        'source' => 'bulk',
+                        'user_id' => $userId,
+                        'image_url' => 'foto_content/' . $newFileName,
+                        'total_views' => 0,
+                    ]);
+
+                    // Create category associations
+                    foreach ($categories as $catName) {
+                        $category = Category::where('category_name', trim($catName))->first();
+                        if ($category) {
+                            CategoryContent::create([
+                                'category_id' => $category->id,
+                                'content_photo_id' => $content->id,
+                                'content_video_id' => null
+                            ]);
+                        }
+                    }
+                } elseif ($type === 'video') {
+                    // Store video file
+                    Storage::disk('public')->putFileAs(
+                        'video_content',
+                        new \Illuminate\Http\File($mediaPath),
+                        $newFileName
+                    );
+
+                    // Try to find and store thumbnail if exists
+                    $thumbnailFileName = pathinfo($fileName, PATHINFO_FILENAME) . '.jpg'; // e.g. photo1.mp4 -> photo1.jpg
+                    $thumbnailPath = $mediaDir . '/' . $thumbnailFileName;
+                    $thumbnailUrl = null;
+                    if (file_exists($thumbnailPath)) {
+                        $thumbnailNewName = time() . '_' . $slug . '.jpg';
+                        Storage::disk('public')->putFileAs(
+                            'thumbnail_video',
+                            new \Illuminate\Http\File($thumbnailPath),
+                            $thumbnailNewName
+                        );
+                        $thumbnailUrl = 'thumbnail_video/' . $thumbnailNewName;
+                    }
+
+                    // Create video record
+                    $content = ContentVideo::create([
+                        'title' => $title,
+                        'slug' => $slug,
+                        'description' => $description,
+                        'note' => $note,
+                        'tag' => $tag,
+                        'source' => 'bulk',
+                        'user_id' => $userId,
+                        'video_url' => 'video_content/' . $newFileName,
+                        'thumbnail' => $thumbnailUrl,
+                        'status' => 'pending',
+                    ]);
+
+                    // Create category associations
+                    foreach ($categories as $catName) {
+                        $category = Category::where('category_name', trim($catName))->first();
+                        if ($category) {
+                            CategoryContent::create([
+                                'category_id' => $category->id,
+                                'content_photo_id' => null,
+                                'content_video_id' => $content->id
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+
+            // Clean up temporary directory
+            $this->deleteDirectory($tempDir);
+
+            //  return the data that stored
+            $data = [
+                'message' => 'Bulk upload completed successfully',
+                'data' => $content
+            ];
+
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Clean up temporary directory if it exists
+            if (isset($tempDir) && is_dir($tempDir)) {
+                $this->deleteDirectory($tempDir);
+            }
+
+            return response()->json([
+                'message' => 'Bulk upload failed: ' . $e->getMessage(),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function deleteDirectory($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $files = array_diff(scandir($dir), ['.', '..']);
+        foreach ($files as $file) {
+            $path = $dir . '/' . $file;
+            is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
+        }
+        rmdir($dir);
     }
 }
