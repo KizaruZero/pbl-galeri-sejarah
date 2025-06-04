@@ -18,7 +18,7 @@ class ContentReactionController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'reaction_type_id' => 'required|exists:reactions,id',
+            'react_type' => 'required|string',
         ]);
 
         $contentPhoto = ContentPhoto::find($id);
@@ -38,10 +38,21 @@ class ContentReactionController extends Controller
             return response()->json(['message' => 'Reacting user not found'], 404);
         }
 
-        // Get reaction type
-        $reaction = Reaction::find($request->reaction_type_id);
+        // Get reaction type by react_type field instead of ID
+        $reaction = Reaction::where('react_type', $request->react_type)->first();
         if (!$reaction) {
             return response()->json(['message' => 'Reaction type not found'], 404);
+        }
+
+        // Check if reaction already exists to prevent duplicates
+        $existingReaction = ContentReaction::where([
+            'content_photo_id' => $id,
+            'user_id' => $request->user_id,
+            'reaction_type_id' => $reaction->id
+        ])->first();
+
+        if ($existingReaction) {
+            return response()->json(['message' => 'Reaction already exists'], 409);
         }
 
         // Only notify if the reacting user is not the photo owner
@@ -56,7 +67,7 @@ class ContentReactionController extends Controller
         $contentReaction = ContentReaction::create([
             'content_photo_id' => $id,
             'user_id' => $request->user_id,
-            'reaction_type_id' => $request->reaction_type_id,
+            'reaction_type_id' => $reaction->id,
         ]);
 
         return response()->json($contentReaction);
@@ -85,7 +96,7 @@ class ContentReactionController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'reaction_type_id' => 'required|exists:reactions,id',
+            'react_type' => 'required|string',
         ]);
 
         $contentVideo = ContentVideo::find($id);
@@ -105,10 +116,21 @@ class ContentReactionController extends Controller
             return response()->json(['message' => 'Reacting user not found'], 404);
         }
 
-        // Get reaction type
-        $reaction = Reaction::find($request->reaction_type_id);
+        // Get reaction type by react_type field instead of ID
+        $reaction = Reaction::where('react_type', $request->react_type)->first();
         if (!$reaction) {
             return response()->json(['message' => 'Reaction type not found'], 404);
+        }
+
+        // Check if reaction already exists to prevent duplicates
+        $existingReaction = ContentReaction::where([
+            'content_video_id' => $id,
+            'user_id' => $request->user_id,
+            'reaction_type_id' => $reaction->id
+        ])->first();
+
+        if ($existingReaction) {
+            return response()->json(['message' => 'Reaction already exists'], 409);
         }
 
         // Only notify if the reacting user is not the video owner
@@ -123,7 +145,7 @@ class ContentReactionController extends Controller
         $contentReaction = ContentReaction::create([
             'content_video_id' => $id,
             'user_id' => $request->user_id,
-            'reaction_type_id' => $request->reaction_type_id,
+            'reaction_type_id' => $reaction->id,
         ]);
 
         return response()->json($contentReaction);
@@ -131,14 +153,27 @@ class ContentReactionController extends Controller
 
     public function deleteVideoReaction(Request $request, $id)
     {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'react_type' => 'required|string',
+        ]);
+
         $contentVideo = ContentVideo::find($id);
         if (!$contentVideo) {
             return response()->json(['message' => 'Content video not found'], 404);
         }
 
-        $contentReaction = ContentReaction::where('content_video_id', $id)
-            ->where('user_id', $request->user_id)
-            ->first();
+        // Get reaction type to find the correct reaction to delete
+        $reaction = Reaction::where('react_type', $request->react_type)->first();
+        if (!$reaction) {
+            return response()->json(['message' => 'Reaction type not found'], 404);
+        }
+
+        $contentReaction = ContentReaction::where([
+            'content_video_id' => $id,
+            'user_id' => $request->user_id,
+            'reaction_type_id' => $reaction->id
+        ])->first();
 
         if (!$contentReaction) {
             return response()->json(['message' => 'Content reaction not found'], 404);
