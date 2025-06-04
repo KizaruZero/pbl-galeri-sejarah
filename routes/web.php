@@ -66,7 +66,9 @@ Route::middleware('web')->group(function () {
     });
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/photo/{slug}', [PhotoController::class, 'show'])->name('photo.show');
+    Route::post('/photos/import', [PhotoController::class, 'import'])->middleware('auth');
     Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');
+    Route::post('/videos/import', [VideoController::class, 'import'])->middleware('auth');
     Route::get('/gallery-photo/{slug}', function () {
         return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
     });

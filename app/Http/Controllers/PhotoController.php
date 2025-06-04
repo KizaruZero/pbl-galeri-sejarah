@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Auth;
+use App\Imports\PhotosImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PhotoController extends Controller
 {
@@ -345,4 +347,37 @@ class PhotoController extends Controller
             ->findOrFail($id);
         return response()->json($photo);
     }
+
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls|max:2048'
+    ]);
+
+    try {
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+        
+        // Pass the user ID to the importer
+        $import = new PhotosImport($userId);
+
+        Excel::import($import, $request->file('file'));
+        
+        $importedCount = $import->getRowCount();
+        $skippedCount = $import->getSkippedCount();
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil mengimpor {$importedCount} foto",
+            'skipped' => $skippedCount,
+            'total' => $importedCount + $skippedCount
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengimpor: ' . $e->getMessage()
+        ], 422);
+    }
+}
 }
