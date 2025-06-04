@@ -198,8 +198,12 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 mb-2">Profile Photo</label>
                     <input type="file" @change="handlePhotoChange" accept="image/*" class="w-full">
-                    <img :src="previewPhoto || (userData?.photo_profile ? `/storage/${userData.photo_profile}` : defaultPhoto)"
-                        class="mt-2 w-32 h-32 object-cover rounded-full">
+          <img
+            :src="previewPhoto || getCurrentProfilePhoto()"
+            :alt="userData?.name || 'Profile Photo'"
+            class="mt-2 w-32 h-32 object-cover rounded-full"
+            @error="handleModalImageError"
+          >
                 </div>
 
                 <div class="mb-4">
@@ -536,10 +540,21 @@
         }
     };
 
-    // Utility Functions
-    const handleImageError = (e) => {
-        e.target.src = defaultPhoto;
-    };
+// Add helper function to get current profile photo
+const getCurrentProfilePhoto = () => {
+  if (props.userData?.photo_profile) {
+    return `/storage/${props.userData.photo_profile}`;
+  } else if (props.userData?.profile_photo_url) {
+    return props.userData.profile_photo_url;
+  }
+  return defaultPhoto;
+};
+
+// Add error handler for modal image
+const handleModalImageError = (e) => {
+  console.log('Modal image error, falling back to default photo');
+  e.target.src = defaultPhoto;
+};
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('id-ID', {
