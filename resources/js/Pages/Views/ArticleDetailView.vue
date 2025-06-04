@@ -167,7 +167,7 @@
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Artikel Terbaru</h1>
         <span class="w-full h-0.5 bg-white mt-6"></span>
       </div>
-            
+
             <!-- Loading State -->
             <div v-if="loadingRecent" class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div v-for="i in 3" :key="i" class="bg-black rounded-lg overflow-hidden animate-pulse">
@@ -181,11 +181,11 @@
 
             <!-- Content -->
             <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div v-for="article in recentArticles" 
-                   :key="article.id" 
+              <div v-for="article in recentArticles.slice(0,6)"
+                   :key="article.id"
                    class="bg-zinc-900 rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer"
                    @click="goToArticle(article.slug)">
-                <img :src="article.imageUrl" 
+                <img :src="article.imageUrl"
                      :alt="article.title"
                      class="w-full h-48 object-cover"
                      @error="$event.target.src = '/js/Assets/default-photo.jpg'">
@@ -233,10 +233,10 @@ const formatContent = (content) => {
   // Convert line breaks to paragraphs
   let html = content.replace(/\n\n/g, "</p><p>");
 
-  // Convert image markdown to HTML
+  // Convert image markdown to HTML with better styling
   html = html.replace(
     /!\[.*?\]\((.*?)\)/g,
-    '<img src="$1" alt="" class="my-4 rounded-lg w-full">'
+    '<div class="image-container my-6"><img src="$1" alt="" class="article-image w-full max-w-xl mx-auto rounded-lg shadow-lg object-cover" loading="lazy" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" /><div class="image-error hidden w-full h-64 bg-zinc-800 rounded-lg flex items-center justify-center"><span class="text-gray-400">Image not available</span></div></div>'
   );
 
   // Convert headings (assuming lines that end with :) to h2
@@ -294,6 +294,7 @@ const fetchArticle = async () => {
       createdAt: articleData.created_at || null,
       updatedAt: articleData.updated_at || null,
     };
+    console.log("Fetched article:", article.value.content);
   } catch (err) {
     console.error("Error fetching article:", err);
     error.value = "Failed to load article. Please try again later.";
@@ -318,9 +319,9 @@ const fetchRecentArticles = async () => {
       id: article.id,
       slug: article.slug,
       title: article.title,
-      imageUrl: article.image_url ? 
-        (article.image_url.startsWith('http') ? 
-          article.image_url : 
+      imageUrl: article.image_url ?
+        (article.image_url.startsWith('http') ?
+          article.image_url :
           `/storage/${article.image_url.replace(/^public\//, '')}`
         ) : '/js/Assets/default-photo.jpg',
       publishedAt: article.published_at
@@ -333,7 +334,7 @@ const fetchRecentArticles = async () => {
 };
 
 const goToArticle = (articleSlug) => {
-  window.location.href = `/articles/${articleSlug}`;
+  window.location.href = `/article/${articleSlug}`;
 };
 
 onMounted(() => {
@@ -364,5 +365,18 @@ const formattedContent = computed(() => formatContent(article.value.content));
 
 .prose li {
   @apply mb-2;
+}
+
+/* New styles for article images */
+.image-container {
+  @apply my-6;
+}
+
+.article-image {
+  @apply w-full max-w-md mx-auto rounded-lg shadow-lg object-cover;
+}
+
+.image-error {
+  @apply hidden w-full h-64 bg-zinc-800 rounded-lg flex items-center justify-center;
 }
 </style>
