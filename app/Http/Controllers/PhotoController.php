@@ -18,6 +18,8 @@ use App\Models\Category;
 use App\Models\ContentVideo;
 use Illuminate\Support\Facades\Log;
 
+use App\Imports\PhotosImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PhotoController extends Controller
 {
@@ -352,6 +354,39 @@ class PhotoController extends Controller
             ->findOrFail($id);
         return response()->json($photo);
     }
+
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls|max:2048'
+    ]);
+
+    try {
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+        
+        // Pass the user ID to the importer
+        $import = new PhotosImport($userId);
+
+        Excel::import($import, $request->file('file'));
+        
+        $importedCount = $import->getRowCount();
+        $skippedCount = $import->getSkippedCount();
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil mengimpor {$importedCount} foto",
+            'skipped' => $skippedCount,
+            'total' => $importedCount + $skippedCount
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengimpor: ' . $e->getMessage()
+        ], 422);
+    }
+}
 
     public function bulkUpload(Request $request)
     {

@@ -515,47 +515,46 @@
 
     // Replace the toggleLike function with this implementation
     const toggleLike = async () => {
-        if (!UserId.value) {
-            router.visit('/login');
-            return;
-        }
+    if (!UserId.value) {
+        router.visit('/login');
+        return;
+    }
 
-        try {
-            if (isLiked.value) {
-                await axios.delete(`/api/reaction/photo/${photo.value.id}`, {
-                    data: {
-                        user_id: UserId.value,
-                        reaction_type_id: 1 // ID for "like" reaction
-                    },
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                likeCount.value--;
-            } else {
-                await axios.post(`/api/reaction/photo/${photo.value.id}`, {
+    try {
+        if (isLiked.value) {
+            await axios.delete(`/api/reaction/photo/${photo.value.id}`, {
+                data: {
                     user_id: UserId.value,
-                    reaction_type_id: 1 // ID for "like" reaction
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                likeCount.value++;
-            }
-            isLiked.value = !isLiked.value;
-        } catch (error) {
-            console.error('Error toggling like:', error);
-            if (error.response ?.status === 401) {
-                router.visit('/login');
-            } else {
-                alert('Failed to update like. Please try again.');
-            }
+                    react_type: "love" // Send as string to match react_type field
+                },
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                }
+            });
+            likeCount.value--;
+        } else {
+            await axios.post(`/api/reaction/photo/${photo.value.id}`, {
+                user_id: UserId.value,
+                react_type: "love" // Send as string to match react_type field
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                }
+            });
+            likeCount.value++;
         }
-    };
-
+        isLiked.value = !isLiked.value;
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        if (error.response?.status === 401) {
+            router.visit('/login');
+        } else {
+            alert('Failed to update like. Please try again.');
+        }
+    }
+};
     // Toggle bookmark
     const toggleBookmark = async () => {
         if (!currentUser.value ?.id) {

@@ -744,7 +744,7 @@
                 await axios.delete(`/api/reaction/video/${video.value.id}`, {
                     data: {
                         user_id: UserId.value,
-                        reaction_type_id: 1 // ID for "like" reaction
+                        react_type: "love" // Send as string to match react_type field
                     },
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -755,7 +755,7 @@
             } else {
                 await axios.post(`/api/reaction/video/${video.value.id}`, {
                     user_id: UserId.value,
-                    reaction_type_id: 1 // ID for "like" reaction
+                    react_type: "love" // Send as string to match react_type field
                 }, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -767,8 +767,22 @@
             isLiked.value = !isLiked.value;
         } catch (error) {
             console.error('Error toggling like:', error);
-            if (error.response ?.status === 401) {
+            
+            // Handle specific error cases
+            if (error.response?.data?.message) {
+                alert(error.response.data.message);
+            } else if (error.response?.data?.errors) {
+                const errors = Object.values(error.response.data.errors).flat();
+                alert(errors.join(', '));
+            } else if (error.response?.status === 401) {
+                alert('Please log in to like this video.');
                 router.visit('/login');
+            } else if (error.response?.status === 409) {
+                alert('You have already reacted to this video.');
+                // Refresh the like status
+                await checkIfLiked();
+            } else if (error.response?.status === 404) {
+                alert('Video not found or reaction type not available.');
             } else {
                 alert('Failed to update like. Please try again.');
             }

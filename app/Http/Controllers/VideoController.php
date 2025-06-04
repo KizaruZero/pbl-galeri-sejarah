@@ -84,11 +84,11 @@ class VideoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'video_url' => 'required_without:link_youtube|nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
-            'thumbnail' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
+            'video_url' => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+            'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
-            'link_youtube' => 'required_without:video_url|nullable|string|max:255',
+            'link_youtube' => 'nullable|string|max:255',
             'category_ids' => 'required|array',
             'category_ids.*' => 'required|exists:categories,id',
         ]);

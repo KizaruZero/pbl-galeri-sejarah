@@ -107,7 +107,7 @@ onMounted(async () => {
 
         // Get Total Favorites
         const { data: favoritesResponse } = await axios.get(
-            `/api/favorite/total/user/${userId}`
+            `/api/user/totalfavorite/${userId}`
         );
         totalFavorites.value = favoritesResponse?.total || 0;
 
