@@ -1,11 +1,11 @@
 <template>
-  <section class="w-full bg-black py-16 px-6 md:px-10">
+  <section class="w-full bg-white dark:bg-black py-16 px-6 md:px-10">
     <div class="max-w-[1192px] mx-auto">
       <!-- Judul -->
-      <div class="flex flex-col items-center text-white mb-12">
-        <span class="w-full h-0.5 bg-white mb-6"></span>
+      <div class="flex flex-col items-center text-black dark:text-white mb-12">
+        <span class="w-full h-0.5 bg-black dark:bg-white mb-6"></span>
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Article</h1>
-        <span class="w-full h-0.5 bg-white mt-6"></span>
+        <span class="w-full h-0.5 bg-black dark:bg-white mt-6"></span>
       </div>
 
       <!-- Loading State -->
@@ -71,17 +71,17 @@
         <button
           @click="currentPage--"
           :disabled="currentPage === 1"
-          class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+          class="px-4 py-2 bg-gray-800 text-white  rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
         >
           Previous
         </button>
-        <div class="flex items-center px-4 text-white">
+        <div class="flex items-center px-4 text-black dark:text-white">
           Page {{ currentPage }} of {{ totalPages }}
         </div>
         <button
           @click="currentPage++"
           :disabled="currentPage >= totalPages"
-          class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+          class="px-4 py-2 bg-gray-800 text-white  rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
         >
           Next
         </button>

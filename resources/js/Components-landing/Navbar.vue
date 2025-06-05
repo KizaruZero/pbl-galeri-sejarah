@@ -1,11 +1,11 @@
 <template>
   <nav
-    class="bg-black text-white py-3 px-4 md:px-6 shadow-md fixed top-0 left-0 w-full z-50 font-poppins"
+    class="bg-white dark:bg-black text-black dark:text-white py-3 px-4 md:px-6 shadow-md fixed top-0 left-0 w-full z-50 font-poppins"
   >
     <div class="max-w-screen-xl mx-auto flex justify-between items-center w-full">
       <!-- Mobile: Menu & Logo -->
       <div class="flex lg:hidden w-full items-center justify-between">
-        <button @click="toggleMenu" class="text-white focus:outline-none">
+        <button @click="toggleMenu" class="text-black dark:text-white focus:outline-none">
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -24,7 +24,7 @@
           />
           <div
             v-else
-            class="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"
+            class="w-6 h-6 rounded-full border-2 border-black border-t-transparent animate-spin"
           ></div>
         </div>
       </div>
@@ -36,19 +36,19 @@
         <Link href="/" class="relative group py-1"
           >Home
           <span
-            class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+            class="absolute left-0 bottom-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
         <Link href="/events" class="relative group py-1"
           >Events
           <span
-            class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+            class="absolute left-0 bottom-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
         <Link href="/gallery" class="relative group py-1"
           >Gallery
           <span
-            class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+            class="absolute left-0 bottom-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
       </div>
@@ -65,7 +65,7 @@
         />
         <div
           v-else
-          class="mt-6 w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"
+          class="mt-6 w-6 h-6 rounded-full border-2 border-black dark:border-white border-t-transparent animate-spin"
         ></div>
       </div>
 
@@ -76,14 +76,14 @@
         <Link href="/article" class="relative group py-1"
           >Article
           <span
-            class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+            class="absolute left-0 bottom-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
         <!-- Conditional rendering for Member/Contact link -->
         <Link :href="user ? '/contact' : '/member'" class="relative group py-1">
           {{ user ? "Contact" : "Member" }}
           <span
-            class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+            class="absolute left-0 bottom-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
 
@@ -103,18 +103,18 @@
 
           <div
             v-show="dropdownOpen"
-            class="absolute right-0 mt-2 w-40 bg-white text-black rounded-lg shadow-lg py-2 z-50"
+            class="absolute right-0 mt-2 w-40 bg-black dark:bg-white text-white dark:text-black rounded-lg shadow-lg py-2 z-50"
           >
             <template v-if="roles.includes('super_admin')">
-              <Link href="/profile-page" class="block px-4 py-2 hover:bg-gray-100"
+              <Link href="/profile-page" class="block px-4 py-2 hover:bg-gray-900 dark:hover:bg-gray-100"
                 >Profile</Link
               >
-              <Link @click="goToDashboard" class="block px-4 py-2 hover:bg-gray-100"
+              <Link @click="goToDashboard" class="block px-4 py-2 hover:bg-gray-900 dark:hover:bg-gray-100"
                 >Dashboard</Link
               >
             </template>
             <template v-else>
-              <Link href="/profile-page" class="block px-4 py-2 hover:bg-gray-100"
+              <Link href="/profile-page" class="block px-4 py-2 hover:bg-gray-900 dark:hover:bg-gray-100"
                 >Profile</Link
               >
             </template>
@@ -122,7 +122,7 @@
               href="/logout"
               method="post"
               as="button"
-              class="block px-4 py-2 hover:bg-gray-100 text-left w-full"
+              class="block px-4 py-2 hover:bg-gray-900 dark:hover:bg-gray-100 text-left w-full"
               >Logout</Link
             >
           </div>
@@ -131,10 +131,11 @@
         <Link v-else href="/login" class="relative group py-1"
           >Login
           <span
-            class="absolute left-0 bottom-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+            class="absolute left-0 bottom-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
           ></span>
         </Link>
       </div>
+      
     </div>
   </nav>
 
@@ -143,10 +144,10 @@
 
   <!-- Sidebar (Mobile) -->
   <transition name="slide">
-    <div v-if="menuOpen" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex">
-      <div class="w-56 bg-black h-full p-6 flex flex-col gap-6">
+    <div v-if="menuOpen" class="fixed inset-0 bg-white/80 dark:bg-black/80  backdrop-blur-sm z-50 flex">
+      <div class="w-56 bg-white h-full dark:bg-black/80 p-6 flex flex-col gap-6">
         <!-- Close Button -->
-        <button @click="toggleMenu" class="text-white self-end text-2xl">✕</button>
+        <button @click="toggleMenu" class="text-black dark:text-white self-end text-2xl">✕</button>
 
         <!-- User Profile Section (if logged in) -->
         <div v-if="user" class="flex flex-col items-center gap-4 mb-4">
@@ -155,23 +156,23 @@
             :alt="user.name"
             class="w-20 h-20 rounded-full object-cover"
           />
-          <span class="text-white text-lg">{{ user.name }}</span>
+          <span class="text-black dark:text-white text-lg">{{ user.name }}</span>
         </div>
 
         <!-- Navigation Links -->
-        <Link href="/" class="text-white text-lg py-1" @click="toggleMenu">Home</Link>
-        <Link href="/events" class="text-white text-lg py-1" @click="toggleMenu"
+        <Link href="/" class="text-black dark:text-white text-lg py-1" @click="toggleMenu">Home</Link>
+        <Link href="/events" class="text-black dark:text-white text-lg py-1" @click="toggleMenu"
           >Events</Link
         >
-        <Link href="/gallery" class="text-white text-lg py-1" @click="toggleMenu"
+        <Link href="/gallery" class="text-black dark:text-white text-lg py-1" @click="toggleMenu"
           >Gallery</Link
         >
-        <Link href="/article" class="text-white text-lg py-1" @click="toggleMenu"
+        <Link href="/article" class="text-black dark:text-white text-lg py-1" @click="toggleMenu"
           >Article</Link
         >
         <Link
           :href="user ? '/contact' : '/member'"
-          class="text-white text-lg py-1"
+          class="text-black dark:text-white text-lg py-1"
           @click="toggleMenu"
           >{{ user ? "Contact" : "Member" }}</Link
         >
@@ -179,10 +180,10 @@
         <!-- Conditional Login/User Actions -->
         <template v-if="user">
           <template v-if="roles.includes('super_admin')">
-            <Link @click="goToDashboard" class="text-white text-lg py-1">Dashboard</Link>
+            <Link @click="goToDashboard" class="text-black dark:text-white text-lg py-1">Dashboard</Link>
           </template>
           <template v-else-if="roles.includes('member')">
-            <Link href="/profile-page" class="text-white text-lg py-1" @click="toggleMenu"
+            <Link href="/profile-page" class="text-black dark:text-white text-lg py-1" @click="toggleMenu"
               >Profile</Link
             >
           </template>
@@ -190,28 +191,43 @@
             href="/logout"
             method="post"
             as="button"
-            class="text-white text-lg py-1 text-left w-full"
+            class="text-black dark:text-white text-lg py-1 text-left w-full"
             @click="toggleMenu"
             >Logout</Link
           >
         </template>
         <template v-else>
-          <Link href="/login" class="text-white text-lg py-1" @click="toggleMenu"
+          <Link href="/login" class="text-black dark:text-white text-lg py-1" @click="toggleMenu"
             >Login</Link
           >
         </template>
+
+        <!-- Theme Toggle - Placed at the bottom after login/logout -->
+        <div class="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
+          <ThemeToggle />
+        </div>
       </div>
       <div class="flex-1" @click="toggleMenu"></div>
     </div>
   </transition>
+
+  <!-- Theme Toggle for Desktop only -->
+  <ThemeToggle class="theme-toggle hidden lg:block" />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import ThemeToggle from "../Components/ThemeToogle.vue";
 import { usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
 import NotificationList from "../Components/NotificationList.vue";
+
 import defaultPhoto from '@/Assets/default-photo.jpg';
+
+const isDarkTheme = ref(localStorage.getItem('theme') === 'dark' || true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 const dropdownRef = ref(null);
 const menuOpen = ref(false);
@@ -343,5 +359,16 @@ const user = computed(() => page.props.auth?.user || null);
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;
+}
+
+#dark-toggle:checked + label .toggle-circle {
+  transform: translateX(100%);
+}
+
+.theme-toggle {
+    position: fixed; /* Tetap di posisi layar meskipun di-scroll */
+    top: 25px; /* Jarak dari atas */
+    right: 10px; /* Jarak dari kanan */
+    z-index: 1000; /* Pastikan berada di atas elemen lainnya */
 }
 </style>

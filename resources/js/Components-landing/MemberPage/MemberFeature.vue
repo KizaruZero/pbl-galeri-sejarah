@@ -6,7 +6,7 @@
         <h2 class="text-2xl md:text-3xl font-bold mb-6">
           JADILAH MEMBER DAN DAPATKAN AKSES EKSKLUSIF!
         </h2>
-        <p class="text-gray-300 mb-8">
+        <p class="text-gray-500 dark:text-gray-400 mb-8">
           Dengan bergabung sebagai member, kamu bisa menikmati fitur penuh aplikasi:
           unggah gambar, unggah video, dan berikan komentar pada berbagai konten menarik.
           Ekspresikan dirimu dan jadi bagian dari komunitas kami!
@@ -16,7 +16,7 @@
         <h2 class="text-2xl md:text-3xl font-bold mb-6">
           Selamat datang kembali, {{ username }}!
         </h2>
-        <p class="text-gray-300 mb-8">
+        <p class="text-gray-500 dark:text-gray-400 mb-8">
           Terima kasih telah bergabung sebagai member. Nikmati akses penuh ke konten
           premium, fitur eksklusif, dan berbagai keuntungan lainnya yang hanya tersedia
           untuk anggota seperti Anda.
@@ -29,7 +29,7 @@
     <div>
       <div class="grid grid-cols-3 md:grid-cols-3 gap-8 text-center mb-10">
         <div class="flex flex-col items-center">
-          <div class="bg-gray-800 p-4 rounded-md inline-block mb-4">
+          <div class="bg-gray-300 dark:bg-gray-800 p-4 rounded-md inline-block mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 w-12"
@@ -48,7 +48,7 @@
           <h3 class="text-lg font-semibold">unggah gambar</h3>
         </div>
         <div class="flex flex-col items-center">
-          <div class="bg-gray-800 p-4 rounded-md inline-block mb-4">
+          <div class="bg-gray-300 dark:bg-gray-800 p-4 rounded-md inline-block mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 w-12"
@@ -73,7 +73,7 @@
           <h3 class="text-lg font-semibold">unggah video</h3>
         </div>
         <div class="flex flex-col items-center">
-          <div class="bg-gray-800 p-4 rounded-md inline-block mb-4">
+          <div class="bg-gray-300 dark:bg-gray-800 p-4 rounded-md inline-block mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 w-12"

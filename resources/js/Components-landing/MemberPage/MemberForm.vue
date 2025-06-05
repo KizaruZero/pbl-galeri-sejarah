@@ -64,7 +64,7 @@
                 <div class="flex space-x-4">
                     <button
                         type="submit"
-                        class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition duration-300 border border-gray-700"
+                        class="w-full py-3 bg-gray-500 dark:bg-gray-800 hover:bg-gray-700 text-white rounded-md transition duration-300 border border-gray-700"
                         :disabled="processing"
                     >
                         {{ processing ? "Processing..." : "Register" }}
@@ -72,7 +72,7 @@
                     <button
                         type="button"
                         @click="resetForm"
-                        class="w-full py-3 bg-black hover:bg-red-700 text-white rounded-md transition duration-300 border border-red-700"
+                        class="w-full py-3 bg-white dark:bg-black hover:bg-red-700 hover:text-white dark:hover:bg-red-700 text-black dark:text-white rounded-md transition duration-300 border border-red-700"
                         :disabled="processing"
                     >
                         Reset

@@ -1,6 +1,6 @@
 <template>
   <MainLayout>
-    <div class="min-h-screen bg-black">
+    <div class="min-h-screen bg-white dark:bg-black">
       <!-- Loading state -->
       <div v-if="loading" class="animate-pulse">
         <!-- Image placeholder -->
@@ -105,21 +105,21 @@
                 v-if="!imageError"
                 :src="article.imageUrl"
                 :alt="article.altText"
-                class="w-full h-auto max-h-[70vh] object-contain bg-gray-950"
+                class="w-full h-auto max-h-[70vh] object-contain bg-gray-200 dark:bg-gray-950"
                 @error="handleImageError"
               />
               <div
-                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70 mix-blend-multiply"
+                class="absolute inset-0 bg-gradient-to-t from-white/80 dark:from-black/80 via-transparent to-transparent opacity-70 mix-blend-multiply"
               ></div>
             </div>
           </div>
         </div>
 
         <!-- Main article Card -->
-        <div class="bg-black rounded-lg shadow-xl overflow-hidden">
+        <div class="bg-white dark:bg-black rounded-lg shadow-xl overflow-hidden">
           <!-- article Details -->
           <div class="p-6 md:px-24">
-            <div class="flex items-center gap-4 text-sm text-gray-400">
+            <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
               <div class="flex items-center gap-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@
               </div>
             </div>
             <!-- Title -->
-            <h1 class="text-xl md:text-3xl font-bold text-white mb-4">
+            <h1 class="text-xl md:text-3xl font-bold text-black dark:text-white mb-4">
               {{ article.title }}
             </h1>
 
@@ -160,12 +160,12 @@
         </div>
 
         <!-- Recent Articles Section -->
-        <div class="bg-black py-16">
+        <div class="bg-white dark:bg-black py-16">
           <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col items-center text-white mb-12">
-        <span class="w-full h-0.5 bg-white mb-6"></span>
+            <div class="flex flex-col items-center text-black dark:text-white mb-12">
+        <span class="w-full h-0.5 bg-black dark:bg-white mb-6"></span>
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Artikel Terbaru</h1>
-        <span class="w-full h-0.5 bg-white mt-6"></span>
+        <span class="w-full h-0.5 bg-black dark:bg-white mt-6"></span>
       </div>
 
             <!-- Loading State -->
@@ -183,15 +183,15 @@
             <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div v-for="article in recentArticles.slice(0,6)"
                    :key="article.id"
-                   class="bg-zinc-900 rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer"
+                   class="bg-zinc-200 dark:bg-zinc-900 rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer"
                    @click="goToArticle(article.slug)">
                 <img :src="article.imageUrl"
                      :alt="article.title"
                      class="w-full h-48 object-cover"
                      @error="$event.target.src = '/js/Assets/default-photo.jpg'">
                 <div class="p-4">
-                  <h3 class="text-white font-semibold mb-2 line-clamp-2">{{ article.title }}</h3>
-                  <p class="text-gray-400 text-sm">{{ formatDate(article.publishedAt) }}</p>
+                  <h3 class="text-black dark:text-white font-semibold mb-2 line-clamp-2">{{ article.title }}</h3>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm">{{ formatDate(article.publishedAt) }}</p>
                 </div>
               </div>
             </div>
@@ -352,7 +352,7 @@ const formattedContent = computed(() => formatContent(article.value.content));
 }
 
 .prose p {
-  @apply my-4 text-white leading-relaxed;
+  @apply my-4 text-black dark:text-white leading-relaxed;
 }
 
 .prose img {

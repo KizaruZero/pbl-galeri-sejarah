@@ -7,14 +7,14 @@
                     <img :src="userData?.photo_profile ? `/storage/${userData.photo_profile}` : (userData?.profile_photo_url || defaultPhoto)"
                         alt="Profile Photo" class="w-full h-full object-cover rounded-full z-10 relative"
                         @error="handleImageError" />
-                    <div class="absolute top-0 left-0 w-full h-full border-4 border-white rounded-full blur-sm z-0" />
-                    <div class="absolute top-0 left-0 w-full h-full border border-white rounded-full z-10" />
+                    <div class="absolute top-0 left-0 w-full h-full border-4 border-black dark:border-white rounded-full blur-sm z-0" />
+                    <div class="absolute top-0 left-0 w-full h-full border border-black dark:border-white rounded-full z-10" />
                 </div>
 
-                <div class="text-white text-center md:text-left px-2 sm:px-0">
+                <div class="text-black dark:text-white text-center md:text-left px-2 sm:px-0">
                     <div class="flex items-center justify-center md:justify-start gap-2">
                         <h1 class="text-lg sm:text-2xl md:text-3xl font-medium mb-1 sm:mb-2">{{ userData?.name }}</h1>
-                        <button @click="openModal" class="text-white hover:text-blue-400 transition duration-200">
+                        <button @click="openModal" class="text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-400 transition duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -75,11 +75,11 @@
 
                     <!-- Add the Import Modal -->
                     <div v-if="isImportModalOpenVideo"
-                        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div class="bg-gray-800 rounded-lg p-6 w-96">
+                        class="fixed inset-0 bg-white dark:bg-black bg-opacity-50 dark:bg-opacity-50  flex items-center justify-center z-50">
+                        <div class="bg-gray-200 dark:bg-gray-800 rounded-lg p-6 w-96">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 class="text-xl font-bold">Bulk Import Videos</h2>
-                                <button @click="closeImportModal" class="text-white hover:text-gray-700">
+                                <button @click="closeImportModal" class="text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -89,9 +89,9 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-gray-300 mb-2">Select Excel File</label>
+                                <label class="block text-gray-500 dark:text-gray-400 mb-2">Select Excel File</label>
                                 <input type="file" @change="handleFileChange" accept=".xlsx,.xls"
-                                    class="w-full border rounded p-2">
+                                    class="w-full border border-black dark:border-white rounded p-2">
                                 <p class="text-xs text-gray-400 mt-1">Only Excel files (.xlsx, .xls) are accepted</p>
                             </div>
 
@@ -109,7 +109,7 @@
                             </div>
 
                             <div class="flex justify-end gap-2">
-                                <button @click="closeImportModal" class="px-4 py-2 bg-red-600 rounded hover:bg-red-300">
+                                <button @click="closeImportModal" class="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-300">
                                     Cancel
                                 </button>
                                 <button @click="submitImportVideo" :disabled="!selectedFile || isImporting"
@@ -120,11 +120,11 @@
                         </div>
                     </div>
                     <div v-if="isImportModalOpenPhoto"
-                        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div class="bg-gray-800 rounded-lg p-6 w-96">
+                        class="fixed inset-0 bg-white dark:bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div class="bg-gray-200 dark:bg-gray-800 rounded-lg p-6 w-96">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 class="text-xl font-bold">Bulk Import Photos</h2>
-                                <button @click="closeImportModal" class="text-white hover:text-gray-700">
+                                <button @click="closeImportModal" class="text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -134,9 +134,9 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-gray-300 mb-2">Select Excel File</label>
+                                <label class="block text-gray-500 dark:text-gray-400 mb-2">Select Excel File</label>
                                 <input type="file" @change="handleFileChange" accept=".xlsx,.xls"
-                                    class="w-full border rounded p-2">
+                                    class="w-full border border-black dark:border-white rounded p-2">
                                 <p class="text-xs text-gray-400 mt-1">Only Excel files (.xlsx, .xls) are accepted</p>
                             </div>
 
@@ -154,7 +154,7 @@
                             </div>
 
                             <div class="flex justify-end gap-2">
-                                <button @click="closeImportModal" class="px-4 py-2 bg-red-600 rounded hover:bg-red-300">
+                                <button @click="closeImportModal" class="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-300">
                                     Cancel
                                 </button>
                                 <button @click="submitImportPhoto" :disabled="!selectedFile || isImporting"
@@ -171,18 +171,18 @@
             <div class="flex col-span-2 justify-center md:justify-start items-center mt-4 sm:mt-0">
                 <div class="flex flex-wrap justify-between w-full sm:justify-around gap-1 sm:gap-8 md:gap-12 lg:mb-20">
                     <div class="flex flex-col items-center px-2 sm:px-0">
-                        <span class="text-white text-lg sm:text-2xl md:text-3xl font-semibold">{{ stats.posts }}</span>
-                        <span class="text-white text-xs sm:text-sm md:text-base">UNGGAHAN</span>
+                        <span class="text-black dark:text-white text-lg sm:text-2xl md:text-3xl font-semibold">{{ stats.posts }}</span>
+                        <span class="text-black dark:text-white text-xs sm:text-sm md:text-base">UNGGAHAN</span>
                     </div>
                     <div class="flex flex-col items-center px-2 sm:px-0">
-                        <span class="text-white text-lg sm:text-2xl md:text-3xl font-semibold">{{ stats.likes }}</span>
-                        <span class="text-white text-xs sm:text-sm md:text-base">LIKE</span>
+                        <span class="text-black dark:text-white text-lg sm:text-2xl md:text-3xl font-semibold">{{ stats.likes }}</span>
+                        <span class="text-black dark:text-white text-xs sm:text-sm md:text-base">LIKE</span>
                     </div>
                     <div class="flex flex-col items-center px-2 sm:px-0">
                         <span
-                            class="text-white text-lg sm:text-2xl md:text-3xl font-semibold">{{ stats.favorites }}</span>
+                            class="text-black dark:text-white text-lg sm:text-2xl md:text-3xl font-semibold">{{ stats.favorites }}</span>
                         <button @click="showFavoritesModal"
-                            class="text-white text-xs sm:text-sm md:text-base hover:text-blue-400 transition duration-200">
+                            class="text-black dark:text-white text-xs sm:text-sm md:text-base hover:text-blue-400 dark:hover:text-blue-400 transition duration-200">
                             FAVORITE
                         </button>
                     </div>

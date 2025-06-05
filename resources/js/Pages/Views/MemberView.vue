@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
     <HeroSection />
-    <div class="min-h-screen bg-black text-white">
+    <div class="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <div class="container mx-auto px-6 py-12">
         <div class="max-w-4xl mx-auto">
           <MemberFeature :isAuthenticated="isAuthenticated" />

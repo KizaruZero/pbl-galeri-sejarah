@@ -1,11 +1,11 @@
 <template>
-    <div class="min-h-screen text-white">
+    <div class="min-h-screen text-black dark:text-white">
         <!-- Navigation Tabs -->
         <div class="border-b border-gray-700 py-3 sm:py-4">
             <div class="container flex justify-center space-x-3 sm:space-x-6 md:space-x-8">
                 <button v-for="tab in tabs" :key="tab.id" :class="[
                         'font-medium flex items-center text-sm sm:text-base',
-                        activeTab === tab.id ? 'text-white' : 'text-gray-400',
+                        activeTab === tab.id ? 'text-black dark:text-white' : 'text-gray-500 dark:text-gray-400',
                     ]" @click="$emit('change-tab', tab.id)">
                     <span class="mr-1 sm:mr-2">
                         <component :is="tab.icon" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />

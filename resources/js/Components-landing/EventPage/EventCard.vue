@@ -1,6 +1,6 @@
 <template>
     <article
-        class="overflow-hidden bg-black rounded-xl shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
+        class="overflow-hidden bg-zinc-200 dark:bg-zinc-900 rounded-xl shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
         @click="$emit('click')"
     >
         <!-- Image Container -->
@@ -18,18 +18,18 @@
         <!-- Rest of your card content -->
         <div class="p-5 text-center">
             <h3
-                class="font-semibold text-white leading-snug mb-2"
+                class="font-semibold text-black dark:text-white leading-snug mb-2"
                 :class="titleClass"
             >
                 {{ title || "Untitled" }}
             </h3>
             <p
                 v-if="description"
-                class="text-sm text-white leading-relaxed line-clamp-2"
+                class="text-sm text-black dark:text-white leading-relaxed line-clamp-2"
             >
                 {{ description }}
             </p>
-            <p v-else class="text-sm text-gray-400 italic">
+            <p v-else class="text-sm text-black dark:text-white italic">
                 No description available
             </p>
             <div class="flex flex-wrap justify-center gap-2 mb-2">
@@ -41,11 +41,11 @@
                 </p>
             </div>
 
-            <p v-if="location" class="text-xs text-gray-300 mb-2">
+            <p v-if="location" class="text-xs text-gray-500 dark:text-gray-100 mb-2">
                 {{ location }}
             </p>
 
-            <div v-if="contactPerson" class="text-xs text-gray-300 mb-2">
+            <div v-if="contactPerson" class="text-xs text-gray-500 dark:text-gray-100 mb-2">
                 Contact: {{ contactPerson }}
             </div>
 
@@ -133,7 +133,12 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
+
+const isDarkTheme = ref(true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 const props = defineProps({
     imageUrl: {

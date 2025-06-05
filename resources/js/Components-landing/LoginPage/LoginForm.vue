@@ -1,12 +1,12 @@
 <template>
     <section
-        class="flex flex-col justify-center w-full max-w-md px-6 py-12 bg-stone-950"
+        class="flex flex-col justify-center w-full max-w-md px-6 py-12 bg-white dark:bg-black"
     >
         <div class="flex flex-col items-center">
-            <h1 class="text-center text-4xl font-medium text-white uppercase">
+            <h1 class="text-center text-4xl font-medium text-black dark:text-white uppercase">
                 Welcome Back
             </h1>
-            <h2 class="mt-1.5 text-3xl font-medium text-white uppercase">
+            <h2 class="mt-1.5 text-3xl font-medium text-black dark:text-white uppercase">
                 Login
             </h2>
 
@@ -63,7 +63,7 @@
                 <div class="flex flex-col space-y-6">
                     <Link
                         href="/forgot-password"
-                        class="self-start text-xs text-white uppercase hover:text-orange-200 transition-colors"
+                        class="self-start text-xs text-black dark:text-white uppercase hover:text-orange-500 dark:hover:text-orange-200 transition-colors"
                     >
                         Forgot password?
                     </Link>
@@ -97,10 +97,10 @@
             <div
                 class="flex gap-1.5 mt-10 max-w-full text-xs uppercase w-[190px]"
             >
-                <p class="grow text-white">Don't have an account?</p>
+                <p class="grow text-black dark:text-white">Don't have an account?</p>
                 <Link
                     href="/member"
-                    class="text-orange-200 hover:text-orange-300 transition-colors"
+                    class="text-orange-500 dark:text-orange-200 hover:text-orange-300 transition-colors"
                 >
                     Sign Up
                 </Link>

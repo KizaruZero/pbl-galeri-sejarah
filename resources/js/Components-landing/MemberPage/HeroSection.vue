@@ -1,8 +1,8 @@
 <template>
     <!-- Spinner Loading -->
     <section v-if="isLoading"
-        class="flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] bg-black">
-        <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        class="flex items-center justify-center w-full aspect-[16/9] max-md:aspect-[4/3] max-sm:h-[300px] bg-white dark:bg-black">
+        <div class="w-10 h-10 border-4 border-black dark:border-white border-t-transparent rounded-full animate-spin"></div>
     </section>
 
     <!-- Slideshow -->

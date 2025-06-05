@@ -1,11 +1,11 @@
 <template>
-  <section class="w-full bg-black py-16 px-6 md:px-10">
+  <section class="w-full bg-white dark:bg-black py-16 px-6 md:px-10">
     <div class="max-w-[1192px] mx-auto">
       <!-- Header -->
-      <div class="flex flex-col items-center text-white mb-12">
-        <span class="w-full h-0.5 bg-white mb-6"></span>
+      <div class="flex flex-col items-center text-black dark:text-white mb-12">
+        <span class="w-full h-0.5 bg-black dark:bg-white mb-6"></span>
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Unggahan Terbaru</h1>
-        <span class="w-full h-0.5 bg-white mt-6"></span>
+        <span class="w-full h-0.5 bg-black dark:bg-white mt-6"></span>
       </div>
 
       <!-- Loading State -->
@@ -45,19 +45,19 @@
       <div v-else>
         <!-- Photos Section -->
         <div v-if="photos.length > 0">
-          <h2 class="text-2xl font-serif text-white mb-6">Foto Terbaru</h2>
+          <h2 class="text-2xl font-serif text-black dark:text-white mb-6">Foto Terbaru</h2>
           <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-12">
             <div v-for="item in photos.slice(0, 3)" :key="item.id" 
-                 class="bg-zinc-900 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform cursor-pointer"
+                 class="bg-zinc-200 dark:bg-zinc-900 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform cursor-pointer"
                  @click="navigateToDetail(item)">
               <div class="w-full h-48">
                 <img :src="item.image_url" :alt="item.title" class="w-full h-full object-cover">
               </div>
-              <div class="p-4 text-white">
+              <div class="p-4 text-black dark:text-white">
                 <h3 class="font-medium text-lg mb-2">{{ item.title }}</h3>
-                <p class="text-sm text-gray-400">{{ formatDate(item.uploaded_at) }}</p>
-                <p class="text-gray-400 mt-2" v-if="item.description">{{ item.description }}</p>
-                <p v-else class="text-gray-400 mt-2">Tidak ada deskripsi</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(item.uploaded_at) }}</p>
+                <p class="text-gray-500 dark:text-gray-400 mt-2" v-if="item.description">{{ item.description }}</p>
+                <p v-else class="text-gray-500 dark:text-gray-400 mt-2">Tidak ada deskripsi</p>
               </div>
             </div>
           </div>
@@ -66,22 +66,22 @@
         <!-- Videos Section -->
         <div v-if="videos.length > 0">
           <div class="w-full h-0.5 bg-gray-700 my-8"></div>
-          <h2 class="text-2xl font-serif text-white mb-6">Video Terbaru</h2>
+          <h2 class="text-2xl font-serif text-black dark:text-white mb-6">Video Terbaru</h2>
           <div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             <div v-for="item in videos.slice(0, 3)" :key="item.id" 
-                 class="bg-zinc-900 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform cursor-pointer"
+                 class="bg-zinc-200 dark:bg-zinc-900 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform cursor-pointer"
                  @click="navigateToDetail(item)">
               <div class="relative">
                 <img :src="item.thumbnail" :alt="item.title" class="w-full h-48 object-cover">
                 <div class="absolute top-2 right-2 bg-black/70 p-1 rounded">
-                  <span class="text-white text-sm">🎥</span>
+                  <span class="text-black dark:text-white text-sm">🎥</span>
                 </div>
               </div>
-              <div class="p-4 text-white">
+              <div class="p-4 text-black dark:text-white">
                 <h3 class="font-medium text-lg mb-2">{{ item.title }}</h3>
-                <p class="text-sm text-gray-400">{{ formatDate(item.uploaded_at) }}</p>
-                <p class="text-gray-400 mt-2" v-if="item.description">{{ item.description }}</p>
-                <p v-else class="text-gray-400 mt-2">Tidak ada deskripsi</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(item.uploaded_at) }}</p>
+                <p class="text-gray-500 dark:text-gray-400 mt-2" v-if="item.description">{{ item.description }}</p>
+                <p v-else class="text-gray-500 dark:text-gray-400 mt-2">Tidak ada deskripsi</p>
               </div>
             </div>
           </div>
@@ -94,6 +94,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+
+const isDarkTheme = ref(true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 const photos = ref([]);
 const videos = ref([]);
