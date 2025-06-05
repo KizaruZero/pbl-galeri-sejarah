@@ -15,6 +15,7 @@ use App\Http\Controllers\ContentReactionController;
 use App\Http\Controllers\CommentReactionController;
 use App\Http\Controllers\RequirementsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -80,5 +81,6 @@ Route::put('/reaction/comment/{id}', [CommentReactionController::class, 'update'
 Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'destroy']);
 Route::get('/reaction/comment/{id}', [CommentReactionController::class, 'index']);
 
+Route::get('/categories/name/{name}', [CategoryController::class, 'getCategoryByName']);
 
 require __DIR__ . '/auth.php';

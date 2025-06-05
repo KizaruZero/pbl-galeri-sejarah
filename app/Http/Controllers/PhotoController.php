@@ -94,6 +94,7 @@ class PhotoController extends Controller
             'tag' => 'nullable|string|max:255',
             'category_ids' => 'required|array',
             'category_ids.*' => 'required|exists:categories,id',
+            'exif_data' => 'nullable|array', // Accept pre-extracted EXIF data
         ]);
 
         $userId = Auth::user()->id;
@@ -138,27 +139,45 @@ class PhotoController extends Controller
             }
 
             // Extract EXIF metadata
-            try {
-                $exif = exif_read_data($file->getPathname());
+            // Handle EXIF metadata
+            $exifData = $request->input('exif_data');
 
-                // Get image dimensions
-                $image = Image::make($file->getPathname());
-                $dimensions = $image->width() . 'x' . $image->height();
-
-                // Create metadata record
+            if ($exifData) {
+                // Use pre-extracted EXIF data from bulk upload
                 MetadataPhoto::create([
                     'content_photo_id' => $photo->id,
-                    'collection_date' => isset($exif['DateTimeOriginal']) ? date('Y-m-d H:i:s', strtotime($exif['DateTimeOriginal'])) : null,
-                    'file_size' => $file->getSize(),
-                    'aperture' => isset($exif['COMPUTED']['ApertureFNumber']) ? $exif['COMPUTED']['ApertureFNumber'] : null,
-                    'location' => isset($exif['GPSLatitude']) ? $this->getGPSCoordinates($exif) : null,
-                    'model' => isset($exif['Model']) ? $exif['Model'] : null,
-                    'ISO' => isset($exif['ISOSpeedRatings']) ? $exif['ISOSpeedRatings'] : null,
-                    'dimensions' => $dimensions,
+                    'collection_date' => !empty($exifData['collection_date']) ? $exifData['collection_date'] : null,
+                    'file_size' => $exifData['file_size'],
+                    'aperture' => $exifData['aperture'],
+                    'location' => $exifData['location'],
+                    'model' => $exifData['model'],
+                    'ISO' => $exifData['ISO'],
+                    'dimensions' => $exifData['dimensions'],
                 ]);
-            } catch (\Exception $e) {
-                // Log error but continue with photo upload
-                \Log::error('Error extracting EXIF data: ' . $e->getMessage());
+            } else {
+                // Extract EXIF from uploaded file (regular upload)
+                try {
+                    $exif = exif_read_data($file->getPathname());
+                    $image = Image::make($file->getPathname());
+                    $dimensions = $image->width() . 'x' . $image->height();
+
+                    MetadataPhoto::create([
+                        'content_photo_id' => $photo->id,
+                        'collection_date' => !empty($exif['DateTimeOriginal']) ?
+                            date('Y-m-d H:i:s', strtotime($exif['DateTimeOriginal'])) : null,
+                        'file_size' => $file->getSize(),
+                        'aperture' => isset($exif['COMPUTED']['ApertureFNumber']) ?
+                            $exif['COMPUTED']['ApertureFNumber'] : null,
+                        'location' => isset($exif['GPSLatitude']) ?
+                            $this->getGPSCoordinates($exif) : null,
+                        'model' => isset($exif['Model']) ? $exif['Model'] : null,
+                        'ISO' => isset($exif['ISOSpeedRatings']) ?
+                            $exif['ISOSpeedRatings'] : null,
+                        'dimensions' => $dimensions,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Error extracting EXIF data: ' . $e->getMessage());
+                }
             }
 
             return response()->json([
@@ -422,9 +441,11 @@ class PhotoController extends Controller
                 throw new \Exception('media directory not found in ZIP file');
             }
 
-
             // Parse Excel file
             $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $metadataPath)[0];
+
+            $parsedItems = [];
+            $tempFiles = [];
 
             // Process each row
             foreach ($rows as $index => $row) {
@@ -443,135 +464,140 @@ class PhotoController extends Controller
                 $link_youtube = trim($row[9]);
                 $thumbnail_url = trim($row[10]);
 
-
-                // Check if media file exists
-
-                $mediaPath = $mediaDir . '/' . $fileName;
-                if (!file_exists($mediaPath)) {
-                    if ($type === 'photo') {
-                        \Log::warning("File not found: $fileName");
-                        throw new \Exception("File tidak ditemukan:" . $fileName . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
-                    }
-                    \Log::warning("File not found: $fileName");
-                }
-
                 $slug = Str::slug($title);
                 $extension = pathinfo($fileName, PATHINFO_EXTENSION);
                 $newFileName = time() . '_' . $slug . '.' . $extension;
 
+                $item = [
+                    'type' => $type,
+                    'title' => $title,
+                    'slug' => $slug,
+                    'description' => $description,
+                    'note' => $note,
+                    'tag' => $tag,
+                    'source' => $source,
+                    'alt_text' => $alt_text,
+                    'categories' => $categories,
+                    'link_youtube' => $link_youtube,
+                    'media_url' => null,
+                    'thumbnail_url' => null,
+                ];
+
+                // Handle media file
                 if ($type === 'photo') {
-                    // Store photo file
-                    Storage::disk('public')->putFileAs(
-                        'foto_content',
-                        new \Illuminate\Http\File($mediaPath),
-                        $newFileName
-                    );
-
-                    // Create photo record
-                    $content = ContentPhoto::create([
-                        'title' => $title,
-                        'slug' => $slug,
-                        'description' => $description,
-                        'note' => $note,
-                        'tag' => $tag,
-                        'source' => $source,
-                        'alt_text' => $alt_text,
-                        'user_id' => $userId,
-                        'image_url' => 'foto_content/' . $newFileName,
-                        'total_views' => 0,
-                    ]);
-
-                    // Create category associations
-                    foreach ($categories as $catName) {
-                        $category = Category::where('category_name', trim($catName))->first();
-                        if ($category) {
-                            CategoryContent::create([
-                                'category_id' => $category->id,
-                                'content_photo_id' => $content->id,
-                                'content_video_id' => null
-                            ]);
-                        }
+                    // For photos, file is required
+                    $mediaPath = $mediaDir . '/' . $fileName;
+                    if (!file_exists($mediaPath)) {
+                        throw new \Exception("File tidak ditemukan: $fileName - pastikan nama file yang ditulis sama dengan nama file yang di upload");
                     }
+
+                    try {
+                        $image = Image::make($mediaPath);
+                        $dimensions = $image->width() . 'x' . $image->height();
+
+                        // Only try to extract EXIF for JPEG/JPG files
+                        $exif = null;
+                        if (in_array(strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION)), ['jpg', 'jpeg'])) {
+                            $exif = @exif_read_data($mediaPath);
+                        }
+
+                        $item['exif_data'] = [
+                            'collection_date' => !empty($exif['DateTimeOriginal']) ?
+                                date('Y-m-d H:i:s', strtotime($exif['DateTimeOriginal'])) : null,
+                            'file_size' => filesize($mediaPath),
+                            'aperture' => isset($exif['COMPUTED']['ApertureFNumber']) ?
+                                $exif['COMPUTED']['ApertureFNumber'] : null,
+                            'location' => isset($exif['GPSLatitude']) ?
+                                $this->getGPSCoordinates($exif) : null,
+                            'model' => isset($exif['Model']) ? $exif['Model'] : null,
+                            'ISO' => isset($exif['ISOSpeedRatings']) ?
+                                $exif['ISOSpeedRatings'] : null,
+                            'dimensions' => $dimensions,
+                        ];
+                    } catch (\Exception $e) {
+                        \Log::warning('Error processing image ' . $fileName . ': ' . $e->getMessage());
+                        // Set default values for unsupported formats
+                        $item['exif_data'] = [
+                            'collection_date' => null,
+                            'file_size' => filesize($mediaPath),
+                            'aperture' => null,
+                            'location' => null,
+                            'model' => null,
+                            'ISO' => null,
+                            'dimensions' => $dimensions ?? 'unknown',
+                        ];
+                    }
+
+                    // Create temporary file in storage
+                    $tempStoragePath = 'temp/' . uniqid() . '/' . $newFileName;
+                    Storage::disk('public')->putFileAs(
+                        dirname($tempStoragePath),
+                        new \Illuminate\Http\File($mediaPath),
+                        basename($tempStoragePath)
+                    );
+                    $item['media_url'] = $tempStoragePath;
+                    $tempFiles[] = $tempStoragePath;
                 } elseif ($type === 'video') {
-                    // Store video file only if no YouTube link is provided
+                    // For videos, file is only required if no YouTube link is provided
                     if (empty($link_youtube)) {
                         $mediaPath = $mediaDir . '/' . $fileName;
                         if (!file_exists($mediaPath)) {
-                            \Log::warning("File not found: $fileName");
-                            throw new \Exception("File tidak ditemukan:" . $fileName . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
+                            throw new \Exception("File tidak ditemukan: $fileName - pastikan nama file yang ditulis sama dengan nama file yang di upload");
                         }
 
+                        // Create temporary file in storage
+                        $tempStoragePath = 'temp/' . uniqid() . '/' . $newFileName;
                         Storage::disk('public')->putFileAs(
-                            'video_content',
+                            dirname($tempStoragePath),
                             new \Illuminate\Http\File($mediaPath),
-                            $newFileName
+                            basename($tempStoragePath)
                         );
-                        $videoUrl = 'video_content/' . $newFileName;
-                    } else {
-                        $videoUrl = null;
+                        $item['media_url'] = $tempStoragePath;
+                        $tempFiles[] = $tempStoragePath;
+                    }
+                }
+
+                // Handle thumbnail for videos
+                if ($type === 'video' && !empty($thumbnail_url)) {
+                    $thumbnailDir = $tempDir . '/thumbnail';
+                    if (!is_dir($thumbnailDir)) {
+                        throw new \Exception('thumbnail directory not found in ZIP file');
+                    }
+                    $thumbnailPath = $thumbnailDir . '/' . $thumbnail_url;
+                    if (!file_exists($thumbnailPath)) {
+                        \Log::warning("File not found: $thumbnail_url");
+                        throw new \Exception("File tidak ditemukan:" . $thumbnail_url . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
                     }
 
-                    // Handle thumbnail
-                    $thumbnailUrl = null;
-                    if (!empty($thumbnail_url)) {
-                        $thumbnailDir = $tempDir . '/thumbnail';
-                        if (!is_dir($thumbnailDir)) {
-                            throw new \Exception('thumbnail directory not found in ZIP file');
-                        }
-                        $thumbnailPath = $thumbnailDir . '/' . $thumbnail_url;
-                        if (!file_exists($thumbnailPath)) {
-                            \Log::warning("File not found: $thumbnail_url");
-                            throw new \Exception("File tidak ditemukan:" . $thumbnail_url . "pastikan nama file yang ditulis sama dengan nama file yang di upload");
-                        }
+                    $thumbnailNewName = time() . '_' . $slug . '.jpg';
+                    $tempThumbnailPath = 'temp/' . uniqid() . '/' . $thumbnailNewName;
+                    Storage::disk('public')->putFileAs(
+                        dirname($tempThumbnailPath),
+                        new \Illuminate\Http\File($thumbnailPath),
+                        basename($tempThumbnailPath)
+                    );
+                    $item['thumbnail_url'] = $tempThumbnailPath;
+                }
 
-                        $thumbnailNewName = time() . '_' . $slug . '.jpg';
-                        Storage::disk('public')->putFileAs(
-                            'thumbnail_video',
-                            new \Illuminate\Http\File($thumbnailPath),
-                            $thumbnailNewName
-                        );
-                        $thumbnailUrl = 'thumbnail_video/' . $thumbnailNewName;
-                    }
-
-                    // Create video record
-                    $content = ContentVideo::create([
-                        'title' => $title,
-                        'slug' => $slug,
-                        'description' => $description,
-                        'note' => $note,
-                        'tag' => $tag,
-                        'source' => 'bulk',
-                        'user_id' => $userId,
-                        'video_url' => $videoUrl,
-                        'link_youtube' => $link_youtube,
-                        'thumbnail' => $thumbnailUrl,
-                        'status' => 'pending',
-                    ]);
-
-                    // Create category associations
-                    foreach ($categories as $catName) {
-                        $category = Category::where('category_name', trim($catName))->first();
-                        if ($category) {
-                            CategoryContent::create([
-                                'category_id' => $category->id,
-                                'content_photo_id' => null,
-                                'content_video_id' => $content->id
-                            ]);
-                        }
-                    }
+                $parsedItems[] = $item;
+                // Only add to tempFiles if media_url exists
+                if ($item['media_url']) {
+                    $tempFiles[] = $item['media_url'];
+                }
+                if ($item['thumbnail_url']) {
+                    $tempFiles[] = $item['thumbnail_url'];
                 }
             }
 
-
-            // Clean up temporary directory
+            // Clean up original temp directory
             $this->deleteDirectory($tempDir);
 
-            //  return the data that stored
-            $data = [
-                'message' => 'Bulk upload completed successfully',
-            ];
+            return response()->json([
+                'message' => 'Files parsed successfully',
+                'items' => $parsedItems,
+                'temp_files' => $tempFiles
+            ]);
 
-            return response()->json($data);
         } catch (\Exception $e) {
             // Clean up temporary directory if it exists
             if (isset($tempDir) && is_dir($tempDir)) {

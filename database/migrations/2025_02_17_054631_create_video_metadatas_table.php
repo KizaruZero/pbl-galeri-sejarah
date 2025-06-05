@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('frame_rate', 6)->nullable();
             $table->string('resolution', 12)->nullable();
             $table->string('duration', 8)->nullable();
-            $table->string('format_file', 5)->nullable();
+            $table->string('format_file', 15)->nullable();
             // $table->string('tag', 50)->nullable();
             $table->string('codec_video_audio', 20)->nullable();
             $table->date('collection_date')->nullable();

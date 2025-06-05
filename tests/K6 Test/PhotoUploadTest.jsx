@@ -5,13 +5,13 @@ import { SharedArray } from "k6/data";
 // Test configuration
 export const options = {
     stages: [
-        { target: 1, duration: "10s" },  // Ramp up to 1 user
-        { target: 3, duration: "20s" },  // Stay at 5 users
-        { target: 2, duration: "10s" },  // Ramp down to 2 users
+        { target: 10, duration: "10s" }, // Ramp up to 1 user
+        { target: 30, duration: "20s" }, // Stay at 5 users
+        { target: 50, duration: "10s" }, // Ramp down to 2 users
     ],
     thresholds: {
         http_req_duration: ["p(95)<5000"], // 95% of requests should be below 5s
-        http_req_failed: ["rate<0.1"],     // Less than 10% of requests should fail
+        http_req_failed: ["rate<0.1"], // Less than 10% of requests should fail
     },
 };
 
@@ -23,8 +23,30 @@ const testImage = open("./test-image.jpg", "b");
 
 // Helper function to generate random title
 function generateRandomTitle() {
-    const adjectives = ['Beautiful', 'Historic', 'Amazing', 'Vintage', 'Rare', 'Unique', 'Classic', 'Modern', 'Ancient', 'Famous'];
-    const nouns = ['Photo', 'Image', 'Picture', 'Snapshot', 'Portrait', 'Scene', 'Moment', 'Memory', 'Artifact', 'Document'];
+    const adjectives = [
+        "Beautiful",
+        "Historic",
+        "Amazing",
+        "Vintage",
+        "Rare",
+        "Unique",
+        "Classic",
+        "Modern",
+        "Ancient",
+        "Famous",
+    ];
+    const nouns = [
+        "Photo",
+        "Image",
+        "Picture",
+        "Snapshot",
+        "Portrait",
+        "Scene",
+        "Moment",
+        "Memory",
+        "Artifact",
+        "Document",
+    ];
     const randomNum = Math.floor(Math.random() * 1000);
     const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
@@ -35,9 +57,9 @@ function generateRandomTitle() {
 function parseCookies(cookieString) {
     const cookies = {};
     if (!cookieString) return cookies;
-    
-    cookieString.split(';').forEach(cookie => {
-        const parts = cookie.split('=');
+
+    cookieString.split(";").forEach((cookie) => {
+        const parts = cookie.split("=");
         if (parts.length === 2) {
             cookies[parts[0].trim()] = parts[1].trim();
         }
@@ -60,14 +82,14 @@ export default function main() {
             "http://kizarukaede.indonesiacentral.cloudapp.azure.com/login",
             {
                 headers: {
-                    "Accept": "application/json",
-                }
+                    Accept: "application/json",
+                },
             }
         );
 
         // Parse cookies from response
         const cookies = parseCookies(response.headers["Set-Cookie"]);
-        
+
         if (cookies["XSRF-TOKEN"]) {
             token = decodeURIComponent(cookies["XSRF-TOKEN"]);
         }
@@ -84,8 +106,8 @@ export default function main() {
             headers: {
                 "Content-Type": "application/json",
                 "X-XSRF-TOKEN": token,
-                "Accept": "application/json",
-                "Cookie": sessionCookie
+                Accept: "application/json",
+                Cookie: sessionCookie,
             },
         };
 
@@ -97,14 +119,13 @@ export default function main() {
 
         // Parse cookies from login response
         const loginCookies = parseCookies(loginRes.headers["Set-Cookie"]);
-        
+
         if (loginCookies["galeri_sejarah_session"]) {
             sessionCookie = `galeri_sejarah_session=${loginCookies["galeri_sejarah_session"]}`;
         }
         if (loginCookies["XSRF-TOKEN"]) {
             token = decodeURIComponent(loginCookies["XSRF-TOKEN"]);
         }
-
 
         check(loginRes, {
             "login successful": (r) => r.status === 200,
@@ -125,16 +146,16 @@ export default function main() {
             "http://kizarukaede.indonesiacentral.cloudapp.azure.com/api/content-photo",
             {
                 headers: {
-                    "Accept": "application/json",
-                    "Cookie": sessionCookie
-                }
+                    Accept: "application/json",
+                    Cookie: sessionCookie,
+                },
             }
         );
 
         // Parse cookies from CSRF response
         const csrfCookies = parseCookies(csrfResponse.headers["Set-Cookie"]);
         let uploadToken = token;
-        
+
         if (csrfCookies["XSRF-TOKEN"]) {
             uploadToken = decodeURIComponent(csrfCookies["XSRF-TOKEN"]);
         }
@@ -155,8 +176,8 @@ export default function main() {
         const uploadParams = {
             headers: {
                 "X-XSRF-TOKEN": uploadToken,
-                "Cookie": sessionCookie,
-                "Accept": "application/json"
+                Cookie: sessionCookie,
+                Accept: "application/json",
             },
         };
 
@@ -166,7 +187,6 @@ export default function main() {
             uploadParams
         );
 
-   
         check(uploadRes, {
             "upload successful": (r) => r.status === 201,
             "response has message": (r) => r.json("message") !== undefined,
@@ -175,4 +195,4 @@ export default function main() {
     });
 
     sleep(2);
-} 
+}

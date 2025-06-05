@@ -84,7 +84,7 @@ class VideoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'video_url' => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/flv,video/mpeg,video/mpg,video/m4v,video/webm,video/mkv',
+            'video_url' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,mpeg,mpg,m4v,webm,mkv|max:102400', // 100MB max
             'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
@@ -129,6 +129,8 @@ class VideoController extends Controller
             // Save relative path to DB
             $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
         }
+
+        $slug = Str::slug($request->title);
 
         // Create new video record
         $video = ContentVideo::create([
@@ -412,35 +414,35 @@ class VideoController extends Controller
     }
 
     public function import(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls|max:2048'
-    ]);
-
-    try {
-        // Get the authenticated user's ID
-        $userId = Auth::id();
-        
-        // Pass the user ID to the importer
-        $import = new VideosImport($userId);
-        
-        Excel::import($import, $request->file('file'));
-        
-        $importedCount = $import->getRowCount();
-        $skippedCount = $import->getSkippedCount();
-        
-        return response()->json([
-            'success' => true,
-            'message' => "Berhasil mengimpor {$importedCount} video",
-            'skipped' => $skippedCount,
-            'total' => $importedCount + $skippedCount
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:2048'
         ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal mengimpor: ' . $e->getMessage()
-        ], 422);
+
+        try {
+            // Get the authenticated user's ID
+            $userId = Auth::id();
+
+            // Pass the user ID to the importer
+            $import = new VideosImport($userId);
+
+            Excel::import($import, $request->file('file'));
+
+            $importedCount = $import->getRowCount();
+            $skippedCount = $import->getSkippedCount();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil mengimpor {$importedCount} video",
+                'skipped' => $skippedCount,
+                'total' => $importedCount + $skippedCount
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengimpor: ' . $e->getMessage()
+            ], 422);
+        }
     }
-}
 }
