@@ -15,6 +15,8 @@ use App\Models\UserReaction;
 
 class StatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 8;
+
     protected function getStats(): array
     {
         return [

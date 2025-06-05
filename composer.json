@@ -7,8 +7,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "bezhansalleh/filament-google-analytics": "^2.1",
         "bezhansalleh/filament-shield": "^3.3",
+        "bilfeldt/laravel-route-statistics": "^3.4",
         "filament/filament": "3.2.57",
         "flowframe/laravel-trend": "^0.4.0",
         "inertiajs/inertia-laravel": "^2.0",

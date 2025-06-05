@@ -24,7 +24,7 @@ class VideoController extends Controller
     //
     public function index()
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'userComments.userReactions', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'user', 'categoryContents'])
             ->where('status', 'approved')
             ->get();
         if (!$contentVideo) {
@@ -35,7 +35,7 @@ class VideoController extends Controller
 
     public function show($slug)
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'user', 'categoryContents'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
@@ -56,12 +56,8 @@ class VideoController extends Controller
     {
         $popularVideos = ContentVideo::with([
             'metadataVideo',
-            'userComments',
             'user',
             'categoryContents',
-            'contentReactions',
-            'contentReactions.reactionType',
-            'userFavorite'
         ])
             ->where('status', 'approved')
             ->withCount([

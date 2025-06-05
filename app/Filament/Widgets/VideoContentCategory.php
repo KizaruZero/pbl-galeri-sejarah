@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class VideoContentCategory extends ChartWidget
 {
     protected static ?string $heading = 'Photo Content by Category';
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 21;
 
     protected function getData(): array
     {

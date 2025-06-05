@@ -51,7 +51,7 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->required(),
                         FileUpload::make('logo')
                             ->label('Logo')
-                            ->hint('Recommended image size: 100x100 pixels with a transparent background (png).')   
+                            ->hint('Recommended image size: 100x100 pixels with a transparent background (png).')
                             ->hintColor('warning')
                             ->image()
                             ->directory('company-profile'),

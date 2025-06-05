@@ -23,7 +23,7 @@ class PhotoController extends Controller
 {
     public function index()
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'userComments.userReactions', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents'])
             ->where('status', 'approved')
             ->get();
         if (!$contentPhoto) {
@@ -38,12 +38,8 @@ class PhotoController extends Controller
     {
         $popularPhotos = ContentPhoto::with([
             'metadataPhoto',
-            'userComments',
             'user',
             'categoryContents',
-            'contentReactions',
-            'contentReactions.reactionType',
-            'userFavorite'
         ])
             ->where('status', 'approved')
             ->withCount([
@@ -65,7 +61,7 @@ class PhotoController extends Controller
 
     public function show($slug)
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();

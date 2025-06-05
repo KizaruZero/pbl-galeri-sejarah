@@ -45,22 +45,23 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('/');
+})->name('/')->middleware(['routestatistics']);
 
 /**
  * Routing Vue Pages (non-auth)
  */
 // middleware web
 Route::middleware('web')->group(function () {
-    Route::get('/article', fn() => Inertia::render('Views/ArticleView'));
+    Route::get('/article', fn() => Inertia::render('Views/ArticleView'))->middleware(['routestatistics']);
+    ;
     Route::get('/article/{slug}', fn() => Inertia::render('Views/ArticleDetailView'));
-    Route::get('/member', fn() => Inertia::render('Views/MemberView'))->middleware('guest');
-    Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware('auth');
+    Route::get('/member', fn() => Inertia::render('Views/MemberView'))->middleware(['guest', 'routestatistics']);
+    Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware(['auth', 'routestatistics']);
     Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
     Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
-    Route::get('/events', fn() => Inertia::render('Views/EventView'));
+    Route::get('/events', fn() => Inertia::render('Views/EventView'))->middleware(['routestatistics']);
     Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
-    Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'));
+    Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'))->middleware(['routestatistics']);
     Route::get('/gallery/{slug}', function ($slug) {
         return Inertia::render('Views/ListGallery');
     });

@@ -21,7 +21,7 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Rupadana\ApiService\ApiServicePlugin;
 use App\Filament\Pages\CompanyProfileSettings;
-use BezhanSalleh\FilamentGoogleAnalytics\FilamentGoogleAnalyticsPlugin;
+
 
 
 
@@ -34,15 +34,19 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('dashboard')
             ->login()
-            ->brandName('KASUNANAN')
             ->colors([
                 'primary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path(path: 'Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(
+                in: app_path('Filament/Pages/Widgets'),
+                for: 'App\\Filament\\Pages\\Widgets'
+            )
             ->widgets([
                 \App\Filament\Widgets\LastLoggedInUsers::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -56,7 +60,10 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->pages([
+                Pages\Dashboard::class,
                 CompanyProfileSettings::class,
+                \App\Filament\Pages\RouteStatisticsPage::class,
+
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -65,7 +72,8 @@ class AdminPanelProvider extends PanelProvider
                 'Photo Contents',
                 'Video Contents',
                 'Content Management',
-                'Users'
+                'Users',
+                'Statistics'
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
@@ -73,7 +81,6 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications(true)
             ->plugins([
                 ApiServicePlugin::make(),
-                FilamentGoogleAnalyticsPlugin::make()
             ]);
     }
 }
