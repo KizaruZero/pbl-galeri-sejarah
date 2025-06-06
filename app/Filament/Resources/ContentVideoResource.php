@@ -146,144 +146,155 @@ class ContentVideoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('title')
-                    ->limit(length: 20)
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tag')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('link_youtube')
-                    ->limit(30),
-                Tables\Columns\ImageColumn::make('thumbnail')
-                    ->disk('public')
-                    ->height(50),
-                Tables\Columns\TextColumn::make('categoryContents.category.category_name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('total_views')
-                    ->limit(length: 20)
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('popularity')
-                    ->label('Popularity')
-                    ->sortable(query: function (Builder $query, string $direction) {
-                        return $query->withCount(['contentReactions', 'userComments', 'userFavorite'])
-                            ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) ' . $direction);
-                    })
-                    ->getStateUsing(function (ContentVideo $record) {
-                        return $record->calculatePopularity();
-                    }),
-                BadgeColumn::make('status')
-                    ->state(function (ContentVideo $record): string {
-                        return match ($record->status) {
-                            'pending' => 'Pending',
-                            'approved' => 'Approved',
-                            'rejected' => 'Rejected',
-                            default => $record->status,
-                        };
-                    })
-                    ->colors([
-                        'primary' => 'Pending',
-                        'success' => 'Approved',
-                        'danger' => 'Rejected',
-                    ])
-                    ->icons([
-                        'heroicon-o-clock' => 'Pending',
-                        'heroicon-o-check-circle' => 'Approved',
-                        'heroicon-o-x-circle' => 'Rejected',
-                    ])
-                    ->description(fn(ContentVideo $record): string => $record->note ?? '')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->headerActions([
-                Action::make('bulkUpload')
-                    ->label('Bulk Upload Videos')
-                    ->icon('heroicon-o-arrow-up-tray')
-                    ->color('success')
-                    ->form([
-                        FileUpload::make('zip_file')
-                            ->label('ZIP File')
-                            ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed'])
-                            ->maxSize(512000) // 500MB for videos
-                            ->required()
-                            ->helperText('Upload a ZIP file containing metadata_template.xlsx, media/ folder with videos, and thumbnail/ folder.')
-                            ->disk('local')
-                            ->directory('bulk-uploads')
-                            ->preserveFilenames()
-                            ->columnSpanFull(),
-
-                        Forms\Components\Placeholder::make('structure')
-                            ->label('Required ZIP Structure')
-                            ->content(view('filament.components.video-zip-structure'))
-                            ->columnSpanFull(),
-                    ])
-                    ->action(function (array $data) {
-                        return static::processBulkUploadVideo($data);
-                    })
-                    ->modalWidth('2xl'),
-            ])
-            ->defaultSort('created_at', 'desc')
+            ->columns(static::getTableColumns())
+            ->headerActions(static::getTableHeaderActions())
             ->filters([
                 CategoryFilter::make('category'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('approve')
-                    ->label('Approve')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->visible(fn(ContentVideo $record) => $record->status === 'pending')
-                    ->action(function (ContentVideo $record) {
-                        $record->update([
-                            'status' => 'approved',
-                            'approved_at' => now(),
-                        ]);
-                        $record->user->notify(new VideoStatus('approved', $record->title, ''));
-                        Notification::make()
-                            ->title('Content Approved')
-                            ->body('The content has been approved!')
-                            ->success()
-                            ->sendToDatabase(auth()->user())
-                            ->send();
-                    }),
-                Action::make('reject')
-                    ->label('Reject')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn(ContentVideo $record) => $record->status === 'pending')
-                    ->form([
-                        Textarea::make('note')
-                            ->label('Rejection Reason')
-                            ->required()
-                            ->placeholder('Enter the reason for rejection...')
-                            ->columnSpanFull(),
-                    ])
-                    ->action(function (ContentVideo $record, array $data) {
-                        $record->update([
-                            'status' => 'rejected',
-                            'note' => $data['note'],
-                        ]);
-                        $record->user->notify(new VideoStatus('rejected', $record->title, $data['note']));
-                        Notification::make()
-                            ->title('Content Rejected')
-                            ->body('The content has been rejected.')
-                            ->danger()
-                            ->sendToDatabase(auth()->user())
-                            ->send();
-                    }),
-            ])
+            ->defaultSort('created_at', 'desc')
+            ->actions(static::getTableActions())
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function getTableColumns(): array
+    {
+        return [
+            Tables\Columns\TextColumn::make('title')
+                ->limit(length: 20)
+                ->searchable(),
+            Tables\Columns\TextColumn::make('user.name')
+                ->sortable(),
+            Tables\Columns\TextColumn::make('tag')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('link_youtube')
+                ->limit(30),
+            Tables\Columns\TextColumn::make('categoryContents.category.category_name')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('total_views')
+                ->limit(length: 20)
+                ->sortable()
+                ->searchable(),
+            Tables\Columns\TextColumn::make('popularity')
+                ->label('Popularity')
+                ->sortable(query: function (Builder $query, string $direction) {
+                    return $query->withCount(['contentReactions', 'userComments', 'userFavorite'])
+                        ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) ' . $direction);
+                })
+                ->getStateUsing(function (ContentVideo $record) {
+                    return $record->calculatePopularity();
+                }),
+            BadgeColumn::make('status')
+                ->state(function (ContentVideo $record): string {
+                    return match ($record->status) {
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        default => $record->status,
+                    };
+                })
+                ->colors([
+                    'primary' => 'Pending',
+                    'success' => 'Approved',
+                    'danger' => 'Rejected',
+                ])
+                ->icons([
+                    'heroicon-o-clock' => 'Pending',
+                    'heroicon-o-check-circle' => 'Approved',
+                    'heroicon-o-x-circle' => 'Rejected',
+                ])
+                ->description(fn(ContentVideo $record): string => $record->note ?? '')
+                ->sortable(),
+            Tables\Columns\TextColumn::make('created_at')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+        ];
+    }
+
+    protected static function getTableHeaderActions(): array
+    {
+        return [
+            Action::make('bulkUpload')
+                ->label('Bulk Upload Videos')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('success')
+                ->form([
+                    FileUpload::make('zip_file')
+                        ->label('ZIP File')
+                        ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed'])
+                        ->maxSize(512000)
+                        ->required()
+                        ->helperText('Upload a ZIP file containing metadata_template.xlsx, media/ folder with videos, and thumbnail/ folder.')
+                        ->disk('local')
+                        ->directory('bulk-uploads')
+                        ->preserveFilenames()
+                        ->columnSpanFull(),
+                    Forms\Components\Placeholder::make('structure')
+                        ->label('Required ZIP Structure')
+                        ->content(view('filament.components.video-zip-structure'))
+                        ->columnSpanFull(),
+                ])
+                ->action(function (array $data) {
+                    return static::processBulkUploadVideo($data);
+                })
+                ->modalWidth('2xl'),
+        ];
+    }
+
+    protected static function getTableActions(): array
+    {
+        return [
+            Tables\Actions\ViewAction::make(),
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+            Action::make('approve')
+                ->label('Approve')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->visible(fn(ContentVideo $record) => $record->status === 'pending')
+                ->action(function (ContentVideo $record) {
+                    $record->update([
+                        'status' => 'approved',
+                        'approved_at' => now(),
+                    ]);
+                    $record->user->notify(new VideoStatus('approved', $record->title, ''));
+                    Notification::make()
+                        ->title('Content Approved')
+                        ->body('The content has been approved!')
+                        ->success()
+                        ->sendToDatabase(auth()->user())
+                        ->send();
+                }),
+            Action::make('reject')
+                ->label('Reject')
+                ->icon('heroicon-o-x-circle')
+                ->color('danger')
+                ->visible(fn(ContentVideo $record) => $record->status === 'pending')
+                ->form([
+                    Textarea::make('note')
+                        ->label('Rejection Reason')
+                        ->required()
+                        ->placeholder('Enter the reason for rejection...')
+                        ->columnSpanFull(),
+                ])
+                ->action(function (ContentVideo $record, array $data) {
+                    $record->update([
+                        'status' => 'rejected',
+                        'note' => $data['note'],
+                    ]);
+                    $record->user->notify(new VideoStatus('rejected', $record->title, $data['note']));
+                    Notification::make()
+                        ->title('Content Rejected')
+                        ->body('The content has been rejected.')
+                        ->danger()
+                        ->sendToDatabase(auth()->user())
+                        ->send();
+                }),
+        ];
     }
 
     public static function processBulkUploadVideo(array $data)
