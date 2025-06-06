@@ -24,6 +24,7 @@ use App\Filament\Resources\ContentPhotoResource\Widgets\ContentPhotoOverview;
 use App\Notifications\PhotoStatus;
 use Illuminate\Http\UploadedFile;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Intervention\Image\ImageManagerStatic as Image;
 
 
 
@@ -92,7 +93,7 @@ class ContentPhotoResource extends Resource
                     ->hintColor('warning')
                     ->disk('public')
                     ->maxSize(10000)
-                    ->storeFileNamesIn('original_filename') // Store original filenames if needed
+                    ->storeFileNamesIn('original_filename')
                     ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/heic'])
                     ->getUploadedFileNameForStorageUsing(
                         function (TemporaryUploadedFile $file, callable $get): string {
@@ -100,7 +101,18 @@ class ContentPhotoResource extends Resource
                             $extension = $file->getClientOriginalExtension();
                             return $slug . '_' . time() . '.' . $extension;
                         }
-                    ),
+                    )
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        if ($state) {
+                            // Extract EXIF data when file is uploaded
+                            $exifData = static::extractExifData($state);
+
+                            // Set the extracted data to hidden fields or component state
+                            $set('exif_data', $exifData);
+                        }
+                    }),
+
+                Forms\Components\Hidden::make('exif_data'),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('source')
@@ -360,5 +372,101 @@ class ContentPhotoResource extends Resource
                 ]);
             }
         }
+    }
+
+    public static function extractExifData($file): array
+    {
+        $exifData = [
+            'collection_date' => null,
+            'file_size' => null,
+            'aperture' => null,
+            'location' => null,
+            'model' => null,
+            'ISO' => null,
+            'dimensions' => null,
+        ];
+
+        try {
+            // Get the temporary file path
+            $filePath = $file instanceof TemporaryUploadedFile
+                ? $file->getRealPath()
+                : (is_string($file) ? storage_path('app/public/' . $file) : $file->getPathname());
+
+            // Check if file exists
+            if (!file_exists($filePath)) {
+                \Log::warning('File not found for EXIF extraction: ' . $filePath);
+                return $exifData;
+            }
+
+            // Extract EXIF data BEFORE any processing
+            $exif = @exif_read_data($filePath);
+
+            // Get image dimensions
+            $image = Image::make($filePath);
+            $dimensions = $image->width() . 'x' . $image->height();
+
+            // Extract specific EXIF data
+            if ($exif) {
+                $exifData = [
+                    'collection_date' => !empty($exif['DateTimeOriginal'])
+                        ? date('Y-m-d H:i:s', strtotime($exif['DateTimeOriginal']))
+                        : null,
+                    'file_size' => filesize($filePath),
+                    'aperture' => isset($exif['COMPUTED']['ApertureFNumber'])
+                        ? $exif['COMPUTED']['ApertureFNumber']
+                        : null,
+                    'location' => isset($exif['GPSLatitude'])
+                        ? static::getGPSCoordinates($exif)
+                        : null,
+                    'model' => isset($exif['Model']) ? $exif['Model'] : null,
+                    'ISO' => isset($exif['ISOSpeedRatings'])
+                        ? $exif['ISOSpeedRatings']
+                        : null,
+                    'dimensions' => $dimensions,
+                ];
+            } else {
+                // If no EXIF, at least get file size and dimensions
+                $exifData['file_size'] = filesize($filePath);
+                $exifData['dimensions'] = $dimensions;
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error extracting EXIF data in Filament: ' . $e->getMessage());
+        }
+
+        return $exifData;
+    }
+
+    public static function getGPSCoordinates($exif): ?string
+    {
+        if (!isset($exif['GPSLatitude']) || !isset($exif['GPSLongitude'])) {
+            return null;
+        }
+
+        $lat = static::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+        $lon = static::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
+
+        return $lat . ',' . $lon;
+    }
+
+    public static function getGps($exifCoord, $hemi): float
+    {
+        $degrees = count($exifCoord) > 0 ? static::gps2Num($exifCoord[0]) : 0;
+        $minutes = count($exifCoord) > 1 ? static::gps2Num($exifCoord[1]) : 0;
+        $seconds = count($exifCoord) > 2 ? static::gps2Num($exifCoord[2]) : 0;
+
+        $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
+
+        return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+    }
+
+    private function gps2Num($coordPart): float
+    {
+        $parts = explode('/', $coordPart);
+        if (count($parts) <= 0)
+            return 0.0;
+        if (count($parts) == 1)
+            return floatval($parts[0]);
+        return floatval($parts[0]) / floatval($parts[1]);
     }
 }
