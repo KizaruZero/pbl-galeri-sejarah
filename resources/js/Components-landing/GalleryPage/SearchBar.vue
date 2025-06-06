@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex flex-col items-center w-full bg-black py-10">
+  <div class="relative flex flex-col items-center w-full bg-white dark:bg-black py-10">
     <div class="relative flex flex-col items-center w-full max-w-[1300px] rounded-lg shadow-lg px-5 py-10">
       <!-- Search Form -->
       <form @submit.prevent="handleSearch" class="w-full mt-8">
@@ -8,7 +8,7 @@
           <button
             @click.prevent="toggleSidebar"
             type="button"
-            class="md:hidden px-4 py-3 bg-black text-white border border-white rounded-l-lg hover:bg-gray-800 transition-colors"
+            class="md:hidden px-4 py-3 bg-white dark:bg-black text-black dark:text-white border border-black dark:border-white rounded-l-lg hover:bg-gray-300 dark:hover:bg-gray-800  transition-colors"
           >
             ☰
           </button>
@@ -18,7 +18,7 @@
             <button
               @click.prevent="toggleDropdown"
               type="button"
-              class="z-10 inline-flex items-center px-5 py-3 text-base font-medium text-white bg-black border border-white rounded-l-lg hover:text-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-500 transition-colors"
+              class="z-10 inline-flex items-center px-5 py-3 text-base font-medium text-black dark:text-white bg-white dark:bg-black border border-black dark:border-white rounded-l-lg hover:bg-gray-300 dark:hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-500 transition-colors"
             >
               {{ selectedCategory }}
               <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 10 6">
@@ -35,14 +35,14 @@
             <!-- Dropdown Menu -->
             <div
               v-if="showDropdown"
-              class="absolute top-full left-0 w-48 bg-black text-white rounded-lg shadow-lg mt-2 border border-gray-700 z-50"
+              class="absolute top-full left-0 w-48 bg-white dark:bg-black text-black dark:text-white rounded-lg shadow-lg mt-2 border border-gray-700 z-50"
             >
               <ul class="py-2 text-sm">
                 <li v-for="category in categories" :key="category">
                   <button
                     @click.prevent="selectCategory(category)"
                     type="button"
-                    class="block w-full px-4 py-3 text-left hover:bg-gray-800 transition-colors"
+                    class="block w-full px-4 py-3 text-left hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                   >
                     {{ category }}
                   </button>
@@ -56,13 +56,13 @@
             <input
               type="search"
               v-model="searchQuery"
-              class="w-full p-3 text-base text-white bg-black border border-white md:border-l-0 md:rounded-none rounded-r-lg focus:ring-gray-500 focus:border-gray-500"
+              class="w-full p-3 text-base text-black dark:text-white bg-white dark:bg-black border border-black dark:border-white md:border-l-0 md:rounded-none rounded-r-lg focus:ring-gray-500 focus:border-gray-500"
               placeholder="Search Mockups, Logos, Design Templates..."
               required
             />
             <button
               type="submit"
-              class="absolute top-0 right-0 h-full px-4 text-black bg-white border border-white rounded-r-lg hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-500 transition-colors"
+              class="absolute top-0 right-0 h-full px-4 text-black dark:text-white bg-white dark:bg-black border border-black dark:border-white rounded-r-lg hover:bg-gray-200 dark:hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-500 transition-colors"
             >
               <svg class="w-5 h-5" fill="none" viewBox="0 0 20 20">
                 <path
@@ -82,19 +82,19 @@
       <!-- Search Results -->
       <div v-if="searchPerformed" class="w-full mt-8">
         <div v-if="loading" class="text-center py-10">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-          <p class="mt-2 text-white">Searching...</p>
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black dark:border-white"></div>
+          <p class="mt-2 text-black dark:text-white">Searching...</p>
         </div>
         
         <div v-else>
           <div v-if="searchResults.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="item in searchResults" :key="`${item.type}-${item.id}`" class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+            <div v-for="item in searchResults" :key="`${item.type}-${item.id}`" class="bg-zinc-200 dark:bg-zinc-900 rounded-lg overflow-hidden shadow-lg">
               <a @click.prevent="navigateToDetail(item)" class="block cursor-pointer">
                 <img :src="item.image_url" :alt="item.title" class="w-full h-48 object-cover">
                 <div class="p-4">
-                  <h3 class="text-white font-semibold text-lg mb-2">{{ item.title }}</h3>
-                  <p class="text-gray-300 text-sm mb-3">{{ truncateDescription(item.description) }}</p>
-                  <div class="flex justify-between items-center text-sm text-gray-400">
+                  <h3 class="text-black dark:text-white font-semibold text-lg mb-2">{{ item.title }}</h3>
+                  <p class="text-gray-800 dark:text-gray-200 text-sm mb-3">{{ truncateDescription(item.description) }}</p>
+                  <div class="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
                     <span>{{ item.category }}</span>
                     <span>{{ item.type }}</span>
                   </div>
@@ -103,7 +103,7 @@
             </div>
           </div>
           
-          <div v-else class="text-center py-10 text-white">
+          <div v-else class="text-center py-10 text-black dark:text-white">
             <p class="text-xl">No results found for "{{ searchQuery }}"</p>
             <p v-if="selectedCategory !== 'All categories'">in category "{{ selectedCategory }}"</p>
           </div>
@@ -114,14 +114,14 @@
     <!-- Mobile Sidebar -->
     <div 
       v-if="showSidebar" 
-      class="fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col justify-center items-center text-white transition-opacity duration-300"
+      class="fixed inset-0 bg-white dark:bg-black bg-opacity-80 z-50 flex flex-col justify-center items-center text-white transition-opacity duration-300"
     >
-      <div class="relative w-full max-w-md bg-black p-6 rounded-lg shadow-lg border border-gray-700">
+      <div class="relative w-full max-w-md bg-white dark:bg-black p-6 rounded-lg shadow-lg border border-gray-700">
         <div class="flex justify-between items-center border-b border-gray-700 pb-4">
           <span class="text-lg font-semibold">Select Category</span>
           <button 
             @click="toggleSidebar" 
-            class="text-gray-300 hover:text-white text-2xl transition-colors"
+            class="text-gray-800 dark:text-gray-200 hover:text-white text-2xl transition-colors"
           >
             &times;
           </button>
@@ -131,7 +131,7 @@
             <button 
               @click="selectCategory(category)" 
               type="button"
-              class="block w-full px-6 py-4 text-left bg-gray-900 hover:bg-gray-700 rounded-lg transition-colors"
+              class="block w-full px-6 py-4 text-left text-black dark:text-white bg-zinc-200 dark:bg-zinc-900 hover:bg-gray-300 rounded-lg transition-colors"
             >
               {{ category }}
             </button>
@@ -145,6 +145,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from 'axios';
+
+const isDarkTheme = ref(true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 // UI State
 const showDropdown = ref(false);

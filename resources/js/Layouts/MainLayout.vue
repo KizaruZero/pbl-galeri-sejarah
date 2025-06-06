@@ -2,6 +2,7 @@
 import Navbar from "@/Components-landing/Navbar.vue";
 import Footer from "@/Components-landing/Footer.vue";
 import BaseLoading from "@/Components/BaseLoading.vue";
+
 import 'lite-youtube-embed/src/lite-yt-embed.css'
 </script>
 

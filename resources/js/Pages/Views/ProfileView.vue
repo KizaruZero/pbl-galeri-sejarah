@@ -1,6 +1,6 @@
 <template>
     <MainLayout>
-        <div class="bg-[#0d0d0d] min-h-screen w-full">
+        <div class="bg-white dark:bg-black min-h-screen w-full">
             <div class="max-w-7xl mx-auto px-4 py-8 sm:py-12 lg:py-16">
                 <ProfileHeaderSection
                     :user-data="userData"

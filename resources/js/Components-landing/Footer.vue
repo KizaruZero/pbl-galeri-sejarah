@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-black text-white py-10 px-5 md:px-20">
+  <footer class="bg-white dark:bg-black text-black dark:text-white py-10 px-5 md:px-20">
     <div class="flex flex-col md:grid md:grid-cols-3 gap-10">
       <!-- Bagian Kiri: Logo -->
       <div
@@ -14,7 +14,7 @@
           />
           <div v-else class="w-14 md:w-16 h-14 md:h-16 flex items-center justify-center">
             <div
-              class="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"
+              class="w-6 h-6 rounded-full border-2 border-black border-t-transparent animate-spin"
             ></div>
           </div>
           <div class="flex flex-col leading-tight">
@@ -81,6 +81,11 @@ import axios from "axios";
 
 const companyProfile = ref(null);
 const isLoading = ref(true);
+
+const isDarkTheme = ref(true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 // Get user data from Inertia page props
 const user = computed(() => usePage().props.auth?.user || null);

@@ -1,5 +1,5 @@
 <template>
-    <article class="overflow-hidden bg-black rounded-xl shadow-md transition-all duration-300 
+    <article class="overflow-hidden bg-zinc-200 dark:bg-zinc-900 rounded-xl shadow-md transition-all duration-300 
              hover:scale-[1.02] hover:shadow-lg cursor-pointer" @click="$emit('click')">
 
         <!-- Image Container -->
@@ -10,10 +10,10 @@
 
         <!-- Rest of your card content -->
         <div class="p-5 text-center">
-            <h3 class="font-semibold text-white leading-snug mb-2" :class="titleClass">
+            <h3 class="font-semibold text-black dark:text-white leading-snug mb-2" :class="titleClass">
                 {{ categoryName || 'Untitled' }}
             </h3>
-            <p v-if="categoryDescription" class="text-sm text-white leading-relaxed line-clamp-2">
+            <p v-if="categoryDescription" class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
                 {{ categoryDescription }}
             </p>
             <p v-else class="text-sm text-gray-400 italic">

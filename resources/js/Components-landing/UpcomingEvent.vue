@@ -1,5 +1,5 @@
 <template>
-  <main class="relative p-5 bg-black text-white">
+  <main class="relative p-5 bg-white dark:bg-black text-white">
     <!-- Title & Button -->
     <div
       class="flex flex-col md:flex-row items-center justify-between gap-4 px-4 sm:px-6 md:px-10 lg:px-20 py-6 md:py-10"
@@ -12,14 +12,14 @@
         >
           <!-- Garis atas (untuk semua ukuran layar) -->
           <span
-            class="block w-16 xs:w-20 sm:w-24 md:w-20 lg:w-24 h-0.5 bg-white mb-3 xs:mb-4 sm:mb-5 md:mb-4 lg:mb-6 mx-auto md:mx-0"
+            class="block w-16 xs:w-20 sm:w-24 md:w-20 lg:w-24 h-0.5 bg-black dark:bg-white mb-3 xs:mb-4 sm:mb-5 md:mb-4 lg:mb-6 mx-auto md:mx-0"
           ></span>
 
-          <span class="inline-block">Upcoming Events</span>
+          <span class="inline-block text-black dark:text-white">Upcoming Events</span>
 
           <!-- Garis bawah (untuk semua ukuran layar) -->
           <span
-            class="block w-full h-0.5 bg-white mt-3 xs:mt-4 sm:mt-5 md:mt-4 lg:mt-6"
+            class="block w-full h-0.5 bg-black dark:bg-white mt-3 xs:mt-4 sm:mt-5 md:mt-4 lg:mt-6"
           ></span>
         </h1>
 
@@ -27,7 +27,7 @@
         <div class="md:hidden ml-2">
           <a
             href="/events"
-            class="inline-flex items-center justify-center w-12 h-12 text-[10px] xs:text-xs sm:text-sm rounded-full border border-white text-white text-nowrap leading-none text-center transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+            class="inline-flex items-center justify-center w-12 h-12 text-[10px] xs:text-xs sm:text-sm rounded-full border border-black dark:border-white text-black dark:text-white text-nowrap leading-none text-center transition-all duration-300 hover:scale-105 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
           >
             View All
           </a>
@@ -38,7 +38,7 @@
       <div class="hidden md:block md:ml-4">
         <a
           href="/events"
-          class="inline-flex items-center justify-center w-16 h-16 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full border border-white text-white text-base md:text-base lg:text-lg transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+          class="inline-flex items-center justify-center w-16 h-16 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full border border-black dark:border-white text-black dark:text-white text-base md:text-base lg:text-lg transition-all duration-300 hover:scale-105 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
         >
           View All
         </a>
@@ -82,7 +82,7 @@
       >
         <template #item="slotProps">
           <div
-            class="relative mx-4 bg-zinc-900 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-[1.02] flex flex-col h-[450px] cursor-pointer"
+            class="relative mx-4 bg-zinc-200 dark:bg-zinc-900 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-[1.02] flex flex-col h-[450px] cursor-pointer"
             @click="getDetailPage(slotProps.data.slug)"
           >
             <!-- Image section (60%) -->
@@ -93,19 +93,19 @@
                 class="object-cover w-full h-full transition-opacity duration-300"
                 @error="$event.target.src = '/js/Assets/default-photo.jpg'"
               />
-              <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+              <div class="absolute inset-0 bg-black dark:bg-white bg-opacity-10 dark:bg-opacity-20"></div>
             </div>
 
             <!-- Content section (40%) -->
             <div class="px-4 mt-4 flex flex-col gap-2 h-[150px]">
-              <h2 class="text-base font-bold uppercase line-clamp-1">
+              <h2 class="text-base text-black dark:text-white font-bold uppercase line-clamp-1">
                 {{ slotProps.data.title }}
               </h2>
-              <time class="text-xs uppercase">
+              <time class="text-xs uppercase text-black dark:text-white">
                 {{ formatDate(slotProps.data.date_start) }}
               </time>
               <p
-                class="text-xs font-light tracking-wide leading-snug text-justify line-clamp-2"
+                class="text-xs font-light text-black dark:text-white tracking-wide leading-snug text-justify line-clamp-2"
               >
                 {{ slotProps.data.description || "No description available" }}
               </p>
@@ -116,7 +116,7 @@
 
       <!-- Empty state -->
       <div v-if="slides.length === 0" class="text-center py-20">
-        <p class="text-xl">No upcoming events found</p>
+        <p class="text-xl text-black dark:text-white">No upcoming events found</p>
       </div>
     </div>
   </main>
@@ -130,6 +130,11 @@ import axios from "axios";
 const slides = ref([]);
 const loading = ref(true);
 const error = ref(null);
+
+const isDarkTheme = ref(true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 const responsiveOptions = ref([
   { breakpoint: "2560px", numVisible: 4, numScroll: 1 },

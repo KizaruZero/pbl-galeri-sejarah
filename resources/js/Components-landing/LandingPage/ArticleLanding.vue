@@ -1,11 +1,11 @@
 <template>
-  <section class="w-full bg-black py-16 px-6 md:px-10">
+  <section class="w-full bg-white dark:bg-black py-16 px-6 md:px-10">
     <div class="max-w-[1192px] mx-auto">
       <!-- Title Section -->
-      <div class="flex flex-col items-center text-white mb-12">
-        <span class="w-full h-0.5 bg-white mb-6"></span>
+      <div class="flex flex-col items-center text-black dark:text-white mb-12">
+        <span class="w-full h-0.5 bg-black dark:bg-white mb-6"></span>
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-center">Article</h1>
-        <span class="w-full h-0.5 bg-white mt-6"></span>
+        <span class="w-full h-0.5 bg-black dark:bg-white mt-6"></span>
       </div>
 
       <!-- Loading State -->
@@ -64,14 +64,14 @@
 
         <!-- Empty State -->
         <div v-if="!loading && articles.length === 0" class="text-center py-16">
-          <p class="text-white text-xl">No articles available</p>
+          <p class="text-black dark:text-white text-xl">No articles available</p>
         </div>
 
         <!-- View All Button -->
         <div v-if="articles.length > 3" class="flex justify-end mt-12">
           <Link
             href="/article"
-            class="inline-block px-8 py-3 bg-white text-black font-medium hover:bg-gray-200 transition duration-300"
+            class="inline-block px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-medium hover:bg-gray-500 dark:hover:bg-gray-300 transition duration-300"
           >
             View All Articles
           </Link>
@@ -86,6 +86,11 @@ import { ref, onMounted, computed } from "vue";
 import ArticleCard from "@/Components-landing/ArticlePage/ArticleCard.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
+
+const isDarkTheme = ref(true);
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+};
 
 const articles = ref([]);
 const loading = ref(true);

@@ -1,6 +1,6 @@
 <template>
     <MainLayout>
-        <div class="min-h-screen bg-black">
+        <div class="min-h-screen bg-white dark:bg-black">
             <!-- Loading state -->
             <div v-if="loading" class="animate-pulse">
                 <!-- Video player placeholder -->
@@ -38,7 +38,7 @@
             <div v-else>
                 <!-- Back Button - Adjusted padding for mobile -->
                 <div class="p-4">
-                    <button @click="goBack" class="flex items-center text-gray-400 hover:text-white">
+                    <button @click="goBack" class="flex items-center text-black dark:text-white hover:text-gray-400 dark:hover:text-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path fill-rule="evenodd"
@@ -52,7 +52,7 @@
                 <!-- Main Video Container -->
                 <div class="rounded-lg shadow-xl overflow-hidden">
                     <!-- Video Player - Responsive adjustments -->
-                    <div class="relative bg-black mx-auto">
+                    <div class="relative bg-white dark:bg-black mx-auto">
                         <!-- Desktop: 35% height, Mobile: 55% height -->
                         <div class="pt-[55%] md:pt-[35%]">
                             <!-- Video player for local videos -->
@@ -60,7 +60,7 @@
                                 v-if="!isYoutubeVideo"
                                 controls
                                 :poster="video.thumbnailUrl"
-                                class="absolute top-0 left-0 w-full h-full object-contain bg-gray-950"
+                                class="absolute top-0 left-0 w-full h-full object-contain bg-gray-200 dark:bg-gray-950"
                             >
                                 <source :src="getVideoUrl(video.video_url)" type="video/mp4" />
                                 Your browser does not support the video tag.
@@ -83,10 +83,10 @@
                         <!-- Title and Actions - Stacked on mobile -->
                         <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-3">
                             <div class="flex-1">
-                                <h1 class="text-xl md:text-2xl font-bold text-white">
+                                <h1 class="text-xl md:text-2xl font-bold text-black dark:text-white">
                                     {{ video.title }}
                                 </h1>
-                                <div class="flex items-center mt-2 space-x-4 text-xs md:text-sm text-gray-400">
+                                <div class="flex items-center mt-2 space-x-4 text-xs md:text-sm text-gray-500 dark:text-gray-400">
                                     <span>{{ video.views }} views</span>
                                     <span>{{ formatDate(video.created_at) }}</span>
                                 </div>
@@ -133,24 +133,24 @@
 
                         <!-- Creator Info - Adjusted spacing for mobile -->
                         <div class="flex items-center gap-3 mb-4 p-2 md:p-3 rounded-lg">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-white/20">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-black dark:border-white">
                                 <img :src="getMediaUrl(video.user?.photo_profile)" :alt="video.user?.name"
                                     class="w-full h-full object-cover" />
                             </div>
                             <div>
-                                <p class="text-white font-medium text-sm md:text-base">
+                                <p class="text-black dark:text-white font-medium text-sm md:text-base">
                                     {{ video.user?.name || "Unknown Creator" }}
                                 </p>
-                                <p class="text-gray-300 text-xs" v-if="video.created_at">
+                                <p class="text-gray-500 dark:text-gray-400 text-xs" v-if="video.created_at">
                                     Uploaded {{ formatRelativeDate(video.created_at) }}
                                 </p>
-                                <p class="text-gray-300 text-xs">Content Creator</p>
+                                <p class="text-gray-500 dark:text-gray-400 text-xs">Content Creator</p>
                             </div>
                         </div>
 
                         <!-- Description - Smaller text on mobile -->
                         <div class="mb-4 md:mb-6">
-                            <p class="text-gray-300 whitespace-pre-line text-sm md:text-base">
+                            <p class="text-gray-600 dark:text-gray-300 whitespace-pre-line text-sm md:text-base">
                                 {{ video.description }}
                             </p>
                         </div>
@@ -160,39 +160,39 @@
                         <!-- Video Details - Single column on mobile -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">Collection Date</h3>
-                                <p class="text-white text-sm md:text-base">{{ formatCollectionDate(video.collection_date) }}
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">Collection Date</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ formatCollectionDate(video.collection_date) }}
                                 </p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">Location</h3>
-                                <p class="text-white text-sm md:text-base">{{ video.location || 'Not specified' }}</p>
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">Location</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ video.location || 'Not specified' }}</p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">Frame Rate</h3>
-                                <p class="text-white text-sm md:text-base">{{ video.frame_rate || 'Not specified' }}</p>
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">Frame Rate</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ video.frame_rate || 'Not specified' }}</p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">Resolution</h3>
-                                <p class="text-white text-sm md:text-base">{{ video.resolution || 'Not specified' }}</p>
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">Resolution</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ video.resolution || 'Not specified' }}</p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">File Size</h3>
-                                <p class="text-white text-sm md:text-base">
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">File Size</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">
                                     {{ video.file_size ? formatFileSize(parseInt(video.file_size)) : 'Not specified' }}
                                 </p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">Duration</h3>
-                                <p class="text-white text-sm md:text-base">{{ video.duration || 'Not specified' }}</p>
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">Duration</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ video.duration || 'Not specified' }}</p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">File Format</h3>
-                                <p class="text-white text-sm md:text-base">{{ video.format_file || 'Not specified' }}</p>
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">File Format</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ video.format_file || 'Not specified' }}</p>
                             </div>
                             <div>
-                                <h3 class="text-gray-400 text-xs md:text-sm">Video Audio Codec</h3>
-                                <p class="text-white text-sm md:text-base">{{ video.codec_video_audio || 'Not specified' }}
+                                <h3 class="text-gray-500 dark:text-gray-400 text-xs md:text-sm">Video Audio Codec</h3>
+                                <p class="text-black dark:text-white text-sm md:text-base">{{ video.codec_video_audio || 'Not specified' }}
                                 </p>
                             </div>
                         </div>
@@ -200,14 +200,14 @@
                         <!-- Tags - Smaller on mobile -->
                         <div class="flex flex-wrap gap-2 mb-4 md:mb-6" v-if="video.tags && video.tags.length">
                             <router-link v-for="tag in video.tags" :key="tag" :to="`/tags/${tag.toLowerCase()}`"
-                                class="px-2 py-0.5 md:px-3 md:py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-full text-xs md:text-sm transition-colors">
+                                class="px-2 py-0.5 md:px-3 md:py-1 bg-gray-300 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full text-xs md:text-sm transition-colors">
                                 #{{ tag }}
                             </router-link>
                         </div>
 
                         <!-- Comments Section - Improved spacing -->
                         <div class="border-t border-gray-800 pt-5 sm:pt-6">
-                            <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-5">
+                            <h2 class="text-lg sm:text-xl font-semibold text-black dark:text-white mb-4 sm:mb-5">
                                 Comments ({{ comments.length }})
                             </h2>
 
@@ -221,20 +221,20 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="relative">
                                             <textarea v-model="newComment" placeholder="Add a comment..."
-                                                class="w-full px-3 py-2 sm:px-4 sm:py-3 bg-gray-800 text-white border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition placeholder-gray-400 text-sm sm:text-base"
+                                                class="w-full px-3 py-2 sm:px-4 sm:py-3 bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition placeholder-gray-400 text-sm sm:text-base"
                                                 rows="3" maxlength="500"></textarea>
                                             <div class="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex items-center">
                                                 <span
-                                                    class="text-xs text-gray-400 mr-2 sm:mr-3">{{ newComment.length }}/500</span>
+                                                    class="text-xs text-gray-500 dark:text-gray-400 mr-2 sm:mr-3">{{ newComment.length }}/500</span>
                                                 <button @click="addComment" :disabled="!newComment.trim()"
-                                                    class="px-3 py-1 sm:px-4 sm:py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm font-medium">
+                                                    class="px-3 py-1 sm:px-4 sm:py-1.5 bg-blue-400 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-900 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm font-medium">
                                                     Post
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="mt-2 sm:mt-3">
-                                            <div v-if="!loadingReactions" class="p-3 bg-gray-800 rounded-lg">
-                                                <span class="text-xs text-gray-400">Add reaction:</span>
+                                            <div v-if="!loadingReactions" class="p-3 bg-zinc-200 dark:bg-zinc-900 rounded-lg">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">Add reaction:</span>
                                                 <div class="flex flex-wrap gap-1 mt-1">
                                                     <button v-for="reaction in reactions" :key="reaction.id"
                                                         class="px-2 py-1 bg-gray-700 rounded-full text-xs sm:text-sm hover:scale-110 transform transition-transform"
@@ -251,8 +251,8 @@
                                 </div>
                             </div>
                             <div v-else
-                                class="mb-6 sm:mb-7 p-3 sm:p-4 bg-gray-800/50 rounded-lg text-center border border-gray-700">
-                                <p class="text-gray-300 text-sm sm:text-base">
+                                class="mb-6 sm:mb-7 p-3 sm:p-4 bg-zinc-200 dark:bg-zinc-900 rounded-lg text-center border border-gray-700">
+                                <p class="text-gray-500 dark:text-gray-400 text-sm sm:text-base">
                                     Please
                                     <router-link to="/login" class="text-blue-400 hover:underline font-medium">login
                                     </router-link>
@@ -302,7 +302,7 @@
                                                         class="font-medium text-white hover:underline text-sm sm:text-base truncate">
                                                         {{ comment.user.name }}
                                                     </router-link>
-                                                    <p class="text-gray-400 text-xs mt-0.5">
+                                                    <p class="text-gray-300 dark:text-gray-400 text-xs mt-0.5">
                                                         {{ formatRelativeDate(comment.date) }}
                                                     </p>
                                                 </div>
@@ -318,7 +318,7 @@
                                             </button>
                                         </div>
                                         <p
-                                            class="mt-2 sm:mt-3 text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
+                                            class="mt-2 sm:mt-3 text-white dark:text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
                                             {{ comment.text }}
                                         </p>
 
@@ -342,7 +342,7 @@
                                             <!-- Add reaction button -->
                                             <div class="relative" v-if="UserId">
                                                 <button
-                                                    class="text-gray-400 hover:text-gray-200 text-xs flex items-center gap-1 p-1 rounded-full hover:bg-gray-700 transition-colors">
+                                                    class="text-gray-800 dark:text-gray-400 hover:text-gray-200 text-xs flex items-center gap-1 p-1 rounded-full hover:bg-gray-700 transition-colors">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -374,8 +374,8 @@
                                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-gray-300 font-medium mb-1 text-sm sm:text-base">No comments yet</h3>
-                                    <p class="text-gray-500 text-xs sm:text-sm">Be the first to share what you think!</p>
+                                    <h3 class="text-gray-500 dark:text-gray-300 font-medium mb-1 text-sm sm:text-base">No comments yet</h3>
+                                    <p class="text-gray-400 dark:text-gray-400 text-xs sm:text-sm">Be the first to share what you think!</p>
                                 </div>
                             </div>
                         </div>
