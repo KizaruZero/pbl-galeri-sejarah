@@ -122,5 +122,9 @@ Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUpload
 Route::get('/bulk', fn() => Inertia::render('Views/BulkUploadView'));
 Route::post('/api/bulk-upload', [PhotoController::class, 'bulkUpload']);
 
-require __DIR__ . '/auth.php';
+// Only load auth routes if they haven't been loaded yet
+if (!Route::has('register')) {
+    require __DIR__ . '/auth.php';
+}
+
 require __DIR__ . '/api.php';

@@ -12,7 +12,7 @@ class CategoryController extends Controller
         $category = Category::where('category_name', $name)->first();
 
         if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
+            return response()->json(['message' => 'Kategori Tidak Ditemukan, Pastikan Kategori Yang Anda Input di Excel Sesuai Dengan Kategori Yang Ada'], 404);
         }
 
         return response()->json($category);

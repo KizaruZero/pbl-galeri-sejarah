@@ -414,16 +414,25 @@ class PhotoController extends Controller
             mkdir($tempDir, 0755, true);
 
             // Extract ZIP file
-            $zip = new \ZipArchive();
             $zipFile = $request->file('zip_file');
             $zipPath = $zipFile->getPathname();
 
-            if ($zip->open($zipPath) !== true) {
-                throw new \Exception('Failed to open ZIP file');
+            // Try ZipArchive first, fallback to alternative method if not available
+            if (class_exists('ZipArchive')) {
+                $zip = new \ZipArchive();
+                if ($zip->open($zipPath) !== true) {
+                    throw new \Exception('Failed to open ZIP file');
+                }
+                $zip->extractTo($tempDir);
+                $zip->close();
+            } else {
+                // Alternative method using system commands
+                $command = "powershell -command \"Expand-Archive -Path '{$zipPath}' -DestinationPath '{$tempDir}' -Force\"";
+                exec($command, $output, $returnVar);
+                if ($returnVar !== 0) {
+                    throw new \Exception('Failed to extract ZIP file using alternative method');
+                }
             }
-
-            $zip->extractTo($tempDir);
-            $zip->close();
 
             // Check if metadata.xlsx exists
             $metadataPath = $tempDir . '/metadata_template.xlsx';

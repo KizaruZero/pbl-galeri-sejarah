@@ -241,10 +241,12 @@ const saveItem = async () => {
                     categoryIds.push(response.data.id);
                 }
             } catch (error) {
-                console.error(
-                    `Error fetching category ID for ${categoryName}:`,
-                    error
-                );
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    timer: 2000,
+                    text: "Kategori Tidak Ditemukan, Pastikan Kategori Yang Anda Input di Excel Sesuai Dengan Kategori Yang Ada",
+                });
             }
         }
 

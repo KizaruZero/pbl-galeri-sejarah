@@ -89,12 +89,23 @@ class ContentVideoResource extends Resource
                     ->resize(50)
                     ->disk('public')
                     ->nullable()
-                    ->hint('Max file size: 20MB. Allowed formats: MP4, MOV, AVI.') // Helper text
-                    ->hintIcon('heroicon-o-information-circle') // Optional icon
-                    ->hintColor('warning') // Optional color (danger, warning, success, etc.)
-                    ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo']) // MIME types
+                    ->hint('Max file size: 20MB. Allowed formats: MP4, MOV, AVI, MKV.')
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->hintColor('warning')
+                    ->acceptedFileTypes([
+                        'video/mp4',
+                        'video/x-msvideo',
+                        'video/quicktime',
+                        'video/x-ms-wmv',
+                        'video/x-flv',
+                        'video/mpeg',
+                        'video/x-m4v',
+                        'video/webm',
+                        'video/x-matroska',
+                        'video/mkv',
+                        'application/x-matroska',
+                    ])
                     ->requiredWithout('video_url,link_youtube')
-                    ->storeFileNamesIn('original_filename') // Store original filenames if needed
                     ->maxSize(20000)
                     ->getUploadedFileNameForStorageUsing(
                         function (TemporaryUploadedFile $file, callable $get): string {
@@ -105,17 +116,18 @@ class ContentVideoResource extends Resource
                     ),
                 Forms\Components\TextInput::make('link_youtube')
                     ->nullable(),
+
                 Forms\Components\FileUpload::make('thumbnail')
                     ->image()
                     ->optimize('webp')
-                    ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.') // Helper text
-                    ->hintIcon('heroicon-o-information-circle') // Optional icon
-                    ->hintColor('warning') // Optional color (danger, warning, success, etc.)
+                    ->hint('Max file size: 10MB. Allowed formats: JPG, JPEG, PNG, HEIC.')
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->hintColor('warning')
                     ->directory('thumbnail_video')
                     ->resize(50)
                     ->disk('public')
                     ->maxSize(10000)
-                    ->storeFilenamesIn('original_filename') // Store original filenames if needed
+                    ->storeFilenamesIn('original_filename')
                     ->getUploadedFileNameForStorageUsing(
                         function (TemporaryUploadedFile $file, callable $get): string {
                             $slug = $get('slug') ?? Str::slug($get('title'));
@@ -123,6 +135,8 @@ class ContentVideoResource extends Resource
                             return $slug . '_thumbnail_' . time() . '.' . $extension;
                         }
                     ),
+                // Hidden field untuk menyimpan info file video
+                Forms\Components\Hidden::make('_video_file_for_metadata'),
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
