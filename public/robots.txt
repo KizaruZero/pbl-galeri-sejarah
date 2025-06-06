@@ -1,2 +1,24 @@
 User-agent: *
-Disallow:
+Allow: /
+Allow: /gallery
+Allow: /article
+Allow: /events
+Allow: /gallery-photo/
+Allow: /gallery-video/
+Allow: /article/
+Allow: /events/
+
+# Disallow admin and sensitive routes
+Disallow: /admin/
+Disallow: /filament/
+Disallow: /login
+Disallow: /register
+Disallow: /password*
+Disallow: /upload-photo
+Disallow: /upload-video
+Disallow: /member
+Disallow: /contact
+
+Sitemap: https://kizarukaede.indonesiacentral.cloudapp.azure.com/sitemap.xml
+
+Crawl-delay: 10

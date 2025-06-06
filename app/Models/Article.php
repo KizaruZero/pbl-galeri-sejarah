@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 
 class Article extends Model
 {
@@ -33,6 +34,24 @@ class Article extends Model
     protected $casts = [
         'published_at' => 'datetime',
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($article) {
+            // Generate sitemap when new article is created
+            Artisan::call('sitemap:generate');
+        });
+
+        static::updated(function ($article) {
+            // Generate sitemap when article is updated
+            Artisan::call('sitemap:generate');
+        });
+
+        static::deleted(function ($article) {
+            // Generate sitemap when article is deleted
+            Artisan::call('sitemap:generate');
+        });
+    }
 
     /**
      * Get the author that owns the article.

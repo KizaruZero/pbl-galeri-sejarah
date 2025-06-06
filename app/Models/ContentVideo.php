@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Searchable;
 use App\Traits\CalculatesPopularity;
+use Illuminate\Support\Facades\Artisan;
 
 
 class ContentVideo extends Model
@@ -38,6 +39,18 @@ class ContentVideo extends Model
     {
         static::created(function ($contentVideo) {
             app()->call([ContentVideoResource::class, 'getHourlyUploadedContent']);
+            // Generate sitemap when new video is created
+            Artisan::call('sitemap:generate');
+        });
+
+        static::updated(function ($contentVideo) {
+            // Generate sitemap when video is updated
+            Artisan::call('sitemap:generate');
+        });
+
+        static::deleted(function ($contentVideo) {
+            // Generate sitemap when video is deleted
+            Artisan::call('sitemap:generate');
         });
     }
     protected $attributes = [

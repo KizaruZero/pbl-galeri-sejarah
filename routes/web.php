@@ -71,16 +71,16 @@ Route::middleware('web')->group(function () {
     Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');
     Route::post('/videos/import', [VideoController::class, 'import'])->middleware('auth');
     Route::get('/gallery-photo/{slug}', function () {
-        return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+        return Inertia::render('Views/PhotoDetail');
     });
     Route::get('/gallery-photo/{slug1}/{slug}', function () {
-        return Inertia::render('Views/PhotoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+        return Inertia::render('Views/PhotoDetail');
     });
     Route::get('/gallery-video/{slug}', function () {
-        return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+        return Inertia::render('Views/VideoDetail');
     });
     Route::get('/gallery-video/{slug1}/{slug}', function () {
-        return Inertia::render('Views/VideoDetail'); // nama Vue component di `resources/js/Pages/PhotoDetail.vue`
+        return Inertia::render('Views/VideoDetail');
     });
     Route::get('/detail/{slug}', fn($slug) => Inertia::render('Views/DetailSejarah', ['slug' => $slug]))->name('Detail');
 

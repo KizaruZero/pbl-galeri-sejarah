@@ -16,5 +16,10 @@ class Kernel extends ConsoleKernel
         Commands\SetupProject::class,
     ];
 
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('sitemap:generate')->daily();
+    }
+
     // ... existing code ...
 }

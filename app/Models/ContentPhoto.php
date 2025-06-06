@@ -10,7 +10,7 @@ use App\Models\Category;
 use App\Models\MetadataPhoto;
 use App\Models\User;
 use App\Models\UserComment;
-
+use Illuminate\Support\Facades\Artisan;
 
 class ContentPhoto extends Model
 {
@@ -38,6 +38,18 @@ class ContentPhoto extends Model
     {
         static::created(function ($contentPhoto) {
             app()->call([ContentPhotoResource::class, 'getHourlyUploadedContent']);
+            // Generate sitemap when new photo is created
+            Artisan::call('sitemap:generate');
+        });
+
+        static::updated(function ($contentPhoto) {
+            // Generate sitemap when photo is updated
+            Artisan::call('sitemap:generate');
+        });
+
+        static::deleted(function ($contentPhoto) {
+            // Generate sitemap when photo is deleted
+            Artisan::call('sitemap:generate');
         });
     }
 

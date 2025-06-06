@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 
 class Category extends Model
 {
@@ -14,6 +15,24 @@ class Category extends Model
         'category_image',
         'slug',
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($category) {
+            // Generate sitemap when new category is created
+            Artisan::call('sitemap:generate');
+        });
+
+        static::updated(function ($category) {
+            // Generate sitemap when category is updated
+            Artisan::call('sitemap:generate');
+        });
+
+        static::deleted(function ($category) {
+            // Generate sitemap when category is deleted
+            Artisan::call('sitemap:generate');
+        });
+    }
 
     public function categoryContents()
     {
