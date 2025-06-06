@@ -40,26 +40,20 @@ class CreateContentPhoto extends CreateRecord
         $record = $this->record;
 
         // Check if we have EXIF data from the form
-        $exifData = $this->exifData ?? null;
+        $exifData = $this->data['exif_data'] ?? null;
 
-        if ($exifData && is_array($exifData)) {
-            try {
-                MetadataPhoto::create([
-                    'content_photo_id' => $record->id,
-                    'collection_date' => $exifData['collection_date'],
-                    'file_size' => $exifData['file_size'],
-                    'aperture' => $exifData['aperture'],
-                    'location' => $exifData['location'],
-                    'model' => $exifData['model'],
-                    'ISO' => $exifData['ISO'],
-                    'dimensions' => $exifData['dimensions'],
-                ]);
-                \Log::info('Metadata created successfully for photo ID: ' . $record->id);
-            } catch (\Exception $e) {
-                \Log::error('Error creating metadata for photo ID ' . $record->id . ': ' . $e->getMessage());
-            }
-        } else {
-            \Log::warning('No EXIF data available for photo ID: ' . $record->id);
+        if ($exifData) {
+            MetadataPhoto::create([
+                'content_photo_id' => $this->record->id,
+                'collection_date' => $exifData['collection_date'] ?? null,
+                'file_size' => $exifData['file_size'] ?? null,
+                'aperture' => $exifData['aperture'] ?? null,
+                'location' => $exifData['location'] ?? null,
+                'model' => $exifData['model'] ?? null,
+                'ISO' => $exifData['ISO'] ?? null,
+                'dimensions' => $exifData['dimensions'] ?? null,
+            ]);
         }
+
     }
 }
