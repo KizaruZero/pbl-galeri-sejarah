@@ -341,9 +341,12 @@ class PhotoController extends Controller
                 return $photo;
             });
 
+        $totalLikes = $contentPhotos->sum('likes_count');
+
         return response()->json([
             'photos' => $contentPhotos,
-            'total' => $contentPhotos->count()
+            'total' => $contentPhotos->count(),
+            'total_likes' => $totalLikes
         ]);
     }
 

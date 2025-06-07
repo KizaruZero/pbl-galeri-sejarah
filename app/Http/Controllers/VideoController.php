@@ -266,9 +266,13 @@ class VideoController extends Controller
                 return $video;
             });
 
+        $totalLikes = $contentVideo->sum('likes_count');
+
         return response()->json([
             'videos' => $contentVideo,
-            'total' => $contentVideo->count()
+            'total' => $contentVideo->count(),
+            'total_likes' => $totalLikes
+
         ]);
     }
 
