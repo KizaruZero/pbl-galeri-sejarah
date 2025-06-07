@@ -407,18 +407,27 @@
 
     const router = useRouter();
 
-    // Helper functions
+    // Helper function for media URLs
     const getMediaUrl = (url) => {
-        if (!url) return "/js/Assets/default-photo.jpg";
-        if (url.startsWith("http")) return url;
+        console.log('Processing URL:', url); // Debug log
 
+        if (!url) return "/js/Assets/default-photo.jpg";
+
+        // If URL already starts with http or /storage, return as is
+        if (url.startsWith("http") || url.startsWith("/storage/")) {
+            console.log('URL already formatted:', url);
+            return url;
+        }
+
+        // Clean the path and add storage prefix
         const cleanPath = url
             .replace(/^storage\//, "")
             .replace(/^public\//, "")
-            .replace(/^\//, "")
-            .replace(/^storage\//, "");
+            .replace(/^\//, "");
 
-        return cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
+        const finalUrl = cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
+        console.log('Final URL:', finalUrl);
+        return finalUrl;
     };
 
     // State variables
@@ -483,11 +492,12 @@
     const UserId = computed(() => {
         const user = usePage().props.auth ?.user;
         if (!user) return null;
+        const photoUrl = user.profile_photo_url || user.photo_profile || user.profile_photo;
 
         currentUser.value = {
             id: user.id,
             name: user.name,
-            photo_profile: user.photo_profile || "/js/Assets/default-photo.jpg",
+            photo_profile: getMediaUrl(photoUrl),
         };
 
         return user.id;
@@ -785,12 +795,16 @@
                 // Check if user data is already included in comment
                 if (comment.user) {
                     console.log('User data found in comment:', comment.user);
+                    const userPhotoUrl = comment.user.profile_photo_url ||
+                                       comment.user.photo_profile ||
+                                       comment.user.profile_photo ||
+                                       comment.user.avatar;
+                    console.log('Comment user photo URL:', userPhotoUrl); // Debug log
+
                     commentObj.user = {
                         id: comment.user.id,
                         name: comment.user.name || `User ${comment.user.id}`,
-                        photo_profile: comment.user.photo_profile ||
-                                      comment.user.profile_photo ||
-                                      "/js/Assets/default-photo.jpg",
+                        photo_profile: getMediaUrl(userPhotoUrl),
                     };
                 } else {
                     // Fetch user details separately
@@ -804,14 +818,16 @@
                         });
 
                         console.log('User response:', userResponse.data);
+                        const fetchedUserPhotoUrl = userResponse.data.profile_photo_url ||
+                                                  userResponse.data.photo_profile ||
+                                                  userResponse.data.profile_photo ||
+                                                  userResponse.data.avatar;
+                        console.log('Fetched user photo URL:', fetchedUserPhotoUrl); // Debug log
 
                         commentObj.user = {
                             id: userResponse.data.id,
                             name: userResponse.data.name || `User ${userResponse.data.id}`,
-                            photo_profile: userResponse.data.photo_profile ||
-                                          userResponse.data.profile_photo ||
-                                          userResponse.data.avatar ||
-                                          "/js/Assets/default-photo.jpg",
+                            photo_profile: getMediaUrl(fetchedUserPhotoUrl),
                         };
                     } catch (userError) {
                         console.error("Error fetching user:", userError);
