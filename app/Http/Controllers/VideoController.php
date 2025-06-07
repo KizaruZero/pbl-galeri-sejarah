@@ -24,10 +24,15 @@ class VideoController extends Controller
     //
     public function index()
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'user', 'categoryContents'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'user', 'categoryContents', 'contentReactions'])
             ->where('status', 'approved')
-            ->get();
-        if (!$contentVideo) {
+            ->get()
+            ->map(function ($video) {
+                $video->likes_count = $video->contentReactions->count();
+                return $video;
+            });
+
+        if ($contentVideo->isEmpty()) {
             return response()->json(['message' => 'Video not found'], 404);
         }
         return response()->json($contentVideo);
@@ -39,6 +44,7 @@ class VideoController extends Controller
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
+
         if (!$contentVideo) {
             return response()->json(['message' => 'Video not found'], 404);
         }
@@ -46,6 +52,7 @@ class VideoController extends Controller
             ->with('reactionType')
             ->count();
         $contentVideo->updateTotalViews();
+
         return response()->json([
             'video' => $contentVideo,
             'total_reactions' => $contentReactions
@@ -58,6 +65,7 @@ class VideoController extends Controller
             'metadataVideo',
             'user',
             'categoryContents',
+            'contentReactions'
         ])
             ->where('status', 'approved')
             ->withCount([
@@ -67,7 +75,11 @@ class VideoController extends Controller
             ])
             ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
             ->take(3)
-            ->get();
+            ->get()
+            ->map(function ($video) {
+                $video->likes_count = $video->contentReactions->count();
+                return $video;
+            });
 
         if ($popularVideos->isEmpty()) {
             return response()->json(['message' => 'No popular video found'], 404);
@@ -248,7 +260,11 @@ class VideoController extends Controller
     {
         $contentVideo = ContentVideo::with(['metadataVideo', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
             ->where('user_id', $userId)
-            ->get();
+            ->get()
+            ->map(function ($video) {
+                $video->likes_count = $video->contentReactions->count();
+                return $video;
+            });
 
         return response()->json([
             'videos' => $contentVideo,
@@ -369,31 +385,55 @@ class VideoController extends Controller
             ->whereNotNull('content_video_id')
             ->count();
 
-        $data = UserFavorite::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'contentVideo.categoryContents', 'contentVideo.contentReactions', 'contentVideo.contentReactions.reactionType'])
+        $data = UserFavorite::with([
+            'contentVideo.metadataVideo',
+            'contentVideo.userComments',
+            'contentVideo.user',
+            'contentVideo.categoryContents',
+            'contentVideo.contentReactions',
+            'contentVideo.contentReactions.reactionType'
+        ])
             ->where('user_id', $userId)
             ->whereNotNull('content_video_id')
-            ->get();
+            ->get()
+            ->map(function ($favorite) {
+                if ($favorite->contentVideo) {
+                    $favorite->contentVideo->likes_count = $favorite->contentVideo->contentReactions->count();
+                }
+                return $favorite;
+            });
 
-        return response()->json(
-            [
-                'total' => $totalFavorites,
-                'data' => $data,
-            ]
-        );
+        return response()->json([
+            'total' => $totalFavorites,
+            'data' => $data,
+        ]);
     }
 
     public function getVideoByCategory($slug)
     {
-        $contentVideos = CategoryContent::with(['contentVideo.metadataVideo', 'contentVideo.userComments', 'contentVideo.user', 'category', 'contentVideo.contentReactions', 'contentVideo.userFavorite'])
+        $contentVideos = CategoryContent::with([
+            'contentVideo.metadataVideo',
+            'contentVideo.userComments',
+            'contentVideo.user',
+            'category',
+            'contentVideo.contentReactions',
+            'contentVideo.userFavorite'
+        ])
             ->whereHas('category', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })
             ->whereHas('contentVideo', function ($query) {
-                $query->where('status', 'approved'); // Ensure the PHOTO is approved
+                $query->where('status', 'approved');
             })
-            ->get();
+            ->get()
+            ->map(function ($categoryContent) {
+                if ($categoryContent->contentVideo) {
+                    $categoryContent->contentVideo->likes_count = $categoryContent->contentVideo->contentReactions->count();
+                }
+                return $categoryContent;
+            });
 
-        if (!$contentVideos) {
+        if ($contentVideos->isEmpty()) {
             return response()->json(['message' => 'Tidak ada konten ditemukan untuk kategori ini'], 404);
         }
         return response()->json($contentVideos);

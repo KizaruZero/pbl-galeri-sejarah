@@ -23,13 +23,17 @@ class PhotoController extends Controller
 {
     public function index()
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents'])
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents', 'contentReactions'])
             ->where('status', 'approved')
-            ->get();
-        if (!$contentPhoto) {
+            ->get()
+            ->map(function ($photo) {
+                $photo->likes_count = $photo->contentReactions->count();
+                return $photo;
+            });
+
+        if ($contentPhoto->isEmpty()) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
-        //  popularity
 
         return response()->json($contentPhoto);
     }
@@ -40,6 +44,7 @@ class PhotoController extends Controller
             'metadataPhoto',
             'user',
             'categoryContents',
+            'contentReactions'
         ])
             ->where('status', 'approved')
             ->withCount([
@@ -49,7 +54,11 @@ class PhotoController extends Controller
             ])
             ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
             ->take(3)
-            ->get();
+            ->get()
+            ->map(function ($photo) {
+                $photo->likes_count = $photo->contentReactions->count();
+                return $photo;
+            });
 
         if ($popularPhotos->isEmpty()) {
             return response()->json(['message' => 'No popular photos found'], 404);
@@ -58,13 +67,13 @@ class PhotoController extends Controller
         return response()->json($popularPhotos);
     }
 
-
     public function show($slug)
     {
         $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
+
         if (!$contentPhoto) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
@@ -72,6 +81,7 @@ class PhotoController extends Controller
             ->with('reactionType')
             ->count();
         $contentPhoto->updateTotalViews();
+
         return response()->json([
             'photo' => $contentPhoto,
             'total_reactions' => $contentReactions
@@ -321,11 +331,15 @@ class PhotoController extends Controller
 
     public function getPhotoByUser($userId)
     {
-        $contentPhotos = ContentPhoto::with(['metadataPhoto', 'userComments', 'user', 'categoryContents', 'contentReactions', 'contentReactions.reactionType', 'userFavorite'])
+        $contentPhotos = ContentPhoto::with(['metadataPhoto', 'user', 'contentReactions'])
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
-            ->get();
-
+            ->get()
+            ->map(function ($photo) {
+                // Add likes count to each photo
+                $photo->likes_count = $photo->contentReactions->count();
+                return $photo;
+            });
 
         return response()->json([
             'photos' => $contentPhotos,
@@ -348,16 +362,22 @@ class PhotoController extends Controller
                 $query->where('slug', $slug);
             })
             ->whereHas('contentPhoto', function ($query) {
-                $query->where('status', 'approved'); // Ensure the PHOTO is approved
+                $query->where('status', 'approved');
             })
-            ->get();
+            ->get()
+            ->map(function ($categoryContent) {
+                if ($categoryContent->contentPhoto) {
+                    $categoryContent->contentPhoto->likes_count = $categoryContent->contentPhoto->contentReactions->count();
+                }
+                return $categoryContent;
+            });
 
         if ($contentPhotos->isEmpty()) {
             return response()->json(['message' => 'No approved photos found for this category'], 404);
         }
 
         return response()->json([
-            'photos' => $contentPhotos,
+            'photos' => $contentPhotos
         ]);
     }
 
