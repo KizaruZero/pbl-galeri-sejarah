@@ -40,7 +40,7 @@ class VideoController extends Controller
 
     public function show($slug)
     {
-        $contentVideo = ContentVideo::with(['metadataVideo', 'user', 'categoryContents'])
+        $contentVideo = ContentVideo::with(['metadataVideo', 'user', 'categoryContents', 'userComments', 'contentReactions'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
