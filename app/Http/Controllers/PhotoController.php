@@ -69,7 +69,7 @@ class PhotoController extends Controller
 
     public function show($slug)
     {
-        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents'])
+        $contentPhoto = ContentPhoto::with(['metadataPhoto', 'user', 'categoryContents', 'contentReactions', 'userComments'])
             ->where('status', 'approved')
             ->where('slug', $slug)
             ->first();
