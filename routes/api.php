@@ -76,6 +76,7 @@ Route::post('/reaction/photo/{id}', [ContentReactionController::class, 'storePho
 Route::delete('/reaction/photo/{id}', [ContentReactionController::class, 'deletePhotoReaction']);
 Route::post('/reaction/video/{id}', [ContentReactionController::class, 'storeVideoReaction']);
 Route::delete('/reaction/video/{id}', [ContentReactionController::class, 'deleteVideoReaction']);
+Route::get('/reaction/user/{userId}/total', [ContentReactionController::class, 'getTotalLikesUserGet']);
 Route::post('/reaction/comment/{id}', [CommentReactionController::class, 'store']);
 Route::put('/reaction/comment/{id}', [CommentReactionController::class, 'update']);
 Route::delete('/reaction/comment/{id}', [CommentReactionController::class, 'destroy']);
