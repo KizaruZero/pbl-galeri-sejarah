@@ -46,8 +46,12 @@
           :title="content.title"
           :titleSize="content.titleSize"
           :description="content.description"
+          :userId="content.user_id"
+          :userName="content.userName || 'Unknown Photographer'"
+          :userAvatar="content.userAvatar || '/js/Assets/default-avatar.jpg'"
           :videoUrl="content.videoUrl"
-          :totalLikes="content.totalLikes"
+          :likesCount="content.likesCount || 0"  
+          :viewsCount="content.viewsCount || 0"
           @play-video="openVideoPlayer"
           @click="getDetailPage(content.slug)"
         />
@@ -116,9 +120,18 @@ onMounted(async () => {
           ? photo.image_url
           : `/storage/${photo.image_url.replace(/^public\//, "")}`
         : "/js/Assets/default-photo.jpg",
+        user_id: photo.user_id,
+        userName: photo.user?.name || "Anonymous",
+        userAvatar: photo.user?.photo_profile
+        ? `/storage/${photo.user.photo_profile.replace(
+          /^public\//,""
+        )}`
+        : "/js/Assets/default-avatar.jpg",
       title: photo.title || "Untitled",
       titleSize: "base",
       description: photo.description || "No description",
+      likesCount: photo.likes_count || photo.content_reactions_count || 0,
+      viewsCount: photo.total_views || 0,
     }));
 
     const videos = (videoResponse.data || []).map((video) => ({
@@ -132,6 +145,11 @@ onMounted(async () => {
       title: video.title || "Untitled",
       titleSize: "base",
       description: video.description || "No description",
+      user_id: video.user_id,
+      userName: video.user?.name || "Anonymous",
+      userAvatar: video.user?.photo_profile
+        ? `/storage/${video.user.photo_profile.replace(/^public\//, "")}`
+        : "/js/Assets/default-avatar.jpg",
       videoUrl: video.video_url,
     }));
 

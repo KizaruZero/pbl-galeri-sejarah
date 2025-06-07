@@ -96,6 +96,8 @@
                     :userAvatar="
                         photo.userAvatar || '/js/Assets/default-avatar.jpg'
                     "
+                    :viewsCount="photo.viewsCount"
+                    :likesCount="photo.likeCount"
                     :titleSize="'lg'"
                     @click="getDetailPage(photo.slug)"
                 />
@@ -176,6 +178,8 @@ onMounted(async () => {
                           )}`
                         : "/js/Assets/default-avatar.jpg",
                     category: item.category || {},
+                    viewsCount: photo.total_views || 0,
+                    likeCount: photo.likes_count || photo.content_reactions_count || 0,
                     createdAt: photo.created_at,
                 };
             });

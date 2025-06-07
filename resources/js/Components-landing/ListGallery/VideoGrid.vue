@@ -87,6 +87,8 @@
           :views="video.views"
           :userName="video.userName"
           :userAvatar="video.userAvatar"
+          :viewsCount="video.viewsCount"
+          :likesCount="video.likeCount"
           @click="getDetailPage(video.slug)"
         />
       </div>
@@ -157,6 +159,8 @@ onMounted(async () => {
         note: video.note || "",
         source: video.source || "",
         createdAt: video.created_at,
+        viewsCount: video.total_views || 0,
+        likeCount: video.likes_count || video.content_reactions_count || 0,
       };
     });
 
