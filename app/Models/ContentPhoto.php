@@ -52,6 +52,34 @@ class ContentPhoto extends Model
             Artisan::call('sitemap:generate');
         });
     }
+    public static function getSearchableData()
+    {
+        return self::with(['user', 'metadataPhoto'])
+            ->get()
+            ->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'title' => $photo->title,
+                    'slug' => $photo->slug,
+                    'user_name' => $photo->user->name ?? '',
+                    'description' => $photo->description,
+                    'source' => $photo->source,
+                    'alt_text' => $photo->alt_text,
+                    'note' => $photo->note,
+                    'tag' => $photo->tag,
+                    // Metadata fields
+                    'location' => $photo->metadataPhoto->location ?? '',
+                    'model' => $photo->metadataPhoto->model ?? '',
+                    'aperture' => $photo->metadataPhoto->aperture ?? '',
+                    'iso' => $photo->metadataPhoto->ISO ?? '',
+                    'dimensions' => $photo->metadataPhoto->dimensions ?? '',
+                    'collection_date' => $photo->metadataPhoto->collection_date ?? '',
+                    // Original object untuk reference
+                    'original' => $photo
+                ];
+            })
+            ->toArray();
+    }
 
     public function category()
     {

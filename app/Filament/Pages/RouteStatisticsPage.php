@@ -11,7 +11,7 @@ class RouteStatisticsPage extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static string $view = 'filament.pages.route-statistics-page-widget';
-    protected static ?string $navigationLabel = 'Route Statistics';
+    protected static ?string $navigationLabel = 'Statistics';
     protected static ?string $slug = 'route-statistics-widget';
     protected static ?string $title = 'Statistic Pengunjung Website';
     protected static ?string $navigationGroup = 'Statistics';

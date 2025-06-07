@@ -66,6 +66,8 @@ Route::middleware('web')->group(function () {
         return Inertia::render('Views/ListGallery');
     });
     Route::get('/search', [SearchController::class, 'search'])->name('search');
+    Route::get('/api/search', [SearchController::class, 'search']);
+    Route::get('/api/search/data', [SearchController::class, 'getSearchData']);
     Route::get('/photo/{slug}', [PhotoController::class, 'show'])->name('photo.show');
     Route::post('/photos/import', [PhotoController::class, 'import'])->middleware('auth');
     Route::get('/video/{slug}', [VideoController::class, 'show'])->name('video.show');

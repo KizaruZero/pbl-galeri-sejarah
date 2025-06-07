@@ -57,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->pages([
-                Pages\Dashboard::class,
+                    // Pages\Dashboard::class,
                 CompanyProfileSettings::class,
                 \App\Filament\Pages\RouteStatisticsPage::class,
 
