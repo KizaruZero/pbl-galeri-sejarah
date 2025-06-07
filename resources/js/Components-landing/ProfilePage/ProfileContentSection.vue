@@ -33,7 +33,7 @@
                     {{ photo.status }}
                 </span>
                 <!-- Edit button - Responsive sizing -->
-                <button class="bg-black bg-opacity-80 hover:bg-opacity-100 rounded-full p-1 sm:p-1.5 shadow-md"
+                <button class="bg-black bg-opacity-10 dark:bg-black dark:bg-opacity-50 hover:bg-opacity-100 rounded-full p-1 sm:p-1.5 shadow-md"
                     @click.stop="editPhoto(photo)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 xs:h-3 xs:w-3 sm:h-3.5 sm:w-3.5" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
