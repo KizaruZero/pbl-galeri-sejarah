@@ -149,30 +149,14 @@ onMounted(async () => {
                 video_url: getMediaUrl(video.video_url),
             })) || [];
 
-        // Calculate stats
-        const photoLikes = userPhotos.value.reduce(
-            (sum, photo) =>
-                sum +
-                (photo.user_comments?.reduce(
-                    (cSum, comment) =>
-                        cSum + (comment.user_reactions?.length || 0),
-                    0
-                ) || 0),
-            0
+        // Get Total Likes (Reactions)
+        const { data: likesResponse } = await axios.get(
+            `/api/reaction/user/${userId}/total`
         );
-        const videoLikes = userVideos.value.reduce(
-            (sum, video) =>
-                sum +
-                (video.user_comments?.reduce(
-                    (cSum, comment) =>
-                        cSum + (comment.user_reactions?.length || 0),
-                    0
-                ) || 0),
-            0
-        );
+        totalLikes.value = likesResponse?.total || 0;
 
+        // Calculate stats
         totalPost.value = userPhotos.value.length + userVideos.value.length;
-        totalLikes.value = photoLikes + videoLikes;
     } catch (error) {
         console.error("Error loading profile data:", error);
     }

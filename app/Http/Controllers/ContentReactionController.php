@@ -182,4 +182,24 @@ class ContentReactionController extends Controller
         $contentReaction->delete();
         return response()->json(['message' => 'Content reaction deleted']);
     }
+
+    public function getTotalLikesUserGet($userId)
+    {
+        // Count reactions for user's photos
+        $photoReactions = ContentReaction::whereHas('contentPhoto', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
+        // Count reactions for user's videos
+        $videoReactions = ContentReaction::whereHas('contentVideo', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
+        // Total reactions received
+        $totalReactions = $photoReactions + $videoReactions;
+
+        return response()->json([
+            'total' => $totalReactions,
+        ]);
+    }
 }
