@@ -51,7 +51,12 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->authenticate();
-
+        $authenticatedUser = $request->user();
+        $authenticatedUser->update([
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+            'last_user_agent' => $request->userAgent(),
+        ]);
 
         $request->session()->regenerate();
 

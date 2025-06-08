@@ -67,16 +67,16 @@ class InstallController extends Controller
             // Rebuild config cache
             Artisan::call('config:cache');
 
-            // call migrate user table
-            Artisan::
-                call('migrate', [
-                    '--path' => 'database/migrations/0001_01_01_000000_create_users_table.php'
-                ]);
-            Artisan::call('session:table');
+            // // call migrate user table
+            // Artisan::
+            //     call('migrate', [
+            //         '--path' => 'database/migrations/0001_01_01_000000_create_users_table.php'
+            //     ]);
+            // Artisan::call('session:table');
 
-            if (!$request->hasSession()) {
-                $request->setLaravelSession(app('session')->driver());
-            }
+            // if (!$request->hasSession()) {
+            //     $request->setLaravelSession(app('session')->driver());
+            // }
 
             // Return success response with a flag to indicate client should reload
             return response()->json([
@@ -128,7 +128,7 @@ class InstallController extends Controller
         try {
             // Step 1: Test database connection
             // Step 5: Run migrations
-            Artisan::call('session:table');
+            // Artisan::call('session:table');
             Artisan::call('migrate:fresh', ['--force' => true]);
 
             // Step 6: Create storage link

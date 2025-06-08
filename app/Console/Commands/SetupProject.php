@@ -38,8 +38,9 @@ class SetupProject extends Command
         $this->info('Updating .env configuration...');
         $this->updateEnvFile([
             'DB_CONNECTION' => 'mysql',
-            'SESSION_DRIVER' => 'database',
+            'SESSION_DRIVER' => 'file',
             'SESSION_LIFETIME' => '60',
+            'CACHE_DRIVER' => 'file',
         ]);
         $this->info('.env configuration updated!');
 
@@ -49,9 +50,6 @@ class SetupProject extends Command
             '--path' => 'database/migrations/0001_01_01_000000_create_users_table.php'
         ]);
         $this->info('Migration completed!');
-
-        // set sessions
-
 
 
         // key generate
@@ -78,23 +76,23 @@ class SetupProject extends Command
     }
 
     protected function updateEnvFile($data)
-{
-    $envFile = base_path('.env');
-    $envContent = file_get_contents($envFile);
+    {
+        $envFile = base_path('.env');
+        $envContent = file_get_contents($envFile);
 
-    // Pastikan APP_KEY ada
-    if (!preg_match("/^APP_KEY=/m", $envContent)) {
-        $envContent .= "\nAPP_KEY=";
-    }
-
-    foreach ($data as $key => $value) {
-        if (preg_match("/^{$key}=/m", $envContent)) {
-            $envContent = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $envContent);
-        } else {
-            $envContent .= "\n{$key}={$value}";
+        // Pastikan APP_KEY ada
+        if (!preg_match("/^APP_KEY=/m", $envContent)) {
+            $envContent .= "\nAPP_KEY=";
         }
-    }
 
-    file_put_contents($envFile, $envContent);
-}
+        foreach ($data as $key => $value) {
+            if (preg_match("/^{$key}=/m", $envContent)) {
+                $envContent = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $envContent);
+            } else {
+                $envContent .= "\n{$key}={$value}";
+            }
+        }
+
+        file_put_contents($envFile, $envContent);
+    }
 }
