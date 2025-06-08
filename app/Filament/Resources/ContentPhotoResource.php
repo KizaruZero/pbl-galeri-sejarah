@@ -98,6 +98,7 @@ class ContentPhotoResource extends Resource
                     ->hintIcon('heroicon-o-information-circle')
                     ->hintColor('warning')
                     ->disk('public')
+                    ->optimize('webp')
                     ->maxSize(10000)
                     ->storeFileNamesIn('original_filename')
                     ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/heic'])
