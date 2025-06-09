@@ -205,7 +205,7 @@
                                     <select
                                         v-model="selectedCategory"
                                         @change="addSelectedCategory"
-                                        class="flex-1 bg-transparent text-white focus:outline-none min-w-[200px]"
+                                        class="flex-1 bg-gray-500 text-white focus:outline-none min-w-[200px]"
                                     >
                                         <option value="" disabled selected>
                                             Select a category
