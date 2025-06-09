@@ -59,6 +59,8 @@ Route::middleware('web')->group(function () {
     Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware(['auth', 'routestatistics']);
     Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
     Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
+    Route::get('/validate-photo', fn() => Inertia::render('Views/ValidatePhoto'))->middleware('auth');
+    Route::get('/validate-video', fn() => Inertia::render('Views/ValidateVideo'))->middleware('auth');
     Route::get('/events', fn() => Inertia::render('Views/EventView'))->middleware(['routestatistics']);
     Route::get('/events/{slug}', fn() => Inertia::render('Views/EventDetailView'));
     Route::get('/gallery', fn() => Inertia::render('Views/GalleryView'))->middleware(['routestatistics']);

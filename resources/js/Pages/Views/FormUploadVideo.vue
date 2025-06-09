@@ -586,28 +586,8 @@ const submitForm = async () => {
             return;
         }
 
-        const formData = new FormData();
-
-        // Append basic form data
-        formData.append("title", form.value.title);
-        formData.append("description", form.value.description || "");
-        formData.append("source", form.value.source);
-        formData.append("tag", form.value.tag || "");
-        formData.append("thumbnail", form.value.thumbnail);
-
-        // Append each category ID
-        form.value.category_ids.forEach((categoryId, index) => {
-            formData.append(`category_ids[${index}]`, categoryId);
-        });
-
-        // Handle video content
-        if (form.value.link_youtube?.trim()) {
-            // For YouTube videos
-            formData.append("link_youtube", form.value.link_youtube.trim());
-        } else if (form.value.video instanceof File) {
-            // For uploaded videos
-            formData.append("video_url", form.value.video);
-        } else {
+        // Validate video content
+        if (!form.value.link_youtube?.trim() && !form.value.video) {
             Swal.fire({
                 icon: "error",
                 title: "Validation Error",
@@ -616,42 +596,50 @@ const submitForm = async () => {
             return;
         }
 
-        loading.value = true;
-
-        const response = await axios.post("/api/content-video", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                Accept: "application/json",
-            },
-        });
-
-        if (response.status === 201) {
+        if (!form.value.thumbnail) {
             Swal.fire({
-                icon: "success",
-                title: "Success",
-                text: "Video uploaded successfully",
+                icon: "error",
+                title: "Validation Error",
+                text: "Please upload a thumbnail",
             });
-            resetForm();
-            router.visit("/upload-video");
+            return;
         }
+
+        // Store files in global variables to access later
+        window.videoValidationFiles = {
+            video: form.value.video,
+            thumbnail: form.value.thumbnail
+        };
+
+        // Prepare data for validation page (without file objects)
+        const validationData = {
+            title: form.value.title,
+            description: form.value.description,
+            source: form.value.source,
+            tag: form.value.tag,
+            link_youtube: form.value.link_youtube,
+            category_ids: form.value.category_ids,
+            categories: categories.value.filter(cat => form.value.category_ids.includes(cat.id)),
+            videoPreview: videoPreview.value,
+            thumbnailPreview: thumbnailPreview.value,
+            youtubeVideoId: youtubeVideoId.value,
+            videoName: videoName.value,
+            thumbnailName: thumbnailName.value
+        };
+
+        // Store data in sessionStorage
+        sessionStorage.setItem('videoValidationData', JSON.stringify(validationData));
+
+        // Redirect to validation page
+        router.visit('/validate-video');
+
     } catch (error) {
-        console.error("Error details:", error.response?.data || error);
-        let errorMessage = "An error occurred while uploading the video";
-
-        if (error.response?.data?.message) {
-            errorMessage = error.response.data.message;
-        } else if (error.response?.data?.errors) {
-            const errors = error.response.data.errors;
-            errorMessage = Object.values(errors).flat().join("\n");
-        }
-
+        console.error('Error preparing validation:', error);
         Swal.fire({
-            icon: "error",
-            title: "Upload Failed",
-            text: errorMessage,
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to prepare validation. Please try again.',
         });
-    } finally {
-        loading.value = false;
     }
 };
 

@@ -401,65 +401,54 @@ const removeCategory = (categoryId) => {
 
 const submitForm = async () => {
     try {
-        // Create FormData object to handle file upload
-        const formData = new FormData();
-        formData.append("title", form.value.title);
-        formData.append("description", form.value.description);
-        formData.append("image", form.value.media);
-        formData.append("source", form.value.source || "");
-        formData.append("alt_text", form.value.altText || "");
-        formData.append("note", form.value.note || "");
-        formData.append("tag", form.value.tag || "");
-
-        // Append each category ID
-        form.value.category_ids.forEach((categoryId, index) => {
-            formData.append(`category_ids[${index}]`, categoryId);
-        });
-
-        // Show loading state
-        loading.value = true;
-
-        // Send POST request to upload photo
-        const response = await axios.post("/api/content-photo", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                Accept: "application/json",
-            },
-        });
-
-        // Handle successful upload
-        if (response.status === 201) {
+        // Validate required fields
+        if (!form.value.title || !form.value.source || form.value.category_ids.length === 0) {
             Swal.fire({
-                icon: "success",
-                title: "Photo uploaded successfully",
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please fill in all required fields (Title, Source, and at least one Category)',
             });
-
-            // Reset form and redirect
-            resetForm();
-            router.push("/photos");
+            return;
         }
+
+        if (!form.value.media) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please upload an image',
+            });
+            return;
+        }
+
+        // Store file in a global variable to access later
+        window.photoValidationFile = form.value.media;
+
+        // Prepare data for validation page (without file object)
+        const validationData = {
+            title: form.value.title,
+            description: form.value.description,
+            source: form.value.source,
+            tag: form.value.tag,
+            altText: form.value.altText,
+            category_ids: form.value.category_ids,
+            categories: categories.value.filter(cat => form.value.category_ids.includes(cat.id)),
+            imagePreview: filePreview.value,
+            fileName: fileName.value
+        };
+
+        // Store data in sessionStorage
+        sessionStorage.setItem('photoValidationData', JSON.stringify(validationData));
+
+        // Redirect to validation page
+        router.visit('/validate-photo');
+
     } catch (error) {
-        // Handle validation errors
-        if (error.response?.status === 422) {
-            const errors = error.response.data.errors;
-            Object.keys(errors).forEach((key) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: errors[key][0],
-                });
-            });
-        } else {
-            // Handle other errors
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Failed to upload photo. Please try again.",
-            });
-            console.error("Upload error:", error);
-        }
-    } finally {
-        loading.value = false;
+        console.error('Error preparing validation:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to prepare validation. Please try again.',
+        });
     }
 };
 
