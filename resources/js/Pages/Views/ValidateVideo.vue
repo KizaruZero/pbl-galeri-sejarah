@@ -39,6 +39,7 @@
                                     :playlabel="videoData.title"
                                     class="w-full h-full"
                                 ></lite-youtube-embed>
+                                <p class="mt-2 text-xs text-blue-400">Source: YouTube</p>
                             </div>
                             
                             <!-- Uploaded Video -->
@@ -49,6 +50,7 @@
                                 >
                                     <source :src="videoData.videoPreview" />
                                 </video>
+                                <p class="mt-2 text-xs text-green-400">Source: Uploaded File</p>
                             </div>
 
                             <!-- File names -->
@@ -93,6 +95,11 @@
                             <div v-if="videoData.link_youtube">
                                 <label class="block text-sm font-medium text-gray-400 mb-1">YouTube Link</label>
                                 <p class="text-white break-all">{{ videoData.link_youtube }}</p>
+                            </div>
+
+                            <div v-else-if="videoData.videoName && !videoData.youtubeVideoId">
+                                <label class="block text-sm font-medium text-gray-400 mb-1">Video Type</label>
+                                <p class="text-white">Uploaded File</p>
                             </div>
 
                             <div v-if="videoData.categories && videoData.categories.length > 0">

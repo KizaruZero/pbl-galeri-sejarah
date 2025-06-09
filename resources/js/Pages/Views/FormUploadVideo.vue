@@ -55,9 +55,13 @@
                                 type="text"
                                 id="link-youtube"
                                 v-model="form.link_youtube"
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                :disabled="form.video !== null"
+                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="Enter Link youtube"
                             />
+                            <p v-if="form.video" class="mt-1 text-xs text-yellow-400">
+                                Remove uploaded video to use YouTube link
+                            </p>
                         </div>
                         
 
@@ -65,10 +69,11 @@
                         <div>
                             <label
                                 class="block text-sm font-medium text-white mt-3 mb-2"
-                                >Video*</label
+                                >Video* (Upload OR YouTube link)</label
                             >
                             <div
                                 class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-[#1f1f1f] transition cursor-pointer relative"
+                                :class="{ 'opacity-50 cursor-not-allowed': form.link_youtube && !youtubeVideoId }"
                                 @dragover.prevent
                                 @drop.prevent="handleVideoDrop"
                             >
@@ -144,7 +149,7 @@
                                 <div
                                     v-else
                                     class="h-full flex flex-col items-center justify-center p-6"
-                                    @click="$refs.videoInput.click()"
+                                    @click="!form.link_youtube ? $refs.videoInput.click() : null"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -160,13 +165,13 @@
                                             d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                                         />
                                     </svg>
-                                    <p class="text-sm text-gray-400">
-                                        <span class="text-blue-400 underline"
-                                            >Upload a video</span
-                                        >
-                                        or drag and drop
+                                    <p class="text-sm text-gray-400 text-center">
+                                        <span v-if="!form.link_youtube" class="text-blue-400 underline">Upload a video</span>
+                                        <span v-else class="text-gray-500">Clear YouTube link to upload video</span>
+                                        <br v-if="!form.link_youtube">
+                                        <span v-if="!form.link_youtube">or drag and drop</span>
                                     </p>
-                                    <p class="mt-1 text-xs text-gray-500">
+                                    <p v-if="!form.link_youtube" class="mt-1 text-xs text-gray-500">
                                         MP4, WebM, OGG up to 100MB
                                     </p>
                                 </div>
@@ -178,6 +183,7 @@
                                     @change="handleVideoUpload"
                                     accept="video/*"
                                     class="hidden"
+                                    :disabled="!!form.link_youtube"
                                 />
                             </div>
                             <!-- File Name -->
@@ -186,6 +192,10 @@
                                 class="mt-2 text-sm text-gray-400 truncate"
                             >
                                 {{ videoName }}
+                            </p>
+                            <!-- Instructions -->
+                            <p class="mt-1 text-xs text-gray-400">
+                                Choose either YouTube link OR upload a video file
                             </p>
                         </div>
                     </div>
@@ -476,6 +486,16 @@ const handleVideoUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Check if YouTube link is already provided
+    if (form.value.link_youtube) {
+        Swal.fire({
+            icon: "warning",
+            title: "Cannot upload video",
+            text: "Please clear the YouTube link first to upload a video file.",
+        });
+        return;
+    }
+
     // Clear YouTube link when uploading a file
     form.value.link_youtube = "";
     youtubeVideoId.value = "";
@@ -666,6 +686,16 @@ const videoInput = ref(null);
 const thumbnailInput = ref(null);
 
 const handleVideoDrop = (event) => {
+    // Check if YouTube link is already provided
+    if (form.value.link_youtube) {
+        Swal.fire({
+            icon: "warning",
+            title: "Cannot upload video",
+            text: "Please clear the YouTube link first to upload a video file.",
+        });
+        return;
+    }
+
     const file = event.dataTransfer.files[0];
     if (!file || !file.type.startsWith("video/")) {
         Swal.fire("Oops!", "Please upload a video file only.", "error");
@@ -752,6 +782,17 @@ watch(
     () => form.value.link_youtube,
     async (newValue) => {
         if (newValue) {
+            // Check if video file is already uploaded
+            if (form.value.video) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Cannot use YouTube link",
+                    text: "Please remove the uploaded video first to use a YouTube link.",
+                });
+                form.value.link_youtube = "";
+                return;
+            }
+
             const videoId = getYoutubeVideoId(newValue);
             if (videoId) {
                 youtubeVideoId.value = videoId;
