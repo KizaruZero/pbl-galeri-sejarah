@@ -34,6 +34,33 @@
                 </button>
             </div>
 
+            <!-- Empty state - Video not found -->
+            <div v-else-if="!video.id" class="flex flex-col items-center justify-center min-h-screen text-center px-4">
+                <div class="max-w-md mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-gray-400 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-3">Video Not Found</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6 text-sm leading-relaxed">
+                        The video you're looking for doesn't exist or may have been removed.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button 
+                            @click="goBack" 
+                            class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium"
+                        >
+                            Go Back
+                        </button>
+                        <router-link 
+                            to="/article" 
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-center"
+                        >
+                            Browse Videos
+                        </router-link>
+                    </div>
+                </div>
+            </div>
+
             <!-- Main content -->
             <div v-else>
                 <!-- Back Button - Adjusted padding for mobile -->
@@ -1213,6 +1240,14 @@
         await fetchReactions();
         try {
             const slug = window.location.pathname.split("/").pop();
+            
+            // Validate slug
+            if (!slug || slug.trim() === '') {
+                error.value = "Invalid video identifier";
+                loading.value = false;
+                return;
+            }
+
             const response = await axios.get(`/api/content-video/${slug}`, {
                 headers: {
                     Accept: "application/json",
@@ -1221,7 +1256,22 @@
             });
 
             console.log('Video data:', response.data);
+            
+            // Check if video data exists
+            if (!response.data || !response.data.video) {
+                error.value = "Video not found";
+                loading.value = false;
+                return;
+            }
+
             const videoData = response.data.video;
+
+            // Validate essential video data
+            if (!videoData.id) {
+                error.value = "Invalid video data";
+                loading.value = false;
+                return;
+            }
 
             video.value = {
                 id: videoData.id,
@@ -1241,21 +1291,21 @@
                 views: videoData.total_views || 0,
                 content_reactions: videoData.content_reactions || [],
                 // Metadata fields from metadata_video
-                collection_date: videoData.metadata_video ?.collection_date,
-                file_size: videoData.metadata_video ?.file_size,
-                duration: videoData.metadata_video ?.duration,
-                location: videoData.metadata_video ?.location,
-                frame_rate: videoData.metadata_video ?.frame_rate,
-                resolution: videoData.metadata_video ?.resolution,
-                codec_video_audio: videoData.metadata_video ?.codec_video_audio,
-                format_file: videoData.metadata_video ?.format_file,
+                collection_date: videoData.metadata_video?.collection_date,
+                file_size: videoData.metadata_video?.file_size,
+                duration: videoData.metadata_video?.duration,
+                location: videoData.metadata_video?.location,
+                frame_rate: videoData.metadata_video?.frame_rate,
+                resolution: videoData.metadata_video?.resolution,
+                codec_video_audio: videoData.metadata_video?.codec_video_audio,
+                format_file: videoData.metadata_video?.format_file,
             };
 
             // Set the actual like count from total_reactions
             likeCount.value = response.data.total_reactions || 0;
 
             // Get existing reactions for this video
-            const userReaction = videoData.content_reactions.find(
+            const userReaction = videoData.content_reactions?.find(
                 reaction => reaction.user_id === UserId.value
             );
             isLiked.value = !!userReaction;
@@ -1283,7 +1333,16 @@
             }
         } catch (error) {
             console.error("Error fetching video:", error);
-            router.push("/not-found");
+            
+            if (error.response?.status === 404) {
+                error.value = "Video not found";
+            } else if (error.response?.status === 403) {
+                error.value = "Access denied";
+            } else if (error.response?.status >= 500) {
+                error.value = "Server error. Please try again later.";
+            } else {
+                error.value = "Failed to load video";
+            }
         } finally {
             loading.value = false;
         }

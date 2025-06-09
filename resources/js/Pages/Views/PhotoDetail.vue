@@ -34,6 +34,33 @@
                 </button>
             </div>
 
+            <!-- Empty state - Photo not found -->
+            <div v-else-if="!photo.id" class="flex flex-col items-center justify-center min-h-screen text-center px-4">
+                <div class="max-w-md mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-gray-400 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-3">Photo Not Found</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6 text-sm leading-relaxed">
+                        The photo you're looking for doesn't exist or may have been removed.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button 
+                            @click="goBack" 
+                            class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium"
+                        >
+                            Go Back
+                        </button>
+                        <router-link 
+                            to="/article" 
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-center"
+                        >
+                            Browse Photos
+                        </router-link>
+                    </div>
+                </div>
+            </div>
+
             <!-- Main content -->
             <div v-else>
                 <div class="text-white">
@@ -1140,6 +1167,14 @@
         await fetchReactions();
 
         const slug = window.location.pathname.split("/").pop();
+        
+        // Validate slug
+        if (!slug || slug.trim() === '') {
+            error.value = "Invalid photo identifier";
+            loading.value = false;
+            return;
+        }
+
         const response = await axios.get(`/api/content-photo/${slug}`, {
             headers: {
                 Accept: "application/json",
@@ -1149,16 +1184,30 @@
 
         console.log('Photo data:', response.data);
 
+        // Check if photo data exists
+        if (!response.data || !response.data.photo) {
+            error.value = "Photo not found";
+            loading.value = false;
+            return;
+        }
+
         const photoData = response.data.photo;
+
+        // Validate essential photo data
+        if (!photoData.id) {
+            error.value = "Invalid photo data";
+            loading.value = false;
+            return;
+        }
 
         photo.value = {
             id: photoData.id,
-            title: photoData.title,
-            description: photoData.description,
+            title: photoData.title || "Untitled Photo",
+            description: photoData.description || "",
             imageUrl: photoData.image_url ?
                 `/storage/${photoData.image_url.replace(/^public\//, "")}` :
                 "/js/Assets/default-photo.jpg",
-            altText: photoData.alt_text || photoData.title,
+            altText: photoData.alt_text || photoData.title || "Photo",
             tags: photoData.tag ? photoData.tag.split(/,\s*/) : [],
             user: photoData.user,
             created_at: photoData.created_at,
@@ -1179,7 +1228,7 @@
         likeCount.value = response.data.total_reactions || 0;
 
         // Get existing reactions for this photo
-        const userReaction = photoData.content_reactions.find(
+        const userReaction = photoData.content_reactions?.find(
             reaction => reaction.user_id === UserId.value
         );
         isLiked.value = !!userReaction;
@@ -1206,7 +1255,16 @@
 
     } catch (error) {
         console.error("Error fetching photo:", error);
-        router.push("/not-found");
+        
+        if (error.response?.status === 404) {
+            error.value = "Photo not found";
+        } else if (error.response?.status === 403) {
+            error.value = "Access denied";
+        } else if (error.response?.status >= 500) {
+            error.value = "Server error. Please try again later.";
+        } else {
+            error.value = "Failed to load photo";
+        }
     } finally {
         loading.value = false;
     }
