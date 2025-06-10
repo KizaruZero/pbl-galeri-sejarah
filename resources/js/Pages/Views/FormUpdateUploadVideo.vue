@@ -1,6 +1,6 @@
 <template>
   <MainLayout>
-    <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
+    <div class="mx-auto p-6 bg-white dark:bg-black max-w-full">
       <button
         @click="visitBacktoProfile"
         class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
@@ -19,7 +19,7 @@
         </svg>
         Back to Profile
       </button>
-      <h2 class="text-2xl font-bold text-center text-white mt-10 mb-8">
+      <h2 class="text-2xl font-bold text-center text-black dark:text-white mt-10 mb-8">
         UPDATE CONTENT VIDEO
       </h2>
 
@@ -30,20 +30,26 @@
           <div class="space-y-6">
             <!-- Title Field -->
             <div>
-              <label for="title" class="block text-sm font-medium text-white mb-2">Title*</label>
+              <label
+                for="title"
+                class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Title*</label
+              >
               <input
                 type="text"
                 id="title"
                 v-model="form.title"
                 required
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter content title"
               />
             </div>
 
             <!-- Video Upload Field -->
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Video*</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Video*</label
+              >
               <div
                 class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-[#1f1f1f] transition cursor-pointer relative"
                 @dragover.prevent
@@ -62,7 +68,7 @@
                   <!-- Remove Button -->
                   <button
                     @click="removeVideo"
-                    class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10"
+                    class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-black dark:text-white shadow-lg transition-colors z-10"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -128,19 +134,25 @@
           <div class="space-y-6">
             <!-- Tag Field -->
             <div>
-              <label for="tag" class="block text-sm font-medium text-white mb-2">Tag</label>
+              <label
+                for="tag"
+                class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Tag</label
+              >
               <input
                 type="text"
                 id="tag"
                 v-model="form.tag"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Tag"
               />
             </div>
 
             <!-- Thumbnail Upload Field -->
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Thumbnail*</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Thumbnail*</label
+              >
               <div
                 class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-[#1f1f1f] transition cursor-pointer"
                 @dragover.prevent
@@ -156,7 +168,7 @@
                   <!-- Remove Button -->
                   <button
                     @click="removeThumbnail"
-                    class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10"
+                    class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-black dark:text-white shadow-lg transition-colors z-10"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -227,14 +239,16 @@
 
             <!-- Category Field -->
             <div>
-              <label for="category" class="block text-sm font-medium text-white mb-2"
+              <label
+                for="category"
+                class="block text-sm font-medium text-black dark:text-white mb-2"
                 >Category*</label
               >
               <select
                 id="category"
                 v-model="form.category_id"
                 required
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="" disabled>Select a category</option>
                 <option
@@ -251,11 +265,15 @@
 
         <!-- Description Field (full width) -->
         <div>
-          <label for="description" class="block text-sm font-medium text-white mb-2">Description</label>
+          <label
+            for="description"
+            class="block text-sm font-medium text-black dark:text-white mb-2"
+            >Description</label
+          >
           <textarea
             id="description"
             v-model="form.description"
-            class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+            class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
             placeholder="Enter content description"
           ></textarea>
         </div>
@@ -266,13 +284,17 @@
           <div class="space-y-6">
             <!-- Source Field -->
             <div>
-              <label for="source" class="block text-sm font-medium text-white mb-2">Source*</label>
+              <label
+                for="source"
+                class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Source*</label
+              >
               <input
                 type="text"
                 id="source"
                 v-model="form.source"
                 required
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter content source"
               />
             </div>
@@ -282,14 +304,16 @@
           <div class="space-y-6">
             <!-- Link Youtube Field -->
             <div>
-              <label for="link_youtube" class="block text-sm font-medium text-white mb-2"
+              <label
+                for="link_youtube"
+                class="block text-sm font-medium text-black dark:text-white mb-2"
                 >Link Youtube</label
               >
               <input
                 type="text"
                 id="link-youtube"
                 v-model="form.link_youtube"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter Link youtube"
               />
             </div>
@@ -297,50 +321,65 @@
         </div>
 
         <!-- Add metadata section before Action Buttons -->
-        <div v-if="showMetadataForm" class="space-y-6 mt-8 border-t border-[#333333] pt-8">
-          <h3 class="text-xl font-bold text-white mb-6">Update Video Metadata</h3>
+        <div
+          v-if="showMetadataForm"
+          class="space-y-6 mt-8 border-t border-[#333333] pt-8"
+        >
+          <h3 class="text-xl font-bold text-black dark:text-white mb-6">
+            Update Video Metadata
+          </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Collection Date</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Collection Date</label
+              >
               <input
                 type="datetime-local"
                 v-model="metadataForm.collection_date"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Model</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Model</label
+              >
               <input
                 type="text"
                 v-model="metadataForm.model"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Camera/Device model"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Resolution</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Resolution</label
+              >
               <input
                 type="text"
                 v-model="metadataForm.resolution"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="1920x1080"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Frame Rate</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Frame Rate</label
+              >
               <input
                 type="text"
                 v-model="metadataForm.frame_rate"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="30 fps"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Location</label>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Location</label
+              >
               <input
                 type="text"
                 v-model="metadataForm.location"
-                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Location where video was taken"
               />
             </div>
@@ -352,7 +391,7 @@
           <button
             type="button"
             @click="cancelForm"
-            class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
+            class="px-6 py-2 bg-transparent border border-red-500 text-black dark:text-white hover:text-white rounded-lg hover:bg-red-500 transition font-medium"
           >
             Cancel
           </button>
@@ -375,7 +414,7 @@ import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { addWatermarkToVideo, addWatermarkToImage } from '@/Services/WatermarkService';
+import { addWatermarkToVideo, addWatermarkToImage } from "@/Services/WatermarkService";
 
 const form = ref({
   title: "",
@@ -389,9 +428,9 @@ const form = ref({
 });
 
 // Add refs for existing data
-const videoId = ref(window.location.pathname.split('/').pop());
-const existingVideoUrl = ref('');
-const existingThumbnailUrl = ref('');
+const videoId = ref(window.location.pathname.split("/").pop());
+const existingVideoUrl = ref("");
+const existingThumbnailUrl = ref("");
 
 // Add categories ref
 const categories = ref([]);
@@ -404,17 +443,17 @@ const thumbnailPreview = ref("");
 // Add these new refs
 const showMetadataForm = ref(true);
 const metadataForm = ref({
-  collection_date: '',
-  model: '',
-  resolution: '',
-  frame_rate: '',
-  location: '',
+  collection_date: "",
+  model: "",
+  resolution: "",
+  frame_rate: "",
+  location: "",
 });
-    const formatDateForInput = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
-    };
+const formatDateForInput = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+};
 
 const visitBacktoProfile = () => {
   window.location.href = "/profile-page";
@@ -457,25 +496,25 @@ const submitForm = async () => {
 
     const response = await axios.post(`/api/content-video/${videoId.value}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-        'Accept': 'application/json',
-      }
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+      },
     });
 
     if (response.status === 200) {
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Video updated successfully'
+        icon: "success",
+        title: "Success",
+        text: "Video updated successfully",
       });
-      router.visit('/profile-page');
+      router.visit("/profile-page");
     }
   } catch (error) {
-    console.error('Error details:', error.response?.data);
+    console.error("Error details:", error.response?.data);
     Swal.fire({
-      icon: 'error',
-      title: 'Update Failed',
-      text: error.response?.data?.message || 'An error occurred while updating the video'
+      icon: "error",
+      title: "Update Failed",
+      text: error.response?.data?.message || "An error occurred while updating the video",
     });
   } finally {
     loading.value = false;
@@ -486,7 +525,7 @@ const submitForm = async () => {
 const loadData = async () => {
   try {
     // Load categories
-    const categoriesResponse = await axios.get('/api/categories');
+    const categoriesResponse = await axios.get("/api/categories");
     categories.value = categoriesResponse.data.data || [];
     categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
 
@@ -519,20 +558,21 @@ const loadData = async () => {
     // Add this after loading video data
     if (videoData.video.metadata_video) {
       metadataForm.value = {
-        collection_date: formatDateForInput(videoData.video.metadata_video.collection_date),
+        collection_date: formatDateForInput(
+          videoData.video.metadata_video.collection_date
+        ),
         model: videoData.video.metadata_video.model,
         resolution: videoData.video.metadata_video.resolution,
         frame_rate: videoData.video.metadata_video.frame_rate,
         location: videoData.video.metadata_video.location,
       };
     }
-
   } catch (error) {
-    console.error('Error loading data:', error);
+    console.error("Error loading data:", error);
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to load data. Please try again.'
+      icon: "error",
+      title: "Error",
+      text: "Failed to load data. Please try again.",
     });
   }
 };
@@ -547,11 +587,11 @@ const handleVideoUpload = async (event) => {
       videoName.value = file.name;
       videoPreview.value = URL.createObjectURL(watermarkedVideo);
     } catch (error) {
-      console.error('Error adding watermark to video:', error);
+      console.error("Error adding watermark to video:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to add watermark to video'
+        icon: "error",
+        title: "Error",
+        text: "Failed to add watermark to video",
       });
     }
   }
@@ -567,38 +607,38 @@ const handleThumbnailUpload = async (event) => {
       thumbnailName.value = file.name;
       thumbnailPreview.value = URL.createObjectURL(watermarkedThumbnail);
     } catch (error) {
-      console.error('Error adding watermark to thumbnail:', error);
+      console.error("Error adding watermark to thumbnail:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to add watermark to thumbnail'
+        icon: "error",
+        title: "Error",
+        text: "Failed to add watermark to thumbnail",
       });
     }
   }
 };
 
 const removeVideo = () => {
-    form.value.video = null;
-    form.value.link_youtube = "";
-    videoName.value = "";
-    videoPreview.value = "";
-    youtubeVideoId.value = "";
-    if (videoInput.value) {
-        videoInput.value.value = "";
-    }
+  form.value.video = null;
+  form.value.link_youtube = "";
+  videoName.value = "";
+  videoPreview.value = "";
+  youtubeVideoId.value = "";
+  if (videoInput.value) {
+    videoInput.value.value = "";
+  }
 };
 
 const removeThumbnail = () => {
-    form.value.thumbnail = null;
-    thumbnailName.value = "";
-    thumbnailPreview.value = "";
-    if (thumbnailInput.value) {
-        thumbnailInput.value.value = "";
-    }
+  form.value.thumbnail = null;
+  thumbnailName.value = "";
+  thumbnailPreview.value = "";
+  if (thumbnailInput.value) {
+    thumbnailInput.value.value = "";
+  }
 };
 
 const cancelForm = () => {
-    window.location.href = "/profile-page";
+  window.location.href = "/profile-page";
 };
 // Update onMounted to use the new loadData function
 onMounted(() => {
