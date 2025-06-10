@@ -3,7 +3,6 @@
     <!-- Add FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <ThemeToggle class="theme-toggle" />
     <div class="flex flex-col lg:flex-row min-h-screen">
       <!-- Image section - Smaller height on mobile -->
       <section class="w-full lg:w-1/2 h-[40vh] lg:h-screen">

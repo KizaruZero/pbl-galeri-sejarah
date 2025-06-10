@@ -7,6 +7,7 @@ import { createApp, h } from 'vue'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy'
 import PrimeVue from 'primevue/config'
 import Carousel from 'primevue/carousel'
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import { LoopingRhombusesSpinner } from 'epic-spinners'
 import NotificationList from './Components/NotificationList.vue'

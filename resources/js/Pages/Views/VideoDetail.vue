@@ -155,6 +155,25 @@
                                     </svg>
                                 </div>
                                 </button>
+
+                                <button @click="shareToWhatsApp" class="flex items-center group disabled:opacity-50">
+    <div class="p-1 transition-colors">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 md:h-6 md:w-6 transform -rotate-45 -translate-y-[3px] fill-current 
+               stroke-transparent group-hover:stroke-green-500
+               dark:stroke-gray-500 dark:group-hover:stroke-green-500"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"
+        />
+      </svg>
+    </div>
+  </button>
                             </div>
                         </div>
 
@@ -436,6 +455,14 @@
             default: () => ({}),
         },
     });
+
+    const shareToWhatsApp = () => {
+  const currentUrl = window.location.href;
+  const message = `${currentUrl}`;
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+  window.open(whatsappUrl, '_blank');
+};
 
     const router = useRouter();
 
