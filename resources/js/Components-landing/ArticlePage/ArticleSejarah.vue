@@ -152,6 +152,14 @@ onMounted(async () => {
       thumbnail_url: article.thumbnail_url || "",
       total_views: article.total_views || 0,
     }));
+
+    // Sort articles by creation date (newest first)
+    articles.value.sort((a, b) => {
+      const dateA = new Date(a.created_at || a.date_created || 0);
+      const dateB = new Date(b.created_at || b.date_created || 0);
+      return dateB - dateA; // Descending order (newest first)
+    });
+
   } catch (err) {
     error.value = "Failed to load articles";
     console.error("Error fetching articles:", err);
