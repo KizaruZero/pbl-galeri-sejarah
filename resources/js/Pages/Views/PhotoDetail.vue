@@ -564,10 +564,28 @@
         e.target.src = "/js/Assets/default-photo.jpg";
     };
 
+    const showAuthAlert = () => {
+        Swal.fire({
+            title: 'Authentication Required',
+            text: 'Please login to continue',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Login',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#3085d6',
+            showCloseButton: true,
+            footer: '<a href="/member" class="text-blue-500 hover:underline">Don\'t have an account? Sign up</a>'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/login';
+            }
+        });
+    };
+
     // Replace the toggleLike function with this implementation
     const toggleLike = async () => {
     if (!UserId.value) {
-        router.visit('/login');
+        showAuthAlert();
         return;
     }
 
@@ -609,8 +627,7 @@
     // Toggle bookmark
     const toggleBookmark = async () => {
         if (!currentUser.value ?.id) {
-            console.log('No user logged in');
-            router.visit('/login');
+            showAuthAlert();
             return;
         }
 
