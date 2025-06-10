@@ -57,8 +57,8 @@ Route::middleware('web')->group(function () {
     Route::get('/article/{slug}', fn() => Inertia::render('Views/ArticleDetailView'));
     Route::get('/member', fn() => Inertia::render('Views/MemberView'))->middleware(['guest', 'routestatistics']);
     Route::get('/contact', fn() => Inertia::render('Views/MemberView'))->middleware(['auth', 'routestatistics']);
-    Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'));
-    Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'));
+    Route::get('/upload-photo', fn() => Inertia::render('Views/FormUploadPhoto'))->middleware('auth');
+    Route::get('/upload-video', fn() => Inertia::render('Views/FormUploadVideo'))->middleware('auth');
     Route::get('/validate-photo', fn() => Inertia::render('Views/ValidatePhoto'))->middleware('auth');
     Route::get('/validate-video', fn() => Inertia::render('Views/ValidateVideo'))->middleware('auth');
     Route::get('/events', fn() => Inertia::render('Views/EventView'))->middleware(['routestatistics']);
@@ -105,8 +105,8 @@ Route::middleware('web')->group(function () {
     // user post
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
     Route::post('/api/content-video', [VideoController::class, 'store']);
-    Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']); 
-    Route::put('/api/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']); 
+    Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']);
+    Route::put('/api/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']);
     Route::delete('/api/content-photo/{id}', [PhotoController::class, 'destroy']); // Add delete route for photos
     Route::get('/api/content-video/edit/{id}', [VideoController::class, 'edit']);
     Route::post('/api/content-video/{id}', [VideoController::class, 'updateVideoByUser']);
@@ -122,11 +122,11 @@ Route::middleware('web')->group(function () {
 
 });
 
-Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'));
-Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'));
+Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'))->middleware('auth');
+Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'))->middleware('auth');
 
-Route::get('/bulk', fn() => Inertia::render('Views/BulkUploadView'));
-Route::post('/api/bulk-upload', [PhotoController::class, 'bulkUpload']);
+Route::get('/bulk', fn() => Inertia::render('Views/BulkUploadView'))->middleware('auth');
+Route::post('/api/bulk-upload', [PhotoController::class, 'bulkUpload'])->middleware('auth');
 
 // Only load auth routes if they haven't been loaded yet
 if (!Route::has('register')) {
