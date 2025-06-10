@@ -17,9 +17,9 @@
                 v-if="loading"
                 class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 animate-pulse"
             >
-                <!-- Skeleton loading cards -->
+                <!-- Skeleton loading cards (9 items to match pagination) -->
                 <div
-                    v-for="i in 3"
+                    v-for="i in 6"
                     :key="i"
                     class="bg-zinc-900 rounded-lg overflow-hidden shadow-lg h-[400px]"
                 >
@@ -52,62 +52,92 @@
                     />
                 </svg>
                 <p class="text-lg">{{ error }}</p>
-            </div>
-
-            <!-- Empty State -->
-            <div
-                v-else-if="!photos.length"
-                class="flex flex-col items-center justify-center py-20 text-white"
-            >
-                <svg
-                    class="w-20 h-20 mb-4 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                <button
+                    @click="fetchPhotos"
+                    class="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                </svg>
-                <h3 class="text-xl font-medium mb-1">No Photos Found</h3>
-                <p class="text-gray-400">
-                    There are no photos available in this gallery yet.
-                </p>
+                    Try Again
+                </button>
             </div>
 
-            <!-- Grid Card -->
-            <div
-                v-else
-                class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
-                <ImageCard
-                    v-for="photo in photos"
-                    :key="photo.slug"
-                    :imageUrl="photo.imageUrl"
-                    :title="photo.title"
-                    :description="
-                        photo.description || 'No description available'
-                    "
-                    :userId="photo.user_id"
-                    :userName="photo.userName || 'Unknown Photographer'"
-                    :userAvatar="
-                        photo.userAvatar || '/js/Assets/default-photo.jpg'
-                    "
-                    :viewsCount="photo.viewsCount"
-                    :likesCount="photo.likeCount"
-                    :titleSize="'lg'"
-                    @click="getDetailPage(photo.slug)"
-                />
+            <!-- Content -->
+            <div v-if="!loading && !error">
+                <!-- Empty State -->
+                <div
+                    v-if="!photos.length"
+                    class="flex flex-col items-center justify-center py-20 text-white"
+                >
+                    <svg
+                        class="w-20 h-20 mb-4 text-gray-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                    </svg>
+                    <h3 class="text-xl font-medium mb-1">No Photos Found</h3>
+                    <p class="text-gray-400">
+                        There are no photos available in this gallery yet.
+                    </p>
+                </div>
+
+                <!-- Grid Card -->
+                <div
+                    v-else
+                    class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                >
+                    <ImageCard
+                        v-for="photo in paginatedPhotos"
+                        :key="photo.slug"
+                        :imageUrl="photo.imageUrl"
+                        :title="photo.title"
+                        :description="
+                            photo.description || 'No description available'
+                        "
+                        :userId="photo.user_id"
+                        :userName="photo.userName || 'Unknown Photographer'"
+                        :userAvatar="
+                            photo.userAvatar || '/js/Assets/default-photo.jpg'
+                        "
+                        :viewsCount="photo.viewsCount"
+                        :likesCount="photo.likeCount"
+                        :titleSize="'lg'"
+                        @click="getDetailPage(photo.slug)"
+                    />
+                </div>
+
+                <!-- Pagination -->
+                <div v-if="photos.length > 0" class="flex justify-center mt-8 gap-2">
+                    <button
+                        @click="currentPage--"
+                        :disabled="currentPage === 1"
+                        class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+                    >
+                        Previous
+                    </button>
+                    <div class="flex items-center px-4 text-white">
+                        Page {{ currentPage }} of {{ totalPages }}
+                    </div>
+                    <button
+                        @click="currentPage++"
+                        :disabled="currentPage >= totalPages"
+                        class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import ImageCard from "./ImageCard.vue";
 import axios from "axios";
 
@@ -117,9 +147,22 @@ const error = ref(null);
 const selectedPhoto = ref(null);
 const isLiked = ref(false);
 const isSaved = ref(false);
-const likeCount = ref(Math.floor(Math.random() * 100) + 5); // Random initial like count
-const slug = window.location.pathname.split("/").pop(); // ambil slug dari URL
-const slug1 = window.location.pathname.split("/").pop(); // ambil slug dari URL
+const likeCount = ref(Math.floor(Math.random() * 100) + 5);
+const currentPage = ref(1);
+const itemsPerPage = 6;
+const slug = window.location.pathname.split("/").pop();
+const slug1 = window.location.pathname.split("/").pop();
+
+// Computed properties for pagination
+const totalPages = computed(() => {
+    return Math.ceil(photos.value.length / itemsPerPage);
+});
+
+const paginatedPhotos = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return photos.value.slice(start, end);
+});
 
 const getDetailPage = (slug) => {
     window.location.href = `/gallery-photo/${slug1}/${slug}`;
@@ -139,7 +182,10 @@ const getMediaUrl = (url) => {
     return cleanPath ? `/storage/${cleanPath}` : "/js/Assets/default-photo.jpg";
 };
 
-onMounted(async () => {
+const fetchPhotos = async () => {
+    loading.value = true;
+    error.value = null;
+
     const options = {
         method: "GET",
         url: `/api/category-photo/${slug}`,
@@ -184,6 +230,14 @@ onMounted(async () => {
                     createdAt: photo.created_at,
                 };
             });
+
+        // Sort photos by creation date (newest first)
+        photos.value.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateB - dateA;
+        });
+
     } catch (err) {
         console.error("Failed to fetch photos:", err);
         if (err.response) {
@@ -194,6 +248,10 @@ onMounted(async () => {
     } finally {
         loading.value = false;
     }
+};
+
+onMounted(() => {
+    fetchPhotos();
 });
 </script>
 
