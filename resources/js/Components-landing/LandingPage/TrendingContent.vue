@@ -76,7 +76,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import ImageCard from "./ImageCard.vue";
+import ImageCard from "@/Components-landing/ListGallery/ImageCard.vue";
 import VideoPlayer from "@/Components-landing/VideoPlayer.vue";
 
 const trendingContent = ref([]);
