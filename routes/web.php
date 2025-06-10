@@ -105,10 +105,12 @@ Route::middleware('web')->group(function () {
     // user post
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
     Route::post('/api/content-video', [VideoController::class, 'store']);
-    Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']); // Add this line
-    Route::put('/api/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']); // Add this line
+    Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']); 
+    Route::put('/api/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']); 
+    Route::delete('/api/content-photo/{id}', [PhotoController::class, 'destroy']); // Add delete route for photos
     Route::get('/api/content-video/edit/{id}', [VideoController::class, 'edit']);
     Route::post('/api/content-video/{id}', [VideoController::class, 'updateVideoByUser']);
+    Route::delete('/api/content-video/{id}', [VideoController::class, 'destroy']); // Add delete route for videos
     // get popular content
     Route::get('/api/popular-photo', [PhotoController::class, 'getPopularPhotos']);
 

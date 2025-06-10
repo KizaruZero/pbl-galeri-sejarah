@@ -660,4 +660,43 @@ class PhotoController extends Controller
         }
         rmdir($dir);
     }
+
+    public function destroy($id)
+    {
+        try {
+            $photo = ContentPhoto::findOrFail($id);
+            
+            // Check if the authenticated user owns this photo
+            if ($photo->user_id !== Auth::id()) {
+                return response()->json([
+                    'message' => 'Unauthorized. You can only delete your own photos.'
+                ], 403);
+            }
+
+            // Delete the image file from storage
+            if ($photo->image_url) {
+                Storage::disk('public')->delete($photo->image_url);
+            }
+
+            // Delete related records (metadata, category contents, reactions, comments, favorites)
+            $photo->metadataPhoto()->delete();
+            $photo->categoryContents()->delete();
+            $photo->contentReactions()->delete();
+            $photo->userComments()->delete();
+            $photo->userFavorite()->delete();
+
+            // Delete the photo record
+            $photo->delete();
+
+            return response()->json([
+                'message' => 'Photo deleted successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting photo: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to delete photo. Please try again.'
+            ], 500);
+        }
+    }
 }

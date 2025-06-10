@@ -493,4 +493,48 @@ class VideoController extends Controller
             ], 422);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $video = ContentVideo::findOrFail($id);
+            
+            // Check if the authenticated user owns this video
+            if ($video->user_id !== Auth::id()) {
+                return response()->json([
+                    'message' => 'Unauthorized. You can only delete your own videos.'
+                ], 403);
+            }
+
+            // Delete the video file from storage if it exists
+            if ($video->video_url) {
+                Storage::disk('public')->delete($video->video_url);
+            }
+
+            // Delete the thumbnail file from storage if it exists
+            if ($video->thumbnail) {
+                Storage::disk('public')->delete($video->thumbnail);
+            }
+
+            // Delete related records (metadata, category contents, reactions, comments, favorites)
+            $video->metadataVideo()->delete();
+            $video->categoryContents()->delete();
+            $video->contentReactions()->delete();
+            $video->userComments()->delete();
+            $video->userFavorite()->delete();
+
+            // Delete the video record
+            $video->delete();
+
+            return response()->json([
+                'message' => 'Video deleted successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting video: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to delete video. Please try again.'
+            ], 500);
+        }
+    }
 }
