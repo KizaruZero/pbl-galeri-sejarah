@@ -244,15 +244,23 @@
                         </div>
 
                         <!-- Photo Pagination -->
-                        <div v-if="totalPhotoPages > 1" class="flex justify-center mt-6 gap-2">
-                            <button v-for="page in totalPhotoPages" :key="`photo-page-${page}`"
-                                @click="goToPhotoPage(page)" :class="[
-                                    'px-4 py-2 rounded-lg text-sm transition-colors',
-                                    currentPhotoPage === page
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
-                                ]">
-                                {{ page }}
+                        <div v-if="totalPhotoPages > 1" class="flex justify-center mt-8 gap-2">
+                            <button
+                                @click="goToPhotoPage(currentPhotoPage - 1)"
+                                :disabled="currentPhotoPage === 1"
+                                class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+                            >
+                                Previous
+                            </button>
+                            <div class="flex items-center px-4 text-black dark:text-white">
+                                Page {{ currentPhotoPage }} of {{ totalPhotoPages }}
+                            </div>
+                            <button
+                                @click="goToPhotoPage(currentPhotoPage + 1)"
+                                :disabled="currentPhotoPage >= totalPhotoPages"
+                                class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+                            >
+                                Next
                             </button>
                         </div>
                     </div>
@@ -386,15 +394,23 @@
                         </div>
 
                         <!-- Video Pagination -->
-                        <div v-if="totalVideoPages > 1" class="flex justify-center mt-6 gap-2">
-                            <button v-for="page in totalVideoPages" :key="`video-page-${page}`"
-                                @click="goToVideoPage(page)" :class="[
-                                    'px-4 py-2 rounded-lg text-sm transition-colors',
-                                    currentVideoPage === page
-                                        ? 'bg-red-500 text-white'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
-                                ]">
-                                {{ page }}
+                        <div v-if="totalVideoPages > 1" class="flex justify-center mt-8 gap-2">
+                            <button
+                                @click="goToVideoPage(currentVideoPage - 1)"
+                                :disabled="currentVideoPage === 1"
+                                class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+                            >
+                                Previous
+                            </button>
+                            <div class="flex items-center px-4 text-black dark:text-white">
+                                Page {{ currentVideoPage }} of {{ totalVideoPages }}
+                            </div>
+                            <button
+                                @click="goToVideoPage(currentVideoPage + 1)"
+                                :disabled="currentVideoPage >= totalVideoPages"
+                                class="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300"
+                            >
+                                Next
                             </button>
                         </div>
                     </div>
@@ -851,11 +867,15 @@
 
     // Add pagination methods
     const goToPhotoPage = (page) => {
-        currentPhotoPage.value = page;
+        if (page >= 1 && page <= totalPhotoPages.value) {
+            currentPhotoPage.value = page;
+        }
     };
 
     const goToVideoPage = (page) => {
-        currentVideoPage.value = page;
+        if (page >= 1 && page <= totalVideoPages.value) {
+            currentVideoPage.value = page;
+        }
     };
 
 </script>
