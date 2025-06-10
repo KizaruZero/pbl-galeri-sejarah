@@ -63,7 +63,7 @@
                                 Remove uploaded video to use YouTube link
                             </p>
                         </div>
-                        
+
 
                         <!-- Video Upload Field -->
                         <div>
@@ -377,7 +377,7 @@
                             </p>
                         </div>
 
-                        
+
                     </div>
                 </div>
 
@@ -426,7 +426,7 @@
                         @click="resetForm"
                         class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
                     >
-                        Cancel
+                        Clear
                     </button>
                     <button
                         type="button"

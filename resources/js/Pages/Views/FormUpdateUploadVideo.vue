@@ -351,7 +351,7 @@
         <div class="flex justify-end gap-3 pt-6">
           <button
             type="button"
-            @click="resetForm"
+            @click="cancelForm"
             class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
           >
             Cancel
@@ -597,21 +597,8 @@ const removeThumbnail = () => {
     }
 };
 
-const resetForm = () => {
-  form.value = {
-    title: "",
-    video: null,
-    thumbnail: null,
-    description: "",
-    source: "",
-    tag: "",
-    link_youtube: "",
-    category_id: "",
-  };
-  videoName.value = "";
-  videoPreview.value = "";
-  thumbnailName.value = "";
-  thumbnailPreview.value = "";
+const cancelForm = () => {
+    window.location.href = "/profile-page";
 };
 // Update onMounted to use the new loadData function
 onMounted(() => {

@@ -4,7 +4,7 @@
             <!-- Loading state -->
             <div v-if="loading" class="animate-pulse">
                 <!-- Image placeholder -->
-                <div class="w-full h-[30vh] md:h-[70vh] bg-gray-800"></div>
+                <div class="w-full h-[60vh] md:h-[70vh] bg-gray-800"></div>
 
                 <!-- Content placeholder -->
                 <div class="p-4 md:p-6 mx-4 md:mx-24">
@@ -64,20 +64,20 @@
                 <div class="max-w-full mx-auto">
                     <div class="relative">
                         <!-- Back Button -->
-                        <button @click="goBack"
-                            class="absolute top-4 left-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/75 transition-colors mt-10">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                        </button>
+                        <div class="p-4 md:p-6">
+                            <button @click="goBack" class="flex items-center text-white hover:text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                </svg>
+                                BACK
+                            </button>
+                        </div>
 
-                        <!-- Image container with overlay -->
+                        <!-- Image container -->
                         <div class="w-full overflow-hidden">
                             <!-- Empty state for image -->
                             <div v-if="!event.imageUrl || imageError"
-                                class="w-full h-[30vh] md:h-[70vh] bg-zinc-900 flex items-center justify-center">
+                                class="w-full h-[60vh] md:h-[70vh] bg-zinc-900 flex items-center justify-center">
                                 <div class="text-center">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-16 w-16 md:h-24 md:w-24 mx-auto text-gray-600"
@@ -89,13 +89,12 @@
                                 </div>
                             </div>
 
-                            <!-- Image with overlay -->
+                            <!-- Image display - Updated to match PhotoDetail -->
                             <div v-else class="relative">
                                 <img :src="event.imageUrl"
                                     :alt="event.title || 'Event image'"
                                     @error="handleImageError"
-                                    class="w-full h-[30vh] md:h-[70vh] object-cover bg-gray-950" />
-                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70 mix-blend-multiply"></div>
+                                    class="w-full h-auto max-h-[60vh] md:max-h-[70vh] object-contain bg-gray-200 dark:bg-gray-950" />
                             </div>
                         </div>
                     </div>
@@ -311,14 +310,6 @@ button:active svg {
 img {
     max-width: 100%;
     height: auto;
-}
-
-.rounded-image {
-    width: 100%;
-    height: auto;
-    max-height: 70vh;
-    object-fit: contain;
-    border-radius: 15px;
 }
 
 .social-link {
