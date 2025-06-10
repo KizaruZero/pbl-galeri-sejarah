@@ -160,7 +160,7 @@
                 </div>
 
                 <div class="flex justify-end gap-3 pt-6">
-                    <button type="button" @click="resetForm"
+                    <button type="button" @click="cancelForm"
                         class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium">
                         Cancel
                     </button>
@@ -357,7 +357,7 @@
             });
 
             if (response.status === 200) {
-                
+
                 await Swal.fire({
                     icon: "success",
                     title: "Photo updated successfully"
@@ -378,7 +378,7 @@
         }
     };
 
-    const resetForm = () => {
+    const cancelForm = () => {
         window.location.href = "/profile-page";
     };
 

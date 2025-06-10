@@ -288,7 +288,7 @@
                         @click="resetForm"
                         class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
                     >
-                        Cancel
+                        Clear
                     </button>
                     <button
                         type="button"
@@ -435,10 +435,10 @@ const submitForm = async () => {
         }
 
         isProcessing.value = true;
-        
+
         // Add watermark to image before storing
         const watermarkedImage = await addWatermarkToImage(form.value.media);
-        
+
         // Store watermarked file in global variable
         window.photoValidationFile = watermarkedImage;
 
@@ -456,10 +456,10 @@ const submitForm = async () => {
                 imagePreview: e.target.result,
                 fileName: fileName.value
             };
-            
+
             // Store in sessionStorage
             sessionStorage.setItem('photoValidationData', JSON.stringify(validationData));
-            
+
             // Close loading indicator and redirect
             Swal.close();
             router.visit('/validate-photo');
