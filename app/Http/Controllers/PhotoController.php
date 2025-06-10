@@ -61,7 +61,11 @@ class PhotoController extends Controller
             });
 
         if ($popularPhotos->isEmpty()) {
-            return response()->json(['message' => 'No popular photos found'], 404);
+            return response()->json([
+                'status' => 'success',
+                'data' => [],
+                'message' => 'No popular photos found'
+            ], 200);
         }
 
         return response()->json($popularPhotos);
@@ -376,7 +380,11 @@ class PhotoController extends Controller
             });
 
         if ($contentPhotos->isEmpty()) {
-            return response()->json(['message' => 'No approved photos found for this category'], 404);
+            return response()->json([
+                'status' => 'success',
+                'data' => [],
+                'message' => 'No approved photos found for this category'
+            ], 200);
         }
 
         return response()->json([

@@ -1,16 +1,21 @@
 <template>
-  <MainLayout>
-    <HeroSection />
-    <div class="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      <div class="container mx-auto px-6 py-12">
-        <div class="max-w-4xl mx-auto">
-          <MemberFeature :isAuthenticated="isAuthenticated" />
-          <MemberForm v-if="!isAuthenticated" :isAuthenticated="isAuthenticated" />
-          <ContactInformation />
+    <MainLayout>
+        <HeroSection />
+        <div
+            class="min-h-screen bg-white dark:bg-black text-black dark:text-white"
+        >
+            <div class="container mx-auto px-6 py-12">
+                <div class="mx-auto">
+                    <MemberFeature :isAuthenticated="isAuthenticated" />
+                    <MemberForm
+                        v-if="!isAuthenticated"
+                        :isAuthenticated="isAuthenticated"
+                    />
+                    <ContactInformation />
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </MainLayout>
+    </MainLayout>
 </template>
 
 <script setup>
@@ -23,6 +28,6 @@ import MemberForm from "@/Components-landing/MemberPage/MemberForm.vue";
 import ContactInformation from "@/Components-landing/MemberPage/ContactInformation.vue";
 
 const isAuthenticated = computed(() => {
-  return usePage().props.auth.user !== null;
+    return usePage().props.auth.user !== null;
 });
 </script>

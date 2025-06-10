@@ -94,7 +94,7 @@
                     :userId="photo.user_id"
                     :userName="photo.userName || 'Unknown Photographer'"
                     :userAvatar="
-                        photo.userAvatar || '/js/Assets/default-avatar.jpg'
+                        photo.userAvatar || '/js/Assets/default-photo.jpg'
                     "
                     :viewsCount="photo.viewsCount"
                     :likesCount="photo.likeCount"
@@ -176,10 +176,11 @@ onMounted(async () => {
                               /^public\//,
                               ""
                           )}`
-                        : "/js/Assets/default-avatar.jpg",
+                        : "/js/Assets/default-photo.jpg",
                     category: item.category || {},
                     viewsCount: photo.total_views || 0,
-                    likeCount: photo.likes_count || photo.content_reactions_count || 0,
+                    likeCount:
+                        photo.likes_count || photo.content_reactions_count || 0,
                     createdAt: photo.created_at,
                 };
             });

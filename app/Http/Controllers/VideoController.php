@@ -82,7 +82,11 @@ class VideoController extends Controller
             });
 
         if ($popularVideos->isEmpty()) {
-            return response()->json(['message' => 'No popular video found'], 404);
+            return response()->json([
+                'status' => 'success',
+                'data' => [],
+                'message' => 'No popular video found'
+            ], 200);
         }
         return response()->json($popularVideos);
     }
@@ -438,7 +442,11 @@ class VideoController extends Controller
             });
 
         if ($contentVideos->isEmpty()) {
-            return response()->json(['message' => 'Tidak ada konten ditemukan untuk kategori ini'], 404);
+            return response()->json([
+                'status' => 'success',
+                'data' => [],
+                'message' => 'Tidak ada konten video ditemukan untuk kategori ini'
+            ], 200);
         }
         return response()->json($contentVideos);
     }
