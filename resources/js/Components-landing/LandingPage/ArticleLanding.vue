@@ -68,10 +68,10 @@
         </div>
 
         <!-- View All Button -->
-        <div v-if="articles.length > 3" class="flex justify-end mt-12">
+        <div v-if="articles.length > 3" class="flex justify-end mt-12 rounded-xs">
           <Link
             href="/article"
-            class="inline-block px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-medium hover:bg-gray-500 dark:hover:bg-gray-300 transition duration-300"
+            class="inline-block rounded-md px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-medium hover:bg-gray-200 hover:text-black dark:hover:bg-gray-300 transition duration-300"
           >
             View All Articles
           </Link>

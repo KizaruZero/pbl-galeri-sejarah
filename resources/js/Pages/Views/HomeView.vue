@@ -8,6 +8,7 @@
 
             <HeroSection />
             <!-- <PakubuwonoSection /> -->
+            <TrendingContent />
             <UpcomingEvent />
             <JoinUs />
             <Article />
@@ -20,7 +21,8 @@ import MainLayout from "@/Layouts/MainLayout.vue";
 import HeroSection from "@/Components-landing/LandingPage/HeroSection.vue";
 // import PakubuwonoSection from '@/Components-landing/LandingPage/PakubuwonoSection.vue'
 import UpcomingEvent from "@/Components-landing/UpcomingEvent.vue";
-import Article from "@/Components-landing/LandingPage/ArticleLanding.vue";
+import TrendingContent from "@/Components-landing/LandingPage/TrendingContent.vue";
 import JoinUs from "@/Components-landing/JoinUsSection.vue";
+import Article from "@/Components-landing/LandingPage/ArticleLanding.vue";
 import SeoHead from "@/Components/SeoHead.vue";
 </script>

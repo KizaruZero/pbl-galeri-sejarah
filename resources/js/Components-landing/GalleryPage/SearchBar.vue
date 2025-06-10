@@ -68,30 +68,15 @@
 
                     <!-- Content Type Filter -->
                     <div class="flex items-center space-x-2">
-                        <button @click="activeTab = 'all'" :class="[
-                                'px-3 py-1 rounded-lg text-sm transition-colors',
-                                activeTab === 'all'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600',
-                            ]">
+                        <div class="px-3 py-1 rounded-lg text-sm bg-gray-200 dark:bg-gray-700 text-black dark:text-white">
                             All ({{ totalCount }})
-                        </button>
-                        <button @click="activeTab = 'photos'" :class="[
-                                'px-3 py-1 rounded-lg text-sm transition-colors',
-                                activeTab === 'photos'
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600',
-                            ]">
+                        </div>
+                        <div class="px-3 py-1 rounded-lg text-sm bg-gray-200 dark:bg-gray-700 text-black dark:text-white">
                             📸 Photos ({{ photoCount }})
-                        </button>
-                        <button @click="activeTab = 'videos'" :class="[
-                                'px-3 py-1 rounded-lg text-sm transition-colors',
-                                activeTab === 'videos'
-                                    ? 'bg-red-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600',
-                            ]">
+                        </div>
+                        <div class="px-3 py-1 rounded-lg text-sm bg-gray-200 dark:bg-gray-700 text-black dark:text-white">
                             🎥 Videos ({{ videoCount }})
-                        </button>
+                        </div>
                     </div>
                 </div>
             </form>

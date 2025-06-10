@@ -651,7 +651,7 @@
 
         } catch (error) {
             console.error("Error fetching comments:", error);
-// Try alternative endpoint if the main one fails
+            // Try alternative endpoint if the main one fails
             try {
                 console.log('Trying alternative comments endpoint...');
                 const altResponse = await axios.get(`/api/comments/photo/${photoId}/all`, {
@@ -771,7 +771,7 @@
             if (error.response) {
                 if (error.response.status === 401) {
                     errorMessage = "Please log in to comment.";
-                    router.push("/login");
+                    window.location.href = '/login';
                 } else if (error.response.status === 422) {
                     // Handle validation errors
                     const errors = error.response.data.errors;
@@ -899,7 +899,22 @@
     // Replace the toggleLike function with this implementation
     const toggleLike = async () => {
         if (!UserId.value) {
-            router.visit('/login');
+            // Show SweetAlert for unauthenticated users
+            const result = await Swal.fire({
+                title: 'Authentication Required',
+                text: 'Please login to like this video',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+                footer: `<a href="/member" class="text-blue-500 hover:underline">Don't have an account? Sign up here</a>`
+            });
+
+            if (result.isConfirmed) {
+                window.location.href = '/login';
+            }
             return;
         }
 
@@ -940,7 +955,7 @@
                 alert(errors.join(', '));
             } else if (error.response?.status === 401) {
                 alert('Please log in to like this video.');
-                router.visit('/login');
+                window.location.href = '/login';
             } else if (error.response?.status === 409) {
                 alert('You have already reacted to this video.');
                 // Refresh the like status
@@ -1079,8 +1094,22 @@
     // Action functions
     const toggleBookmark = async () => {
         if (!currentUser.value?.id) {
-            console.log('No user logged in');
-            router.visit('/login');
+            // Show SweetAlert for unauthenticated users
+            const result = await Swal.fire({
+                title: 'Authentication Required',
+                text: 'Please login to bookmark this video',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+                footer: `<a href="/member" class="text-blue-500 hover:underline">Don't have an account? Sign up here</a>`
+            });
+
+            if (result.isConfirmed) {
+                window.location.href = '/login';
+            }
             return;
         }
 
@@ -1132,7 +1161,7 @@
             });
 
             if (error.response?.status === 401) {
-                router.visit('/login');
+                window.location.href = '/login';
             } else {
                 alert('Error updating bookmark. Please try again.');
             }
@@ -1221,7 +1250,7 @@
             }
 
             if (error.response?.status === 401) {
-                router.visit('/login');
+                window.location.href = '/login';
             } else if (error.response?.status === 404) {
                 console.log('No bookmarks found for user');
                 isBookmarked.value = false;
