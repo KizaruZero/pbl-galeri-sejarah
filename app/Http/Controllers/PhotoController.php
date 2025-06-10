@@ -18,6 +18,9 @@ use App\Models\Category;
 use App\Models\ContentVideo;
 use Illuminate\Support\Facades\Log;
 use App\Imports\PhotosImport;
+use App\Models\CompanyProfile;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Typography\FontFactory;
 
 class PhotoController extends Controller
 {
@@ -110,9 +113,9 @@ class PhotoController extends Controller
         if (!Auth::check()) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
-        
+
         $userId = Auth::id(); // lebih aman
-        
+
 
         // Handle file upload
         if ($request->hasFile('image')) {
@@ -121,11 +124,36 @@ class PhotoController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . $slug . '.' . $extension;
 
-            $path = $file->storeAs('foto_content', $filename, 'public');
+            // Get company name
+            $companyProfile = CompanyProfile::first();
+            $companyName = $companyProfile ? "© " . $companyProfile->cms_name : "© Galeri Sejarah";
+
+            // Create image instance
+            $image = Image::make($file->getPathname());
+
+            // Create a larger watermark canvas
+            $watermarkWidth = $image->width() * 0.8; // 80% of image width
+            $watermarkHeight = $image->height() * 0.8; // 80% of image height
+            $watermark = Image::canvas($watermarkWidth, $watermarkHeight, [0, 0, 0, 0]);
+
+            // Add text to watermark canvas with larger size
+            $watermark->text($companyName, $watermarkWidth / 2, $watermarkHeight / 2, function ($font) {
+                $font->file(public_path('fonts/Roboto-Bold.ttf')); // Ganti path sesuai lokasi font Anda
+                $font->size(80); // Ukuran besar akan benar-benar terlihat
+                $font->color([255, 255, 255, 0.3]);
+                $font->align('center');
+                $font->valign('center');
+                $font->angle(-120);
+            });
+
+            // Insert watermark onto original image
+            $image->insert($watermark, 'center');
+
+            // Save watermarked image
+            $path = $image->save(storage_path('app/public/foto_content/' . $filename));
 
             // Save only the relative path (without 'public/') to DB
             $imageUrl = 'foto_content/' . $filename;
-
 
             // Create new photo record
             $photo = ContentPhoto::create([
@@ -635,7 +663,7 @@ class PhotoController extends Controller
                 'items' => $parsedItems,
                 'temp_files' => $tempFiles
             ]);
-            
+
 
         } catch (\Exception $e) {
             \Log::error('Bulk upload failed', [
@@ -652,7 +680,7 @@ class PhotoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-        
+
     }
 
     private function deleteDirectory($dir)
@@ -673,7 +701,7 @@ class PhotoController extends Controller
     {
         try {
             $photo = ContentPhoto::findOrFail($id);
-            
+
             // Check if the authenticated user owns this photo
             if ($photo->user_id !== Auth::id()) {
                 return response()->json([

@@ -33,6 +33,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
 use App\Models\Category;
 use App\Models\MetadataPhoto;
+use App\Models\CompanyProfile;
 
 
 
@@ -115,6 +116,34 @@ class ContentPhotoResource extends Resource
                             if ($state instanceof TemporaryUploadedFile) {
                                 $exifData = static::extractExifData($state);
                                 $set('exif_data', $exifData);
+
+                                // Add watermark
+                                $companyProfile = CompanyProfile::first();
+                                $companyName = $companyProfile ? "© " . $companyProfile->cms_name : "© Galeri Sejarah";
+
+                                // Create image instance
+                                $image = Image::make($state->getRealPath());
+
+                                // Create a larger watermark canvas
+                                $watermarkWidth = $image->width() * 0.8;
+                                $watermarkHeight = $image->height() * 0.8;
+                                $watermark = Image::canvas($watermarkWidth, $watermarkHeight, [0, 0, 0, 0]);
+
+                                // Add text to watermark canvas
+                                $watermark->text($companyName, $watermarkWidth / 2, $watermarkHeight / 2, function ($font) {
+                                    $font->file(public_path('fonts/Roboto-Bold.ttf'));
+                                    $font->size(80);
+                                    $font->color([255, 255, 255, 0.3]);
+                                    $font->align('center');
+                                    $font->valign('center');
+                                    $font->angle(-120);
+                                });
+
+                                // Insert watermark onto original image
+                                $image->insert($watermark, 'center');
+
+                                // Save watermarked image
+                                $image->save($state->getRealPath());
                             }
                         }
                     }),
@@ -683,11 +712,43 @@ class ContentPhotoResource extends Resource
                     $extension = pathinfo($fileName, PATHINFO_EXTENSION);
                     $newFileName = time() . '_' . $slug . '_' . $index . '.' . $extension;
 
+                    // Get company name for watermark
+                    $companyProfile = CompanyProfile::first();
+                    $companyName = $companyProfile ? "© " . $companyProfile->cms_name : "© Galeri Sejarah";
+
+                    // Create image instance
+                    $image = Image::make($mediaPath);
+
+                    // Create a larger watermark canvas
+                    $watermarkWidth = $image->width() * 0.8;
+                    $watermarkHeight = $image->height() * 0.8;
+                    $watermark = Image::canvas($watermarkWidth, $watermarkHeight, [0, 0, 0, 0]);
+
+                    // Add text to watermark canvas
+                    $watermark->text($companyName, $watermarkWidth / 2, $watermarkHeight / 2, function ($font) {
+                        $font->file(public_path('fonts/Roboto-Bold.ttf'));
+                        $font->size(80);
+                        $font->color([255, 255, 255, 0.3]);
+                        $font->align('center');
+                        $font->valign('center');
+                        $font->angle(-120);
+                    });
+
+                    // Insert watermark onto original image
+                    $image->insert($watermark, 'center');
+
+                    // Save watermarked image to temporary file
+                    $tempPath = tempnam(sys_get_temp_dir(), 'watermarked_') . '.' . $extension;
+                    $image->save($tempPath);
+
                     $storedPath = Storage::disk('public')->putFileAs(
                         'foto_content',
-                        new File($mediaPath),
+                        new File($tempPath),
                         $newFileName
                     );
+
+                    // Clean up temporary file
+                    @unlink($tempPath);
 
                     $exifData = static::extractExifData($mediaPath);
 
