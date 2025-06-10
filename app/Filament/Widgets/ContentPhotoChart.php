@@ -76,6 +76,8 @@ class ContentPhotoChart extends LineChartWidget
         ];
     }
 
+
+
     protected function getType(): string
     {
         return 'line';

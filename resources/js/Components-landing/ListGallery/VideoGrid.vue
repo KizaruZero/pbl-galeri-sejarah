@@ -135,10 +135,11 @@ onMounted(async () => {
     try {
         const response = await axios.request(options);
 
+        // Ensure response.data is an array
+        const data = Array.isArray(response.data) ? response.data : [];
+
         // Filter only items with content_video (exclude photos and null content)
-        const validItems = response.data.filter(
-            (item) => item.content_video !== null
-        );
+        const validItems = data.filter((item) => item.content_video !== null);
 
         // Map the filtered items to our video format
         videos.value = validItems.map((item) => {

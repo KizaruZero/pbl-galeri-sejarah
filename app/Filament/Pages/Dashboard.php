@@ -29,4 +29,11 @@ class Dashboard extends BaseDashboard
                     ->columns(2),
             ]);
     }
+
+    public static function canAccess(): bool
+    {
+        $userRoles = auth()->user()->roles->pluck('name');
+        return $userRoles->contains('super_admin') || $userRoles->contains('direktur');
+    }
+
 }

@@ -92,7 +92,7 @@ class ShieldSeeder extends Seeder
                 "guard_name": "web",
                 "permissions": [
                     "view_article", "view_any_article", "create_article", "update_article", "restore_article", 
-                    "delete_article"
+                    "delete_article", "force_delete_article", "force_delete_any_article"
                 ]
             },
             {
