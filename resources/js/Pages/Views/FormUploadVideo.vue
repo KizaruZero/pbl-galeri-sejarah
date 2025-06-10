@@ -1,6 +1,6 @@
 <template>
     <MainLayout>
-        <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
+        <div class="mx-auto p-6 bg-white dark:bg-black max-w-full">
             <button
                 @click="visitBacktoProfile"
                 class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
@@ -19,7 +19,7 @@
                 </svg>
                 Back to Profile
             </button>
-            <h2 class="text-2xl font-bold text-center text-white mt-10 mb-8">
+            <h2 class="text-2xl font-bold text-center text-black dark:text-white mt-10 mb-8">
                 CREATE CONTENT VIDEO
             </h2>
 
@@ -32,7 +32,7 @@
                         <div>
                             <label
                                 for="title"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Title*</label
                             >
                             <input
@@ -40,7 +40,7 @@
                                 id="title"
                                 v-model="form.title"
                                 required
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter content title"
                             />
                         </div>
@@ -48,7 +48,7 @@
                         <div>
                             <label
                                 for="link_youtube"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Link Youtube</label
                             >
                             <input
@@ -56,7 +56,7 @@
                                 id="link-youtube"
                                 v-model="form.link_youtube"
                                 :disabled="form.video !== null"
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="Enter Link youtube"
                             />
                             <p v-if="form.video" class="mt-1 text-xs text-yellow-400">
@@ -68,11 +68,11 @@
                         <!-- Video Upload Field -->
                         <div>
                             <label
-                                class="block text-sm font-medium text-white mt-3 mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mt-3 mb-2"
                                 >Video* (Upload OR YouTube link)</label
                             >
                             <div
-                                class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-[#1f1f1f] transition cursor-pointer relative"
+                                class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-gray-200 dark:hover:bg-gray-500 transition cursor-pointer relative"
                                 :class="{ 'opacity-50 cursor-not-allowed': form.link_youtube && !youtubeVideoId }"
                                 @dragover.prevent
                                 @drop.prevent="handleVideoDrop"
@@ -165,13 +165,13 @@
                                             d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                                         />
                                     </svg>
-                                    <p class="text-sm text-gray-400 text-center">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
                                         <span v-if="!form.link_youtube" class="text-blue-400 underline">Upload a video</span>
                                         <span v-else class="text-gray-500">Clear YouTube link to upload video</span>
                                         <br v-if="!form.link_youtube">
                                         <span v-if="!form.link_youtube">or drag and drop</span>
                                     </p>
-                                    <p v-if="!form.link_youtube" class="mt-1 text-xs text-gray-500">
+                                    <p v-if="!form.link_youtube" class="mt-1 text-xs text-gray-800 dark:text-gray-200">
                                         MP4, WebM, OGG up to 100MB
                                     </p>
                                 </div>
@@ -189,12 +189,12 @@
                             <!-- File Name -->
                             <p
                                 v-if="videoName"
-                                class="mt-2 text-sm text-gray-400 truncate"
+                                class="mt-2 text-sm text-gray-500 dark:text-gray-400 truncate"
                             >
                                 {{ videoName }}
                             </p>
                             <!-- Instructions -->
-                            <p class="mt-1 text-xs text-gray-400">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Choose either YouTube link OR upload a video file
                             </p>
                         </div>
@@ -206,14 +206,14 @@
                         <div>
                             <label
                                 for="tag"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Tag</label
                             >
                             <input
                                 type="text"
                                 id="tag"
                                 v-model="form.tag"
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter tags"
                             />
                         </div>
@@ -221,12 +221,12 @@
                         <div>
                             <label
                                 for="category"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Categories*</label
                             >
                             <div class="relative">
                                 <div
-                                    class="flex flex-wrap gap-2 p-1 bg-gray-500 border border-[#333333] rounded-lg min-h-[42px]"
+                                    class="flex flex-wrap gap-2 p-1 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg min-h-[42px]"
                                 >
                                     <!-- Selected Categories -->
                                     <div
@@ -261,7 +261,7 @@
                                     <select
                                         v-model="selectedCategory"
                                         @change="addSelectedCategory"
-                                        class="flex-1 bg-gray-500 text-white focus:outline-none min-w-[200px]"
+                                        class="flex-1 bg-gray-200 dark:bg-gray-500 text-black dark:text-white focus:outline-none border-none min-w-[200px]"
                                     >
                                         <option value="" disabled selected>
                                             Select a category
@@ -280,11 +280,11 @@
                         <!-- Thumbnail Upload Field -->
                         <div>
                             <label
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Thumbnail*</label
                             >
                             <div
-                                class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-[#1f1f1f] transition cursor-pointer"
+                                class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-gray-200 dark:hover:bg-gray-500 transition cursor-pointer"
                                 @dragover.prevent
                                 @drop.prevent="handleThumbnailDrop"
                             >
@@ -348,13 +348,13 @@
                                             stroke-width="2"
                                         />
                                     </svg>
-                                    <p class="text-sm text-gray-400">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
                                         <span class="text-blue-400 underline"
                                             >Upload a thumbnail</span
                                         >
                                         or drag and drop
                                     </p>
-                                    <p class="mt-1 text-xs text-gray-500">
+                                    <p class="mt-1 text-xs text-gray-800 dark:text-gray-200">
                                         PNG, JPG, GIF up to 10MB
                                     </p>
                                 </div>
@@ -385,13 +385,13 @@
                 <div>
                     <label
                         for="description"
-                        class="block text-sm font-medium text-white mb-2"
+                        class="block text-sm font-medium text-black dark:text-white mb-2"
                         >Description</label
                     >
                     <textarea
                         id="description"
                         v-model="form.description"
-                        class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+                        class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
                         placeholder="Enter content description"
                     ></textarea>
                 </div>
@@ -404,7 +404,7 @@
                         <div>
                             <label
                                 for="source"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Source*</label
                             >
                             <input
@@ -412,7 +412,7 @@
                                 id="source"
                                 v-model="form.source"
                                 required
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter content source"
                             />
                         </div>
@@ -424,7 +424,7 @@
                     <button
                         type="button"
                         @click="resetForm"
-                        class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
+                        class="px-6 py-2 bg-transparent border border-red-500 text-black dark:text-white rounded-lg hover:bg-red-500 dark:hover:bg-red-800 hover:text-white transition font-medium"
                     >
                         Clear
                     </button>
@@ -462,7 +462,7 @@ const form = ref({
 });
 
 const visitBacktoProfile = () => {
-    window.history.back();
+    window.location.href = "/profile-page";
 };
 
 const videoName = ref("");
@@ -501,8 +501,8 @@ const handleVideoUpload = async (event) => {
         return;
     }
 
-    if (file.size > 100 * 1024 * 1024) {
-        Swal.fire("Oops!", "Video file size should not exceed 100MB.", "error");
+    if (file.size > 20 * 1024 * 1024) {
+        Swal.fire("Oops!", "Video file size should not exceed 20MB.", "error");
         return;
     }
 
@@ -712,8 +712,8 @@ const handleVideoDrop = async (event) => {
         return;
     }
 
-    if (file.size > 100 * 1024 * 1024) {
-        Swal.fire("Oops!", "Video file size should not exceed 100MB.", "error");
+    if (file.size > 20 * 1024 * 1024) {
+        Swal.fire("Oops!", "Video file size should not exceed 20MB.", "error");
         return;
     }
 

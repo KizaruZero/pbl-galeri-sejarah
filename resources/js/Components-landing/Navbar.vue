@@ -187,17 +187,15 @@
                     ✕
                 </button>
 
-                <!-- User Profile Section (if logged in) -->
-                <div v-if="user" class="flex flex-col items-center gap-4 mb-4">
-                    <img
-                        :src="userAvatar || defaultPhoto"
-                        :alt="user.name"
-                        class="w-20 h-20 rounded-full object-cover"
-                    />
-                    <span class="text-black dark:text-white text-lg">{{
-                        user.name
-                    }}</span>
-                </div>
+        <!-- User Profile Section (if logged in) -->
+        <div v-if="user" class="flex flex-col items-center gap-4 mb-4">
+          <img
+            :src="userAvatar || defaultPhoto"
+            :alt="user.name"
+            class="w-20 h-20 rounded-full object-cover"
+          />
+          <!-- <span class="text-black dark:text-white text-lg">{{ user.name }}</span> -->
+        </div>
 
                 <!-- Navigation Links -->
                 <Link

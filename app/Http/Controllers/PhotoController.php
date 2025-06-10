@@ -97,7 +97,7 @@ class PhotoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10485760',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
             'source' => 'nullable|string|max:255',
             'alt_text' => 'nullable|string|max:255',
             'note' => 'nullable|string',
@@ -107,10 +107,12 @@ class PhotoController extends Controller
             'exif_data' => 'nullable|array', // Accept pre-extracted EXIF data
         ]);
 
-        $userId = Auth::user()->id;
-        if (!$userId) {
+        if (!Auth::check()) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
+        
+        $userId = Auth::id(); // lebih aman
+        
 
         // Handle file upload
         if ($request->hasFile('image')) {
@@ -633,8 +635,13 @@ class PhotoController extends Controller
                 'items' => $parsedItems,
                 'temp_files' => $tempFiles
             ]);
+            
 
         } catch (\Exception $e) {
+            \Log::error('Bulk upload failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             // Clean up temporary directory if it exists
             if (isset($tempDir) && is_dir($tempDir)) {
                 $this->deleteDirectory($tempDir);
@@ -645,6 +652,7 @@ class PhotoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+        
     }
 
     private function deleteDirectory($dir)

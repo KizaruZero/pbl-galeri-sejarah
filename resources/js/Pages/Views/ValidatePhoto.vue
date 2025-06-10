@@ -1,6 +1,6 @@
 <template>
     <MainLayout>
-        <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
+        <div class="mx-auto p-6 bg-white dark:bg-black max-w-full">
             <button
                 @click="goBack"
                 class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
@@ -20,22 +20,20 @@
                 Back to Edit
             </button>
 
-            <h2 class="text-2xl font-bold text-center text-white mt-10 mb-8">
+            <h2 class="text-2xl font-bold text-center text-black dark:text-white mt-10 mb-8">
                 VALIDATE PHOTO CONTENT
             </h2>
 
             <!-- Loading State -->
-            <div v-if="isLoading" class="text-center text-white">
+            <div v-if="isLoading" class="text-center text-black dark:text-white">
                 Loading preview...
             </div>
 
             <!-- Content -->
             <div v-else-if="validationData" class="space-y-6">
                 <!-- Preview Section -->
-                <div class="bg-[#1a1a1a] rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-white mb-4">
-                        Content Preview
-                    </h3>
+                <div class="bg-zinc-200 dark:bg-zinc-900 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-black dark:text-white mb-4">Content Preview</h3>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Image Preview -->
@@ -71,17 +69,12 @@
                                                 imageOrientation === 'portrait',
                                         }"
                                     />
-                                    <div
-                                        class="absolute bottom-2 right-2 text-sm text-white bg-black bg-opacity-50 px-2 py-1 rounded"
-                                    >
+                                    <div class="absolute bottom-4 right-2 text-sm text-white bg-black bg-opacity-50 px-2 py-1 rounded">
                                         Preview with Watermark
                                     </div>
                                 </div>
                             </div>
-                            <p
-                                v-if="validationData.fileName"
-                                class="text-sm text-gray-400"
-                            >
+                            <p v-if="validationData.fileName" class="text-sm text-gray-500 dark:text-gray-400">
                                 File: {{ validationData.fileName }}
                             </p>
                         </div>
@@ -89,65 +82,32 @@
                         <!-- Content Details -->
                         <div class="space-y-4">
                             <div>
-                                <label
-                                    class="block text-sm font-medium text-gray-400 mb-1"
-                                    >Title</label
-                                >
-                                <p class="text-white">
-                                    {{ validationData.title }}
-                                </p>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Title</label>
+                                <p class="text-black dark:text-white">{{ validationData.title }}</p>
                             </div>
 
                             <div v-if="validationData.description">
-                                <label
-                                    class="block text-sm font-medium text-gray-400 mb-1"
-                                    >Description</label
-                                >
-                                <p class="text-white">
-                                    {{ validationData.description }}
-                                </p>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
+                                <p class="text-black dark:text-white">{{ validationData.description }}</p>
                             </div>
 
                             <div>
-                                <label
-                                    class="block text-sm font-medium text-gray-400 mb-1"
-                                    >Source</label
-                                >
-                                <p class="text-white">
-                                    {{ validationData.source }}
-                                </p>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Source</label>
+                                <p class="text-black dark:text-white">{{ validationData.source }}</p>
                             </div>
 
                             <div v-if="validationData.tag">
-                                <label
-                                    class="block text-sm font-medium text-gray-400 mb-1"
-                                    >Tags</label
-                                >
-                                <p class="text-white">
-                                    {{ validationData.tag }}
-                                </p>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Tags</label>
+                                <p class="text-black dark:text-white">{{ validationData.tag }}</p>
                             </div>
 
                             <div v-if="validationData.altText">
-                                <label
-                                    class="block text-sm font-medium text-gray-400 mb-1"
-                                    >Alt Text</label
-                                >
-                                <p class="text-white">
-                                    {{ validationData.altText }}
-                                </p>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Alt Text</label>
+                                <p class="text-black dark:text-white">{{ validationData.altText }}</p>
                             </div>
 
-                            <div
-                                v-if="
-                                    validationData.categories &&
-                                    validationData.categories.length > 0
-                                "
-                            >
-                                <label
-                                    class="block text-sm font-medium text-gray-400 mb-1"
-                                    >Categories</label
-                                >
+                            <div v-if="validationData.categories && validationData.categories.length > 0">
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Categories</label>
                                 <div class="flex flex-wrap gap-2">
                                     <span
                                         v-for="category in validationData.categories"
@@ -167,7 +127,7 @@
                     <button
                         type="button"
                         @click="cancelSubmission"
-                        class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
+                        class="px-6 py-2 bg-transparent border border-red-500 text-black dark:text-white rounded-lg hover:bg-red-500 hover:text-white transition font-medium"
                     >
                         Cancel
                     </button>

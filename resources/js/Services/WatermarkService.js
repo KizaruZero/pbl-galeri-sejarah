@@ -40,7 +40,7 @@ export const addWatermarkToImage = async (imageFile) => {
             ctx.drawImage(image, 0, 0);
             
             // Configure watermark
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.01)';
             ctx.font = `${image.width * 0.08}px Arial`;
             
             // Calculate position (center)

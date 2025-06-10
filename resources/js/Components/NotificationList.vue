@@ -34,7 +34,7 @@
             class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg overflow-hidden z-50"
         >
             <div class="p-4 border-b">
-                <h3 class="text-lg font-semibold">Notifications</h3>
+                <h3 class="text-lg text-black font-semibold">Notifications</h3>
             </div>
 
             <div class="max-h-96 overflow-y-auto">

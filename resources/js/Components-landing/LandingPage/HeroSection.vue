@@ -23,11 +23,11 @@
         </div>
 
         <!-- Overlay Hitam -->
-        <div class="absolute inset-0 bg-white dark:bg-black bg-opacity-30 dark:bg-opacity-60"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-30 dark:bg-opacity-60"></div>
 
         <!-- Teks Tengah -->
         <div class="absolute inset-0 flex items-center justify-center z-10">
-            <h1 class="text-center text-black dark:text-white uppercase font-bellefair
+            <h1 class="text-center text-white uppercase font-bellefair
                 text-6xl max-md:text-4xl max-sm:text-2xl px-5 leading-tight"
                 v-html="companyProfile?.cms_name">
             </h1>

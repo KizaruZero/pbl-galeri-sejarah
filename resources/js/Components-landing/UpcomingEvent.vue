@@ -69,7 +69,7 @@
     </div>
 
     <!-- Carousel -->
-    <div v-else class="mt-16 pb-20">
+    <div v-else class="mt-16 pb-20 text-black dark:text-white">
       <Carousel
         v-if="slides.length > 0"
         :value="slides"

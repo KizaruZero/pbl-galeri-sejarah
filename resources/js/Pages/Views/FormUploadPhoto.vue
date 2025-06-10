@@ -1,6 +1,6 @@
 <template>
     <MainLayout>
-        <div class="mx-auto p-6 bg-[#0d0d0d] max-w-full">
+        <div class="mx-auto p-6 bg-white dark:bg-black max-w-full">
             <button
                 @click="visitBacktoProfile"
                 class="mb-6 flex items-center text-gray-400 hover:text-blue-300 transition-colors"
@@ -19,7 +19,7 @@
                 </svg>
                 Back to Profile
             </button>
-            <h2 class="text-2xl font-bold text-center text-white mt-10 mb-8">
+            <h2 class="text-2xl font-bold text-center text-black dark:text-white mt-10 mb-8">
                 CREATE CONTENT PHOTO
             </h2>
             <!-- Changed title -->
@@ -33,7 +33,7 @@
                         <div>
                             <label
                                 for="title"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Title*</label
                             >
                             <input
@@ -41,7 +41,7 @@
                                 id="title"
                                 v-model="form.title"
                                 required
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter content title"
                             />
                         </div>
@@ -49,11 +49,11 @@
                         <!-- Image Upload Field -->
                         <div>
                             <label
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Image</label
                             >
                             <div
-                                class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-[#1f1f1f] transition cursor-pointer relative"
+                                class="w-full aspect-video border-2 border-dashed  border-gray-500 rounded-lg overflow-hidden hover:bg-gray-200 dark:hover:bg-gray-500 transition cursor-pointer relative"
                                 @dragover.prevent
                                 @drop.prevent="handleDrop"
                             >
@@ -114,13 +114,13 @@
                                             stroke-width="2"
                                         />
                                     </svg>
-                                    <p class="text-sm text-gray-400">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
                                         <span class="text-blue-400 underline"
                                             >Upload a file</span
                                         >
                                         or drag and drop
                                     </p>
-                                    <p class="mt-1 text-xs text-gray-500">
+                                    <p class="mt-1 text-xs text-gray-800 dark:text-gray-200">
                                         PNG, JPG, GIF up to 10MB
                                     </p>
                                 </div>
@@ -136,7 +136,7 @@
                             <!-- File Name -->
                             <p
                                 v-if="fileName"
-                                class="mt-2 text-sm text-gray-400 truncate"
+                                class="mt-2 text-sm text-gray-500 dark:text-gray-400 truncate"
                             >
                                 {{ fileName }}
                             </p>
@@ -149,14 +149,14 @@
                         <div>
                             <label
                                 for="tag"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Tag</label
                             >
                             <input
                                 type="text"
                                 id="tag"
                                 v-model="form.tag"
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Tag"
                             />
                         </div>
@@ -165,12 +165,12 @@
                         <div>
                             <label
                                 for="category"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Categories*</label
                             >
                             <div class="relative">
                                 <div
-                                    class="flex flex-wrap gap-2 p-2 bg-gray-500 border border-[#333333] rounded-lg min-h-[42px]"
+                                    class="flex flex-wrap gap-2 p-2 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg min-h-[42px]"
                                 >
                                     <!-- Selected Categories -->
                                     <div
@@ -205,7 +205,7 @@
                                     <select
                                         v-model="selectedCategory"
                                         @change="addSelectedCategory"
-                                        class="flex-1 bg-gray-500 text-white focus:outline-none min-w-[200px]"
+                                        class="flex-1 bg-gray-200 dark:bg-gray-500 text-black dark:text-white focus:outline-none border-none min-w-[200px]"
                                     >
                                         <option value="" disabled selected>
                                             Select a category
@@ -220,7 +220,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <p class="mt-1 text-sm text-gray-400">
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 Select categories from the dropdown
                             </p>
                         </div>
@@ -230,13 +230,13 @@
                 <div>
                     <label
                         for="description"
-                        class="block text-sm font-medium text-white mb-2"
+                        class="block text-sm font-medium text-black dark:text-white mb-2"
                         >Description</label
                     >
                     <textarea
                         id="description"
                         v-model="form.description"
-                        class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+                        class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
                         placeholder="Enter content description"
                     ></textarea>
                 </div>
@@ -248,7 +248,7 @@
                         <div>
                             <label
                                 for="source"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Source*</label
                             >
                             <input
@@ -256,7 +256,7 @@
                                 id="source"
                                 v-model="form.source"
                                 required
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter content source"
                             />
                         </div>
@@ -268,14 +268,14 @@
                         <div>
                             <label
                                 for="alt-text"
-                                class="block text-sm font-medium text-white mb-2"
+                                class="block text-sm font-medium text-black dark:text-white mb-2"
                                 >Alt Text</label
                             >
                             <input
                                 type="text"
                                 id="alt-text"
                                 v-model="form.altText"
-                                class="w-full px-4 py-3 bg-gray-500 border border-[#333333] rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Enter alt text for accessibility"
                             />
                         </div>
@@ -286,8 +286,9 @@
                     <button
                         type="button"
                         @click="resetForm"
-                        class="px-6 py-2 bg-transparent border border-[#333333] text-white rounded-lg hover:bg-[#252525] transition font-medium"
+                        class="px-6 py-2 bg-transparent border border-red-500 text-black dark:text-white rounded-lg hover:bg-red-500 dark:hover:bg-red-800 hover:text-white transition font-medium"
                     >
+                        Reset
                         Clear
                     </button>
                     <button
@@ -326,7 +327,7 @@ const form = ref({
 const fileInput = ref(null);
 
 const visitBacktoProfile = () => {
-    window.history.back();
+    window.location.href = "/profile-page";
 };
 
 const fileName = ref("");

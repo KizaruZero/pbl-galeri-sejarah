@@ -25,11 +25,11 @@
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
         >
             <div
-                class="bg-[#1e1e1e] rounded-lg p-6 w-full max-w-md xl:max-w-2xl 2xl:max-w-xl mx-4"
+                class="bg-zinc-200 dark:bg-zinc-900 rounded-lg p-6 w-full max-w-md xl:max-w-2xl 2xl:max-w-xl mx-4"
             >
                 <div class="flex justify-between items-center mb-4">
                     <h2
-                        class="text-lg sm:text-xl xl:text-2xl font-semibold text-white"
+                        class="text-lg sm:text-xl xl:text-2xl font-semibold text-black dark:text-white"
                     >
                         Upload Media
                     </h2>
@@ -57,7 +57,7 @@
                 <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:gap-6">
                     <button
                         @click="$emit('upload-photo')"
-                        class="flex flex-col items-center justify-center p-3 sm:p-4 xl:p-5 bg-[#2a2a2a] rounded-lg hover:bg-[#3a3a3a] transition-colors"
+                        class="flex flex-col items-center justify-center p-3 sm:p-4 xl:p-5 bg-[#3a3a3a] rounded-lg hover:bg-[#3a3a3a] transition-colors"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +80,7 @@
 
                     <button
                         @click="$emit('upload-video')"
-                        class="flex flex-col items-center justify-center p-3 sm:p-4 xl:p-5 bg-[#2a2a2a] rounded-lg hover:bg-[#3a3a3a] transition-colors"
+                        class="flex flex-col items-center justify-center p-3 sm:p-4 xl:p-5 bg-[#3a3a3a] rounded-lg hover:bg-[#3a3a3a] transition-colors"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +102,7 @@
                     </button>
                     <button
                         @click="$emit('bulk-upload')"
-                        class="flex flex-col items-center justify-center p-3 sm:p-4 xl:p-5 bg-[#2a2a2a] rounded-lg hover:bg-[#3a3a3a] transition-colors"
+                        class="flex flex-col items-center justify-center p-3 sm:p-4 xl:p-5 bg-[#3a3a3a] rounded-lg hover:bg-[#3a3a3a] transition-colors"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

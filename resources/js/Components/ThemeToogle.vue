@@ -29,19 +29,34 @@ export default {
     };
   },
   mounted() {
-    const darkToggle = document.getElementById('dark-toggle');
-    const body = document.querySelector('body');
-    // Set initial state based on body class
-    this.isDarkMode = body.classList.contains('dark');
-    darkToggle.checked = this.isDarkMode;
-    darkToggle.addEventListener('change', () => {
-      this.isDarkMode = darkToggle.checked;
-      if (this.isDarkMode) {
-        body.classList.add('dark');
-      } else {
-        body.classList.remove('dark');
-      }
-    });
-  },
+  const darkToggle = document.getElementById('dark-toggle');
+  const body = document.querySelector('body');
+
+  // Cek localStorage
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    this.isDarkMode = true;
+    body.classList.add('dark');
+    darkToggle.checked = true;
+  } else {
+    this.isDarkMode = false;
+    body.classList.remove('dark');
+    darkToggle.checked = false;
+  }
+
+  // Listener toggle switch
+  darkToggle.addEventListener('change', () => {
+    this.isDarkMode = darkToggle.checked;
+
+    if (this.isDarkMode) {
+      body.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  });
+}
+
 };
 </script>

@@ -96,7 +96,7 @@ class VideoController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'video_url' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,mpeg,mpg,m4v,webm,mkv|max:102400', // 100MB max
+            'video_url' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,mpeg,mpg,m4v,webm,mkv|max:20480', // 100MB max
             'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
@@ -105,10 +105,12 @@ class VideoController extends Controller
             'category_ids.*' => 'required|exists:categories,id',
         ]);
 
-        $userId = Auth::user()->id;
-        if (!$userId) {
+        if (!Auth::check()) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
+        
+        $userId = Auth::id(); // lebih aman
+
 
         // Handle file upload
         if ($request->hasFile('video_url')) {

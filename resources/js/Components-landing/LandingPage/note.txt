@@ -15,3 +15,8 @@ const toggleTheme = () => {
 border-black dark:border-white
 
 hover:bg-gray-200 dark:hover:bg-gray-800
+
+placeholder-black dark:placeholder-white
+bg-gray-200 dark:bg-gray-500
+
+

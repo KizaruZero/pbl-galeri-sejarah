@@ -321,10 +321,10 @@
                                             </router-link>
                                             <div class="min-w-0">
                                                 <router-link :to="`/users/${comment.user.id}`"
-                                                    class="font-medium text-white hover:underline text-sm sm:text-base truncate">
+                                                    class="font-medium text-black dark:text-white hover:underline text-sm sm:text-base truncate">
                                                     {{ comment.user.name }}
                                                 </router-link>
-                                                <p class="text-gray-300 dark:text-gray-400 text-xs mt-0.5">
+                                                <p class="text-gray-500  dark:text-gray-400 text-xs mt-0.5">
                                                     {{ formatRelativeDate(comment.date) }}
                                                 </p>
                                             </div>
@@ -340,7 +340,7 @@
                                         </button>
                                     </div>
                                     <p
-                                        class="mt-2 sm:mt-3 text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
+                                        class="mt-2 sm:mt-3 text-gray-800 dark:text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
                                         {{ comment.text }}
                                     </p>
 

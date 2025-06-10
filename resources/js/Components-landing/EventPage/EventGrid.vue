@@ -22,14 +22,14 @@
             <!-- Pagination -->
             <div v-if="!loading && !error && events.length > 0" class="flex justify-center mt-8 gap-2">
                 <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="px-4 py-2 bg-gray-800 text-white dark:text-black rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300">
+                    class="px-4 py-2 bg-gray-800 text-white  rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300">
                     Previous
                 </button>
                 <div class="flex items-center px-4 text-black dark:text-white">
                     Page {{ currentPage }} of {{ totalPages }}
                 </div>
                 <button @click="currentPage++" :disabled="currentPage >= totalPages"
-                    class="px-4 py-2 bg-gray-800 text-white dark:text-black rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300">
+                    class="px-4 py-2 bg-gray-800 text-white  rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors duration-300">
                     Next
                 </button>
             </div>
