@@ -24,7 +24,13 @@
                 VALIDATE PHOTO CONTENT
             </h2>
 
-            <div v-if="photoData" class="space-y-6">
+            <!-- Loading State -->
+            <div v-if="isLoading" class="text-center text-white">
+                Loading preview...
+            </div>
+
+            <!-- Content -->
+            <div v-else-if="validationData" class="space-y-6">
                 <!-- Preview Section -->
                 <div class="bg-[#1a1a1a] rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-white mb-4">Content Preview</h3>
@@ -33,15 +39,30 @@
                         <!-- Image Preview -->
                         <div class="space-y-4">
                             <div class="aspect-video bg-black rounded-lg overflow-hidden">
-                                <img
-                                    v-if="photoData.imagePreview"
-                                    :src="photoData.imagePreview"
-                                    :alt="photoData.title"
-                                    class="w-full h-full object-contain"
-                                />
+                                <!-- Image Preview with Watermark -->
+                                <div class="relative overflow-hidden"
+                                     :class="{
+                                        'max-w-4xl mx-auto': imageOrientation === 'landscape',
+                                        'max-w-full max-h-full mx-auto': imageOrientation === 'portrait'
+                                     }"
+                                     :style="{ height: imageOrientation === 'portrait' ? containerHeight : 'auto' }"
+                                >
+                                    <img 
+                                        :src="filePreview" 
+                                        :alt="validationData?.title"
+                                        class="w-full h-full rounded-lg bg-[#1a1a1a]"
+                                        :class="{
+                                            'object-contain': imageOrientation === 'landscape',
+                                            'object-contain': imageOrientation === 'portrait'
+                                        }"
+                                    />
+                                    <div class="absolute bottom-2 right-2 text-sm text-white bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        Preview with Watermark
+                                    </div>
+                                </div>
                             </div>
-                            <p v-if="photoData.fileName" class="text-sm text-gray-400">
-                                File: {{ photoData.fileName }}
+                            <p v-if="validationData.fileName" class="text-sm text-gray-400">
+                                File: {{ validationData.fileName }}
                             </p>
                         </div>
 
@@ -49,34 +70,34 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Title</label>
-                                <p class="text-white">{{ photoData.title }}</p>
+                                <p class="text-white">{{ validationData.title }}</p>
                             </div>
 
-                            <div v-if="photoData.description">
+                            <div v-if="validationData.description">
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
-                                <p class="text-white">{{ photoData.description }}</p>
+                                <p class="text-white">{{ validationData.description }}</p>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Source</label>
-                                <p class="text-white">{{ photoData.source }}</p>
+                                <p class="text-white">{{ validationData.source }}</p>
                             </div>
 
-                            <div v-if="photoData.tag">
+                            <div v-if="validationData.tag">
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Tags</label>
-                                <p class="text-white">{{ photoData.tag }}</p>
+                                <p class="text-white">{{ validationData.tag }}</p>
                             </div>
 
-                            <div v-if="photoData.altText">
+                            <div v-if="validationData.altText">
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Alt Text</label>
-                                <p class="text-white">{{ photoData.altText }}</p>
+                                <p class="text-white">{{ validationData.altText }}</p>
                             </div>
 
-                            <div v-if="photoData.categories && photoData.categories.length > 0">
+                            <div v-if="validationData.categories && validationData.categories.length > 0">
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Categories</label>
                                 <div class="flex flex-wrap gap-2">
                                     <span
-                                        v-for="category in photoData.categories"
+                                        v-for="category in validationData.categories"
                                         :key="category.id"
                                         class="bg-blue-600 text-white px-2 py-1 rounded text-sm"
                                     >
@@ -121,18 +142,64 @@ import { router } from '@inertiajs/vue3';
 import MainLayout from '@/Layouts/MainLayout.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { addWatermarkToImage } from '@/Services/WatermarkService';
 
-const photoData = ref(null);
-const loading = ref(false);
+const validationData = ref(null);
+const filePreview = ref('');
+const isLoading = ref(true);
+const imageOrientation = ref('landscape');
+const containerHeight = ref('auto');
 
-onMounted(() => {
-    // Get data from sessionStorage
-    const storedData = sessionStorage.getItem('photoValidationData');
-    if (storedData) {
-        photoData.value = JSON.parse(storedData);
-    } else {
-        // If no data, redirect back to form
-        router.visit('/upload-photo');
+onMounted(async () => {
+    try {
+        // Get validation data from sessionStorage
+        const storedData = sessionStorage.getItem('photoValidationData');
+        const watermarkedFile = window.photoValidationFile;
+
+        if (!storedData || !watermarkedFile) {
+            // Redirect back if no data found
+            Swal.fire({
+                icon: 'error',
+                title: 'No Data Found',
+                text: 'Please fill the form first'
+            }).then(() => {
+                router.visit('/upload-photo');
+            });
+            return;
+        }
+
+        validationData.value = JSON.parse(storedData);
+        
+        // Create preview from watermarked file
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            filePreview.value = e.target.result;
+            isLoading.value = false;
+        };
+        reader.readAsDataURL(watermarkedFile);
+
+        // Check image orientation when preview is loaded
+        if (watermarkedFile) {
+            const img = new Image();
+            img.onload = () => {
+                imageOrientation.value = img.width >= img.height ? 'landscape' : 'portrait';
+                if (imageOrientation.value === 'portrait') {
+                    // Set container height to viewport height minus some padding
+                    containerHeight.value = 'calc(100vh - 200px)';
+                }
+            };
+            img.src = URL.createObjectURL(watermarkedFile);
+        }
+
+    } catch (error) {
+        console.error('Error loading validation data:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to load preview. Please try again.'
+        }).then(() => {
+            router.visit('/upload-photo');
+        });
     }
 });
 
@@ -150,22 +217,22 @@ const cancelSubmission = () => {
 };
 
 const confirmSubmission = async () => {
-    if (!photoData.value || !window.photoValidationFile) return;
+    if (!validationData.value || !window.photoValidationFile) return;
 
     try {
         loading.value = true;
 
         // Create FormData from stored data
         const formData = new FormData();
-        formData.append('title', photoData.value.title);
-        formData.append('description', photoData.value.description || '');
+        formData.append('title', validationData.value.title);
+        formData.append('description', validationData.value.description || '');
         formData.append('image', window.photoValidationFile);
-        formData.append('source', photoData.value.source || '');
-        formData.append('alt_text', photoData.value.altText || '');
-        formData.append('tag', photoData.value.tag || '');
+        formData.append('source', validationData.value.source || '');
+        formData.append('alt_text', validationData.value.altText || '');
+        formData.append('tag', validationData.value.tag || '');
 
         // Append category IDs
-        photoData.value.category_ids.forEach((categoryId, index) => {
+        validationData.value.category_ids.forEach((categoryId, index) => {
             formData.append(`category_ids[${index}]`, categoryId);
         });
 

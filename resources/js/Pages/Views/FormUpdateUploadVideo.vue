@@ -375,6 +375,7 @@ import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { addWatermarkToVideo, addWatermarkToImage } from '@/Services/WatermarkService';
 
 const form = ref({
   title: "",
@@ -432,10 +433,12 @@ const submitForm = async () => {
     formData.append("tag", form.value.tag);
     formData.append("category_id", form.value.category_id);
 
-    // Only append files if they were changed
+    // Only append video if it's a new File object
     if (form.value.video instanceof File) {
-      formData.append("video_url", form.value.video_url);
+      formData.append("video_url", form.value.video);
     }
+
+    // Only append thumbnail if it's a new File object
     if (form.value.thumbnail instanceof File) {
       formData.append("thumbnail", form.value.thumbnail);
     }
@@ -447,12 +450,15 @@ const submitForm = async () => {
     formData.append("metadata[frame_rate]", metadataForm.value.frame_rate);
     formData.append("metadata[location]", metadataForm.value.location);
 
+    // Add method _method for Laravel to handle PUT request
+    formData.append("_method", "PUT");
+
     loading.value = true;
 
     const response = await axios.post(`/api/content-video/${videoId.value}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
+        'Accept': 'application/json',
       }
     });
 
@@ -465,11 +471,11 @@ const submitForm = async () => {
       router.visit('/profile-page');
     }
   } catch (error) {
-    console.error(error);
+    console.error('Error details:', error.response?.data);
     Swal.fire({
       icon: 'error',
       title: 'Update Failed',
-      text: error.response?.data?.message || 'An error occurred'
+      text: error.response?.data?.message || 'An error occurred while updating the video'
     });
   } finally {
     loading.value = false;
@@ -531,34 +537,64 @@ const loadData = async () => {
   }
 };
 
-const handleVideoUpload = (event) => {
+const handleVideoUpload = async (event) => {
   const file = event.target.files[0];
   if (file) {
-    form.value.video = file;
-    videoName.value = file.name;
-    videoPreview.value = URL.createObjectURL(file);
+    try {
+      // Apply watermark to video
+      const watermarkedVideo = await addWatermarkToVideo(file);
+      form.value.video = watermarkedVideo;
+      videoName.value = file.name;
+      videoPreview.value = URL.createObjectURL(watermarkedVideo);
+    } catch (error) {
+      console.error('Error adding watermark to video:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add watermark to video'
+      });
+    }
   }
 };
 
-const handleThumbnailUpload = (event) => {
+const handleThumbnailUpload = async (event) => {
   const file = event.target.files[0];
   if (file) {
-    form.value.thumbnail = file;
-    thumbnailName.value = file.name;
-    thumbnailPreview.value = URL.createObjectURL(file);
+    try {
+      // Apply watermark to thumbnail
+      const watermarkedThumbnail = await addWatermarkToImage(file);
+      form.value.thumbnail = watermarkedThumbnail;
+      thumbnailName.value = file.name;
+      thumbnailPreview.value = URL.createObjectURL(watermarkedThumbnail);
+    } catch (error) {
+      console.error('Error adding watermark to thumbnail:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add watermark to thumbnail'
+      });
+    }
   }
 };
 
 const removeVideo = () => {
-  form.value.video = null;
-  videoName.value = "";
-  videoPreview.value = existingVideoUrl.value || "";
+    form.value.video = null;
+    form.value.link_youtube = "";
+    videoName.value = "";
+    videoPreview.value = "";
+    youtubeVideoId.value = "";
+    if (videoInput.value) {
+        videoInput.value.value = "";
+    }
 };
 
 const removeThumbnail = () => {
-  form.value.thumbnail = null;
-  thumbnailName.value = "";
-  thumbnailPreview.value = existingThumbnailUrl.value || "";
+    form.value.thumbnail = null;
+    thumbnailName.value = "";
+    thumbnailPreview.value = "";
+    if (thumbnailInput.value) {
+        thumbnailInput.value.value = "";
+    }
 };
 
 const resetForm = () => {
@@ -577,7 +613,6 @@ const resetForm = () => {
   thumbnailName.value = "";
   thumbnailPreview.value = "";
 };
-
 // Update onMounted to use the new loadData function
 onMounted(() => {
   loadData();

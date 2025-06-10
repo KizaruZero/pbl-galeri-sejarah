@@ -182,6 +182,7 @@
     import MainLayout from "@/Layouts/MainLayout.vue";
     import axios from "axios";
     import Swal from "sweetalert2";
+    import { addWatermarkToImage } from '@/Services/WatermarkService';
 
     const form = ref({
         title: "",
@@ -270,7 +271,7 @@
         window.location.href = "/profile-page";
     };
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
@@ -279,12 +280,23 @@
             return;
         }
 
-        form.value.media = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            filePreview.value = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        try {
+            // Add watermark to image
+            const watermarkedImage = await addWatermarkToImage(file);
+            form.value.media = watermarkedImage;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                filePreview.value = e.target.result;
+            };
+            reader.readAsDataURL(watermarkedImage);
+        } catch (error) {
+            console.error('Error adding watermark to image:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add watermark to image.',
+            });
+        }
     };
 
     const removeImage = () => {

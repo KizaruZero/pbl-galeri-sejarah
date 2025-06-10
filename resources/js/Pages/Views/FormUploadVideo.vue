@@ -448,6 +448,7 @@ import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "lite-youtube-embed/src/lite-yt-embed.css";
+import { addWatermarkToImage, addWatermarkToVideo } from '@/Services/WatermarkService';
 
 const form = ref({
     title: "",
@@ -482,11 +483,10 @@ const getYoutubeVideoId = (url) => {
     return regularMatch?.[1] || shortMatch?.[1];
 };
 
-const handleVideoUpload = (event) => {
+const handleVideoUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Check if YouTube link is already provided
     if (form.value.link_youtube) {
         Swal.fire({
             icon: "warning",
@@ -495,10 +495,6 @@ const handleVideoUpload = (event) => {
         });
         return;
     }
-
-    // Clear YouTube link when uploading a file
-    form.value.link_youtube = "";
-    youtubeVideoId.value = "";
 
     if (!file.type.startsWith("video/")) {
         Swal.fire("Oops!", "Please upload a video file only.", "error");
@@ -510,21 +506,28 @@ const handleVideoUpload = (event) => {
         return;
     }
 
-    // Explicitly create new File object
-    form.value.video = new File([file], file.name, {
-        type: file.type,
-        lastModified: file.lastModified,
-    });
-    videoName.value = file.name;
+    try {
+        // Add watermark to video
+        const watermarkedVideo = await addWatermarkToVideo(file);
+        form.value.video = watermarkedVideo;
+        videoName.value = file.name;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        videoPreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            videoPreview.value = e.target.result;
+        };
+        reader.readAsDataURL(watermarkedVideo);
+    } catch (error) {
+        console.error('Error adding watermark to video:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add watermark to video.',
+        });
+    }
 };
 
-const handleThumbnailUpload = (event) => {
+const handleThumbnailUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -546,18 +549,25 @@ const handleThumbnailUpload = (event) => {
         return;
     }
 
-    // Explicitly create new File object
-    form.value.thumbnail = new File([file], file.name, {
-        type: file.type,
-        lastModified: file.lastModified,
-    });
-    thumbnailName.value = file.name;
+    try {
+        // Add watermark to thumbnail
+        const watermarkedThumbnail = await addWatermarkToImage(file);
+        form.value.thumbnail = watermarkedThumbnail;
+        thumbnailName.value = file.name;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        thumbnailPreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            thumbnailPreview.value = e.target.result;
+        };
+        reader.readAsDataURL(watermarkedThumbnail);
+    } catch (error) {
+        console.error('Error adding watermark to thumbnail:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add watermark to thumbnail.',
+        });
+    }
 };
 
 const fileInput = ref(null);
@@ -685,7 +695,7 @@ const resetForm = () => {
 const videoInput = ref(null);
 const thumbnailInput = ref(null);
 
-const handleVideoDrop = (event) => {
+const handleVideoDrop = async (event) => {
     // Check if YouTube link is already provided
     if (form.value.link_youtube) {
         Swal.fire({
@@ -707,23 +717,30 @@ const handleVideoDrop = (event) => {
         return;
     }
 
-    // Explicitly create new File object
-    form.value.video = new File([file], file.name, {
-        type: file.type,
-        lastModified: file.lastModified,
-    });
-    form.value.link_youtube = "";
-    videoName.value = file.name;
-    youtubeVideoId.value = "";
+    try {
+        // Add watermark to video
+        const watermarkedVideo = await addWatermarkToVideo(file);
+        form.value.video = watermarkedVideo;
+        form.value.link_youtube = "";
+        videoName.value = file.name;
+        youtubeVideoId.value = "";
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        videoPreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            videoPreview.value = e.target.result;
+        };
+        reader.readAsDataURL(watermarkedVideo);
+    } catch (error) {
+        console.error('Error adding watermark to video:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add watermark to video.',
+        });
+    }
 };
 
-const handleThumbnailDrop = (event) => {
+const handleThumbnailDrop = async (event) => {
     const file = event.dataTransfer.files[0];
     if (!file || !file.type.startsWith("image/")) {
         Swal.fire(
@@ -743,18 +760,25 @@ const handleThumbnailDrop = (event) => {
         return;
     }
 
-    // Explicitly create new File object
-    form.value.thumbnail = new File([file], file.name, {
-        type: file.type,
-        lastModified: file.lastModified,
-    });
-    thumbnailName.value = file.name;
+    try {
+        // Add watermark to thumbnail
+        const watermarkedThumbnail = await addWatermarkToImage(file);
+        form.value.thumbnail = watermarkedThumbnail;
+        thumbnailName.value = file.name;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        thumbnailPreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            thumbnailPreview.value = e.target.result;
+        };
+        reader.readAsDataURL(watermarkedThumbnail);
+    } catch (error) {
+        console.error('Error adding watermark to thumbnail:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add watermark to thumbnail.',
+        });
+    }
 };
 
 const removeVideo = () => {

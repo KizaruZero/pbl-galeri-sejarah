@@ -309,6 +309,7 @@ import { router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { addWatermarkToImage } from '@/Services/WatermarkService';
 
 const selectedCategory = ref("");
 const form = ref({
@@ -399,8 +400,21 @@ const removeCategory = (categoryId) => {
     );
 };
 
+const isProcessing = ref(false);
+
+// Modify submitForm function
 const submitForm = async () => {
     try {
+        // Show loading indicator
+        Swal.fire({
+            title: 'Processing...',
+            html: 'Adding watermark to image...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         // Validate required fields
         if (!form.value.title || !form.value.source || form.value.category_ids.length === 0) {
             Swal.fire({
@@ -420,35 +434,48 @@ const submitForm = async () => {
             return;
         }
 
-        // Store file in a global variable to access later
-        window.photoValidationFile = form.value.media;
+        isProcessing.value = true;
+        
+        // Add watermark to image before storing
+        const watermarkedImage = await addWatermarkToImage(form.value.media);
+        
+        // Store watermarked file in global variable
+        window.photoValidationFile = watermarkedImage;
 
-        // Prepare data for validation page (without file object)
-        const validationData = {
-            title: form.value.title,
-            description: form.value.description,
-            source: form.value.source,
-            tag: form.value.tag,
-            altText: form.value.altText,
-            category_ids: form.value.category_ids,
-            categories: categories.value.filter(cat => form.value.category_ids.includes(cat.id)),
-            imagePreview: filePreview.value,
-            fileName: fileName.value
+        // Update preview with watermarked image and redirect
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const validationData = {
+                title: form.value.title,
+                description: form.value.description,
+                source: form.value.source,
+                tag: form.value.tag,
+                altText: form.value.altText,
+                category_ids: form.value.category_ids,
+                categories: categories.value.filter(cat => form.value.category_ids.includes(cat.id)),
+                imagePreview: e.target.result,
+                fileName: fileName.value
+            };
+            
+            // Store in sessionStorage
+            sessionStorage.setItem('photoValidationData', JSON.stringify(validationData));
+            
+            // Close loading indicator and redirect
+            Swal.close();
+            router.visit('/validate-photo');
         };
-
-        // Store data in sessionStorage
-        sessionStorage.setItem('photoValidationData', JSON.stringify(validationData));
-
-        // Redirect to validation page
-        router.visit('/validate-photo');
+        reader.readAsDataURL(watermarkedImage);
 
     } catch (error) {
+        Swal.close();
         console.error('Error preparing validation:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'Failed to prepare validation. Please try again.',
         });
+    } finally {
+        isProcessing.value = false;
     }
 };
 
