@@ -108,7 +108,7 @@ class VideoController extends Controller
         if (!Auth::check()) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
-        
+
         $userId = Auth::id(); // lebih aman
 
 
@@ -301,12 +301,14 @@ class VideoController extends Controller
             'tag' => 'nullable|string|max:255',
             'link_youtube' => 'nullable|url|max:255',
             'category_id' => 'nullable|exists:categories,id',
+            'metadata.location' => 'nullable|string|max:75',
+            'metadata.file_size' => 'nullable|string|max:10',
+            'metadata.frame_rate' => 'nullable|string|max:6',
+            'metadata.resolution' => 'nullable|string|max:12',
+            'metadata.duration' => 'nullable|string|max:8',
+            'metadata.format_file' => 'nullable|string|max:15',
+            'metadata.codec_video_audio' => 'nullable|string|max:20',
             'metadata.collection_date' => 'nullable|date',
-            'metadata.model' => 'nullable|string',
-            'metadata.ISO' => 'nullable|string',
-            'metadata.location' => 'nullable|string',
-            'metadata.frame_rate' => 'nullable|string',
-            'metadata.resolution' => 'nullable|string',
         ]);
 
         $data = [];
@@ -364,12 +366,14 @@ class VideoController extends Controller
             $metadata = $video->metadataVideo()->updateOrCreate(
                 ['content_video_id' => $video->id],
                 [
-                    'collection_date' => $request->input('metadata.collection_date'),
-                    'model' => $request->input('metadata.model'),
-                    'ISO' => $request->input('metadata.ISO'),
                     'location' => $request->input('metadata.location'),
+                    'file_size' => $request->input('metadata.file_size'),
                     'frame_rate' => $request->input('metadata.frame_rate'),
                     'resolution' => $request->input('metadata.resolution'),
+                    'duration' => $request->input('metadata.duration'),
+                    'format_file' => $request->input('metadata.format_file'),
+                    'codec_video_audio' => $request->input('metadata.codec_video_audio'),
+                    'collection_date' => $request->input('metadata.collection_date'),
                 ]
             );
         }
@@ -500,7 +504,7 @@ class VideoController extends Controller
     {
         try {
             $video = ContentVideo::findOrFail($id);
-            
+
             // Check if the authenticated user owns this video
             if ($video->user_id !== Auth::id()) {
                 return response()->json([

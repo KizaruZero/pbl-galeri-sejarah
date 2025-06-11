@@ -331,34 +331,24 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-black dark:text-white mb-2"
-                >Collection Date</label
+                >Location</label
               >
               <input
-                type="datetime-local"
-                v-model="metadataForm.collection_date"
+                type="text"
+                v-model="metadataForm.location"
                 class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Location where video was taken"
               />
             </div>
             <div>
               <label class="block text-sm font-medium text-black dark:text-white mb-2"
-                >Model</label
+                >File Size</label
               >
               <input
                 type="text"
-                v-model="metadataForm.model"
+                v-model="metadataForm.file_size"
                 class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Camera/Device model"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-black dark:text-white mb-2"
-                >Resolution</label
-              >
-              <input
-                type="text"
-                v-model="metadataForm.resolution"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="1920x1080"
+                placeholder="File size (e.g., 50MB)"
               />
             </div>
             <div>
@@ -374,13 +364,56 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-black dark:text-white mb-2"
-                >Location</label
+                >Resolution</label
               >
               <input
                 type="text"
-                v-model="metadataForm.location"
+                v-model="metadataForm.resolution"
                 class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Location where video was taken"
+                placeholder="1920x1080"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Duration</label
+              >
+              <input
+                type="text"
+                v-model="metadataForm.duration"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Duration in seconds"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Format File</label
+              >
+              <input
+                type="text"
+                v-model="metadataForm.format_file"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="mp4, avi, etc."
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Codec Video/Audio</label
+              >
+              <input
+                type="text"
+                v-model="metadataForm.codec_video_audio"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Video codec and audio codec information"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Collection Date</label
+              >
+              <input
+                type="datetime-local"
+                v-model="metadataForm.collection_date"
+                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -443,11 +476,14 @@ const thumbnailPreview = ref("");
 // Add these new refs
 const showMetadataForm = ref(true);
 const metadataForm = ref({
-  collection_date: "",
-  model: "",
-  resolution: "",
-  frame_rate: "",
   location: "",
+  file_size: "",
+  frame_rate: "",
+  resolution: "",
+  duration: "",
+  format_file: "",
+  codec_video_audio: "",
+  collection_date: "",
 });
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
@@ -483,11 +519,14 @@ const submitForm = async () => {
     }
 
     // Add metadata to formData
-    formData.append("metadata[collection_date]", metadataForm.value.collection_date);
-    formData.append("metadata[model]", metadataForm.value.model);
-    formData.append("metadata[resolution]", metadataForm.value.resolution);
-    formData.append("metadata[frame_rate]", metadataForm.value.frame_rate);
     formData.append("metadata[location]", metadataForm.value.location);
+    formData.append("metadata[file_size]", metadataForm.value.file_size);
+    formData.append("metadata[frame_rate]", metadataForm.value.frame_rate);
+    formData.append("metadata[resolution]", metadataForm.value.resolution);
+    formData.append("metadata[duration]", metadataForm.value.duration);
+    formData.append("metadata[format_file]", metadataForm.value.format_file);
+    formData.append("metadata[codec_video_audio]", metadataForm.value.codec_video_audio);
+    formData.append("metadata[collection_date]", metadataForm.value.collection_date);
 
     // Add method _method for Laravel to handle PUT request
     formData.append("_method", "PUT");
@@ -558,13 +597,16 @@ const loadData = async () => {
     // Add this after loading video data
     if (videoData.video.metadata_video) {
       metadataForm.value = {
+        location: videoData.video.metadata_video.location || "",
+        file_size: videoData.video.metadata_video.file_size || "",
+        frame_rate: videoData.video.metadata_video.frame_rate || "",
+        resolution: videoData.video.metadata_video.resolution || "",
+        duration: videoData.video.metadata_video.duration || "",
+        format_file: videoData.video.metadata_video.format_file || "",
+        codec_video_audio: videoData.video.metadata_video.codec_video_audio || "",
         collection_date: formatDateForInput(
           videoData.video.metadata_video.collection_date
         ),
-        model: videoData.video.metadata_video.model,
-        resolution: videoData.video.metadata_video.resolution,
-        frame_rate: videoData.video.metadata_video.frame_rate,
-        location: videoData.video.metadata_video.location,
       };
     }
   } catch (error) {
