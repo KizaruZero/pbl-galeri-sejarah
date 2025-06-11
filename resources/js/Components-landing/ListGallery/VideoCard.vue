@@ -10,6 +10,7 @@
             <img
                 :src="thumbnailUrl"
                 :alt="title"
+                @error="handleAvatarError"
                 class="w-full h-full object-cover rounded-t-xl"
             />
 
@@ -163,6 +164,11 @@ const titleClass = computed(() => {
         }[props.titleSize] || "text-lg"
     );
 });
+
+// Handle avatar image error
+const handleAvatarError = (e) => {
+    e.target.src = "/js/Assets/default-photo.jpg";
+};
 
 const formatDuration = (duration) => {
     if (!duration) return "00:00";

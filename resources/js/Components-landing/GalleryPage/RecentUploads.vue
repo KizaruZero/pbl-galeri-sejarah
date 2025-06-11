@@ -106,6 +106,7 @@
                                 <img
                                     :src="item.image_url"
                                     :alt="title"
+                                    @error="handleAvatarError"
                                     class="w-full h-full object-cover rounded-t-xl"
                                 />
 
@@ -229,6 +230,7 @@
                                 <img
                                     :src="item.thumbnail"
                                     :alt="title"
+                                    @error="handleAvatarError"
                                     class="w-full h-full object-cover rounded-t-xl"
                                 />
 
@@ -354,7 +356,10 @@ const formatDate = (date) => {
         day: "numeric",
     });
 };
-
+// Handle avatar image error
+const handleAvatarError = (e) => {
+    e.target.src = "/js/Assets/default-photo.jpg";
+};
 const navigateToDetail = (item) => {
     if (item.type === "photo") {
         window.location.href = `/gallery-photo/${item.slug}`;

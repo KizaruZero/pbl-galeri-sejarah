@@ -2,7 +2,9 @@
     <section class="w-full bg-white dark:bg-black py-16 px-6 md:px-10">
         <div class="max-w-[1192px] mx-auto">
             <!-- Judul -->
-            <div class="flex flex-col items-center text-black dark:text-white mb-12">
+            <div
+                class="flex flex-col items-center text-black dark:text-white mb-12"
+            >
                 <span class="w-full h-0.5 bg-black dark:bg-white mb-6"></span>
                 <h1
                     class="text-3xl md:text-4xl lg:text-5xl font-serif text-center"
@@ -94,7 +96,9 @@
                     <ImageCard
                         v-for="photo in paginatedPhotos"
                         :key="photo.slug"
-                        :imageUrl="photo.imageUrl"
+                        :imageUrl="
+                            photo.imageUrl || '/js/Assets/default-photo.jpg'
+                        "
                         :title="photo.title"
                         :description="
                             photo.description || 'No description available'
@@ -112,7 +116,10 @@
                 </div>
 
                 <!-- Pagination -->
-                <div v-if="photos.length > 0" class="flex justify-center mt-8 gap-2">
+                <div
+                    v-if="photos.length > 0"
+                    class="flex justify-center mt-8 gap-2"
+                >
                     <button
                         @click="currentPage--"
                         :disabled="currentPage === 1"
@@ -120,7 +127,9 @@
                     >
                         Previous
                     </button>
-                    <div class="flex items-center px-4 text-black dark:text-white">
+                    <div
+                        class="flex items-center px-4 text-black dark:text-white"
+                    >
                         Page {{ currentPage }} of {{ totalPages }}
                     </div>
                     <button
@@ -237,7 +246,6 @@ const fetchPhotos = async () => {
             const dateB = new Date(b.createdAt || 0);
             return dateB - dateA;
         });
-
     } catch (err) {
         console.error("Failed to fetch photos:", err);
         if (err.response) {
@@ -250,6 +258,10 @@ const fetchPhotos = async () => {
     }
 };
 
+// Handle avatar image error
+const handleAvatarError = (e) => {
+    e.target.src = "/js/Assets/default-photo.jpg";
+};
 onMounted(() => {
     fetchPhotos();
 });
