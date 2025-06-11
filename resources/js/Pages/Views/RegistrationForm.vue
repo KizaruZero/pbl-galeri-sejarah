@@ -237,9 +237,9 @@
                                             "
                                         >
                                             {{
-                                                allVersionRequirementsMet(
-                                                    "All requirements met"
-                                                )
+                                                allVersionRequirementsMet
+                                                    ? "All requirements met"
+                                                    : "Action needed"
                                             }}
                                         </span>
                                     </div>
@@ -347,8 +347,8 @@
                                                     >
                                                         <span
                                                             class="font-medium"
-                                                            >All requirements
-                                                            met</span
+                                                            >Action
+                                                            needed:</span
                                                         >
                                                         Please upgrade your
                                                         {{ name }} version to at
@@ -488,7 +488,9 @@
                                             "
                                         >
                                             {{
-                                                allPermissionsMet("All correct")
+                                                allPermissionsMet
+                                                    ? "All correct"
+                                                    : "Fix required"
                                             }}
                                         </span>
                                     </div>
