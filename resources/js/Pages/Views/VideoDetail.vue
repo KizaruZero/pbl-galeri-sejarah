@@ -300,8 +300,8 @@
                                 class="mb-6 sm:mb-7 p-3 sm:p-4 bg-zinc-200 dark:bg-zinc-900 rounded-lg text-center border border-gray-700">
                                 <p class="text-gray-500 dark:text-gray-400 text-sm sm:text-base">
                                     Please
-                                    <router-link to="/login" class="text-blue-400 hover:underline font-medium">login
-                                    </router-link>
+                                    <Link href="/login" class="text-blue-400 hover:underline font-medium">login
+                                    </Link>
                                     to post a comment.
                                 </p>
                             </div>
@@ -322,7 +322,7 @@
                                                                     <!-- Actual comment -->
                             <div v-else
                                 :class="[
-                                    'p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors border border-gray-700',
+                                    'p-3 sm:p-4 rounded-lg bg-gray-500 hover:bg-gray-400 dark:hover:bg-gray-800 transition-colors border border-gray-700',
                                     getCommentStatusClass(comment.status)
                                 ]"
                             >
@@ -345,10 +345,10 @@
                                                 </router-link>
                                                 <div class="min-w-0">
                                                     <router-link :to="`/users/${comment.user.id}`"
-                                                        class="font-medium text-white hover:underline text-sm sm:text-base truncate">
+                                                        class="font-medium text-black dark:text-white  hover:underline text-sm sm:text-base truncate">
                                                         {{ comment.user.name }}
                                                     </router-link>
-                                                    <p class="text-gray-300 dark:text-gray-400 text-xs mt-0.5">
+                                                    <p class="text-white/80  dark:text-gray-400 text-xs mt-0.5">
                                                         {{ formatRelativeDate(comment.date) }}
                                                     </p>
                                                 </div>
@@ -364,7 +364,7 @@
                                             </button>
                                         </div>
                                         <p
-                                            class="mt-2 sm:mt-3 text-white dark:text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
+                                            class="mt-2 sm:mt-3 text-gray-800 dark:text-gray-200 pl-10 sm:pl-12 whitespace-pre-line text-sm sm:text-base break-words">
                                             {{ comment.text }}
                                         </p>
 
@@ -445,7 +445,7 @@
     } from "vue-router";
     import axios from "axios";
     import {
-        usePage
+        usePage, Link
     } from "@inertiajs/vue3";
     import Swal from 'sweetalert2'; // Add this import
 
