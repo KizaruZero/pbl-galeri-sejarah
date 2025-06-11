@@ -8,7 +8,7 @@
             class="card relative w-full h-[220px] sm:h-[240px] md:h-[260px] lg:h-[300px]"
         >
             <img
-                :src="image_url"
+                :src="image_url || '/js/Assets/default-photo.jpg'"
                 :alt="title"
                 class="w-full h-full object-cover rounded-t-xl"
                 @error="handleImageError"

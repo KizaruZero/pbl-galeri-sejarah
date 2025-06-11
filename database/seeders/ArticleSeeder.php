@@ -40,7 +40,7 @@ class ArticleSeeder extends Seeder
                 'slug' => Str::slug($title),
                 'content' => $faker->paragraphs(rand(3, 7), true),
                 'user_id' => $faker->randomElement($userIds),
-                'image_url' => $faker->boolean(70) ? $faker->imageUrl(640, 480, 'article', true) : null,
+                'image_url' => $faker->boolean(100) ? "/js/Assets/default-photo.jpg" : null,
                 'status' => $status,
                 'published_at' => $publishedAt,
                 'total_views' => $status === 'published' ? $faker->numberBetween(0, 10000) : 0,
