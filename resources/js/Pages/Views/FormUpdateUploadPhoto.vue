@@ -37,7 +37,7 @@
                 id="title"
                 v-model="form.title"
                 required
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter content title"
               />
             </div>
@@ -130,7 +130,7 @@
                 type="text"
                 id="tag"
                 v-model="form.tag"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Tag"
               />
             </div>
@@ -169,7 +169,7 @@
           <textarea
             id="description"
             v-model="form.description"
-            class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+            class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
             placeholder="Enter content description"
           ></textarea>
         </div>
@@ -187,7 +187,7 @@
                 id="source"
                 v-model="form.source"
                 required
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter content source"
               />
             </div>
@@ -204,7 +204,7 @@
                 type="text"
                 id="alt-text"
                 v-model="form.altText"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter alt text for accessibility"
               />
             </div>
@@ -227,7 +227,7 @@
               <input
                 type="datetime-local"
                 v-model="metadataForm.collection_date"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -237,7 +237,7 @@
               <input
                 type="text"
                 v-model="metadataForm.file_size"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="File size (e.g., 2MB)"
               />
             </div>
@@ -248,7 +248,7 @@
               <input
                 type="text"
                 v-model="metadataForm.aperture"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="f/2.8"
               />
             </div>
@@ -259,7 +259,7 @@
               <input
                 type="text"
                 v-model="metadataForm.location"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="GPS coordinates or location name"
               />
             </div>
@@ -270,7 +270,7 @@
               <input
                 type="text"
                 v-model="metadataForm.model"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Camera model"
               />
             </div>
@@ -281,7 +281,7 @@
               <input
                 type="text"
                 v-model="metadataForm.ISO"
-                class="w-full px-4 py-3 placeholder-black dark:placeholder-white bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 placeholder-gray-600 dark:placeholder-gray-300 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="ISO value"
               />
             </div>
@@ -292,7 +292,7 @@
               <input
                 type="text"
                 v-model="metadataForm.dimensions"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="1920x1080"
               />
             </div>

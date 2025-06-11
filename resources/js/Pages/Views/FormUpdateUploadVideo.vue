@@ -40,7 +40,7 @@
                 id="title"
                 v-model="form.title"
                 required
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter content title"
               />
             </div>
@@ -143,7 +143,7 @@
                 type="text"
                 id="tag"
                 v-model="form.tag"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Tag"
               />
             </div>
@@ -273,7 +273,7 @@
           <textarea
             id="description"
             v-model="form.description"
-            class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+            class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
             placeholder="Enter content description"
           ></textarea>
         </div>
@@ -294,7 +294,7 @@
                 id="source"
                 v-model="form.source"
                 required
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter content source"
               />
             </div>
@@ -313,7 +313,7 @@
                 type="text"
                 id="link-youtube"
                 v-model="form.link_youtube"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter Link youtube"
               />
             </div>
@@ -336,7 +336,7 @@
               <input
                 type="text"
                 v-model="metadataForm.location"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Location where video was taken"
               />
             </div>
@@ -347,7 +347,7 @@
               <input
                 type="text"
                 v-model="metadataForm.file_size"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="File size (e.g., 50MB)"
               />
             </div>
@@ -358,7 +358,7 @@
               <input
                 type="text"
                 v-model="metadataForm.frame_rate"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="30 fps"
               />
             </div>
@@ -369,7 +369,7 @@
               <input
                 type="text"
                 v-model="metadataForm.resolution"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="1920x1080"
               />
             </div>
@@ -380,7 +380,7 @@
               <input
                 type="text"
                 v-model="metadataForm.duration"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Duration in seconds"
               />
             </div>
@@ -391,7 +391,7 @@
               <input
                 type="text"
                 v-model="metadataForm.format_file"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="mp4, avi, etc."
               />
             </div>
@@ -402,7 +402,7 @@
               <input
                 type="text"
                 v-model="metadataForm.codec_video_audio"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Video codec and audio codec information"
               />
             </div>
@@ -413,7 +413,7 @@
               <input
                 type="datetime-local"
                 v-model="metadataForm.collection_date"
-                class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full placeholder-gray-600 dark:placeholder-gray-300 px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
