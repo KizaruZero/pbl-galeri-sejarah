@@ -107,11 +107,7 @@ class CommentController extends Controller
         // Add user data to response for immediate display
         $comment->load('user');
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Comment submitted for moderation',
-            'data' => $comment
-        ]);
+        return response()->json($comment);
     }
 
     public function destroyPhotoComment(Request $request, $id)

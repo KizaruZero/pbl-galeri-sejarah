@@ -473,6 +473,11 @@
         'Accept': 'application/json',
     };
 
+    const handleAvatarError = (e) => {
+        e.target.src = "/js/Assets/default-photo.jpg";
+    };
+
+
     // Helper function for media URLs
     const getMediaUrl = (url) => {
         console.log('Processing URL:', url); // Debug log
