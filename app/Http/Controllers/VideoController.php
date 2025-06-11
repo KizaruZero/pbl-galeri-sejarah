@@ -299,7 +299,7 @@ class VideoController extends Controller
             'thumbnail' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp',
             'source' => 'nullable|string|max:255',
             'tag' => 'nullable|string|max:255',
-            'link_youtube' => 'nullable|url|max:255',
+            'link_youtube' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'metadata.location' => 'nullable|string|max:75',
             'metadata.file_size' => 'nullable|string|max:10',
@@ -327,6 +327,9 @@ class VideoController extends Controller
             $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
             $data['video_url'] = 'video_content/' . $videoFilename;
 
+            // Clear YouTube link when video file is uploaded
+            $data['link_youtube'] = null;
+
             // Update metadata for new video
             $this->extractAndSaveVideoMetadata($videoFile, $video->id);
         }
@@ -346,10 +349,33 @@ class VideoController extends Controller
         }
 
         // Update text fields
-        $fields = ['title', 'description', 'source', 'tag', 'link_youtube'];
+        $fields = ['title', 'description', 'source', 'tag'];
         foreach ($fields as $field) {
             if ($request->has($field)) {
                 $data[$field] = $request->input($field);
+            }
+        }
+
+        // Handle YouTube link only if no video file is being uploaded and no existing video_url
+        if (!$request->hasFile('video_url') && $request->has('link_youtube')) {
+            $linkYoutube = trim($request->input('link_youtube'));
+            if (!empty($linkYoutube)) {
+                // Validate YouTube URL format
+                if (filter_var($linkYoutube, FILTER_VALIDATE_URL) && 
+                    (strpos($linkYoutube, 'youtube.com') !== false || strpos($linkYoutube, 'youtu.be') !== false)) {
+                    $data['link_youtube'] = $linkYoutube;
+                    // Clear video_url when YouTube link is provided
+                    if ($video->video_url) {
+                        Storage::disk('public')->delete($video->video_url);
+                        $data['video_url'] = null;
+                    }
+                } else {
+                    return response()->json([
+                        'message' => 'Invalid YouTube URL format'
+                    ], 422);
+                }
+            } else {
+                $data['link_youtube'] = null;
             }
         }
 

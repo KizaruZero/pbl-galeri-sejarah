@@ -313,9 +313,13 @@
                 type="text"
                 id="link-youtube"
                 v-model="form.link_youtube"
-                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :disabled="!!form.video || !!videoPreview"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Enter Link youtube"
               />
+              <p v-if="form.video || videoPreview" class="mt-1 text-xs text-yellow-400">
+                Remove uploaded video to use YouTube link
+              </p>
             </div>
           </div>
         </div>
@@ -504,9 +508,13 @@ const submitForm = async () => {
     formData.append("title", form.value.title);
     formData.append("description", form.value.description);
     formData.append("source", form.value.source);
-    formData.append("link_youtube", form.value.link_youtube);
     formData.append("tag", form.value.tag);
     formData.append("category_id", form.value.category_id);
+
+    // Only append link_youtube if no video file and it's not empty
+    if (!form.value.video && form.value.link_youtube && form.value.link_youtube.trim() !== '') {
+      formData.append("link_youtube", form.value.link_youtube.trim());
+    }
 
     // Only append video if it's a new File object
     if (form.value.video instanceof File) {
@@ -661,10 +669,8 @@ const handleThumbnailUpload = async (event) => {
 
 const removeVideo = () => {
   form.value.video = null;
-  form.value.link_youtube = "";
   videoName.value = "";
   videoPreview.value = "";
-  youtubeVideoId.value = "";
   if (videoInput.value) {
     videoInput.value.value = "";
   }
