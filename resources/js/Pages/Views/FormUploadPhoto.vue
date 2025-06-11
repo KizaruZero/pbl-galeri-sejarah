@@ -510,7 +510,7 @@ onMounted(async () => {
     try {
         const response = await axios.get("/api/categories");
         // Ensure we're getting the data property from the response
-        categories.value = response.data.data || [];
+        categories.value = response.data.data || response.data || [];
 
         // Sort categories alphabetically by name if needed
         categories.value.sort((a, b) =>

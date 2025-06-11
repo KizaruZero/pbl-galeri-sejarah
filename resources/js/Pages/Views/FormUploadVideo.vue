@@ -861,7 +861,7 @@ onMounted(async () => {
 
     try {
         const response = await axios.get("/api/categories");
-        categories.value = response.data.data || [];
+        categories.value = response.data.data || response.data || [];
         categories.value.sort((a, b) =>
             a.category_name.localeCompare(b.category_name)
         );

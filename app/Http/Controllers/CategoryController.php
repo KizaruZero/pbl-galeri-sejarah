@@ -13,7 +13,9 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all(); // Ambil semua data kategori
-        return response()->json($categories);
+        return response()->json([
+            'data' => $categories
+        ]);
     }
 
     /**

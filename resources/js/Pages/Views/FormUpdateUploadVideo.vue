@@ -565,7 +565,7 @@ const loadData = async () => {
   try {
     // Load categories
     const categoriesResponse = await axios.get("/api/categories");
-    categories.value = categoriesResponse.data.data || [];
+    categories.value = categoriesResponse.data.data || categoriesResponse.data || [];
     categories.value.sort((a, b) => a.category_name.localeCompare(b.category_name));
 
     // Load video data
