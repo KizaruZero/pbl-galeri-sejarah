@@ -30,7 +30,7 @@ class ArticleSeeder extends Seeder
 
 
         // Create 50 sample articles
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $title = $faker->sentence(6, true);
             $status = $faker->randomElement(['draft', 'published', 'archived']);
             $publishedAt = $status === 1 ? $faker->dateTimeBetween('-1 year', 'now') : null;
