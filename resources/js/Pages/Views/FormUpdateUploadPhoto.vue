@@ -221,7 +221,7 @@
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-mediumtext-black dark:text-white mb-2"
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
                 >Collection Date</label
               >
               <input
@@ -232,24 +232,13 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-black dark:text-white mb-2"
-                >Camera Model</label
+                >File Size</label
               >
               <input
                 type="text"
-                v-model="metadataForm.model"
+                v-model="metadataForm.file_size"
                 class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Camera model"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-black dark:text-white mb-2"
-                >ISO</label
-              >
-              <input
-                type="text"
-                v-model="metadataForm.ISO"
-                class="w-full px-4 py-3 placeholder-black dark:placeholder-white bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="ISO value"
+                placeholder="File size (e.g., 2MB)"
               />
             </div>
             <div>
@@ -272,6 +261,28 @@
                 v-model="metadataForm.location"
                 class="w-full placeholder-black dark:placeholder-white px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="GPS coordinates or location name"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >Camera Model</label
+              >
+              <input
+                type="text"
+                v-model="metadataForm.model"
+                class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Camera model"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black dark:text-white mb-2"
+                >ISO</label
+              >
+              <input
+                type="text"
+                v-model="metadataForm.ISO"
+                class="w-full px-4 py-3 placeholder-black dark:placeholder-white bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="ISO value"
               />
             </div>
             <div>
@@ -335,10 +346,11 @@ const photoId = window.location.pathname.split("/").pop();
 const showMetadataForm = ref(true);
 const metadataForm = ref({
   collection_date: "",
-  model: "",
-  ISO: "",
+  file_size: "",
   aperture: "",
   location: "",
+  model: "",
+  ISO: "",
   dimensions: "",
 });
 
@@ -385,11 +397,12 @@ onMounted(async () => {
     if (photo.metadata_photo) {
       metadataForm.value = {
         collection_date: formatDateForInput(photo.metadata_photo.collection_date),
-        model: photo.metadata_photo.model,
-        ISO: photo.metadata_photo.ISO,
-        aperture: photo.metadata_photo.aperture,
-        location: photo.metadata_photo.location,
-        dimensions: photo.metadata_photo.dimensions,
+        file_size: photo.metadata_photo.file_size || "",
+        aperture: photo.metadata_photo.aperture || "",
+        location: photo.metadata_photo.location || "",
+        model: photo.metadata_photo.model || "",
+        ISO: photo.metadata_photo.ISO || "",
+        dimensions: photo.metadata_photo.dimensions || "",
       };
     }
   } catch (error) {
@@ -475,10 +488,11 @@ const submitForm = async () => {
 
     // Add metadata to formData
     formData.append("metadata[collection_date]", metadataForm.value.collection_date);
-    formData.append("metadata[model]", metadataForm.value.model);
-    formData.append("metadata[ISO]", metadataForm.value.ISO);
+    formData.append("metadata[file_size]", metadataForm.value.file_size);
     formData.append("metadata[aperture]", metadataForm.value.aperture);
     formData.append("metadata[location]", metadataForm.value.location);
+    formData.append("metadata[model]", metadataForm.value.model);
+    formData.append("metadata[ISO]", metadataForm.value.ISO);
     formData.append("metadata[dimensions]", metadataForm.value.dimensions);
 
     const response = await axios.post(

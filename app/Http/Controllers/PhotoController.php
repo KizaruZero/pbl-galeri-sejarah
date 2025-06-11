@@ -260,11 +260,12 @@ class PhotoController extends Controller
                 'tag' => 'nullable|string|max:255',
                 'category_id' => 'required|exists:categories,id',
                 'metadata.collection_date' => 'nullable|date',
-                'metadata.model' => 'nullable|string',
-                'metadata.ISO' => 'nullable|string',
-                'metadata.aperture' => 'nullable|string',
-                'metadata.location' => 'nullable|string',
-                'metadata.dimensions' => 'nullable|string',
+                'metadata.file_size' => 'nullable|string|max:10',
+                'metadata.aperture' => 'nullable|string|max:8',
+                'metadata.location' => 'nullable|string|max:75',
+                'metadata.model' => 'nullable|string|max:50',
+                'metadata.ISO' => 'nullable|string|max:10',
+                'metadata.dimensions' => 'nullable|string|max:12',
             ]);
 
             \Log::info('Validated data:', $validatedData);
@@ -306,10 +307,11 @@ class PhotoController extends Controller
                     ['content_photo_id' => $photo->id],
                     [
                         'collection_date' => $request->input('metadata.collection_date'),
-                        'model' => $request->input('metadata.model'),
-                        'ISO' => $request->input('metadata.ISO'),
+                        'file_size' => $request->input('metadata.file_size'),
                         'aperture' => $request->input('metadata.aperture'),
                         'location' => $request->input('metadata.location'),
+                        'model' => $request->input('metadata.model'),
+                        'ISO' => $request->input('metadata.ISO'),
                         'dimensions' => $request->input('metadata.dimensions'),
                     ]
                 );
