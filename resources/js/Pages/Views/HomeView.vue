@@ -2,7 +2,7 @@
     <main>
         <MainLayout>
             <SeoHead
-                title="Galeri Sejarah"
+                title="Pesona Surakarta"
                 description="Kumpulan Foto, Video, Event dan Sejarah"
             />
 
