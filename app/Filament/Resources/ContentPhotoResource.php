@@ -169,10 +169,15 @@ class ContentPhotoResource extends Resource
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state === 'approved') {
                             $set('approved_at', now()->toDateTimeString());
+                            $set('note', ''); // Clear note when approved
                         } else {
                             $set('approved_at', null);
                         }
                     }),
+                Forms\Components\Textarea::make('note')
+                    ->label('Rejection Note')
+                    ->required(fn(callable $get) => $get('status') === 'rejected')
+                    ->hidden(fn(callable $get) => $get('status') !== 'rejected'),
                 Forms\Components\DateTimePicker::make('approved_at')
                     ->hidden()
                     ->dehydrated(true),
@@ -294,7 +299,13 @@ class ContentPhotoResource extends Resource
     {
         return [
             Tables\Actions\ViewAction::make(),
-            Tables\Actions\EditAction::make(),
+            Tables\Actions\EditAction::make()
+                ->beforeFormFilled(function (ContentPhoto $record) {
+                    $record->update([
+                        'status' => 'pending',
+                        'note' => null
+                    ]);
+                }),
             Tables\Actions\DeleteAction::make(),
             Action::make('approve')
                 ->label('Approve')

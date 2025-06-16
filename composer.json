@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^3.3",
-        "bilfeldt/laravel-route-statistics": "^3.4",
+        "bilfeldt/laravel-route-statistics": "^4.2",
         "filament/filament": "3.2.57",
         "flowframe/laravel-trend": "^0.4.0",
         "inertiajs/inertia-laravel": "^2.0",
