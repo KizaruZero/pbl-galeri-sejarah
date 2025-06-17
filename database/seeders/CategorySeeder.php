@@ -15,26 +15,26 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['category_name' => 'Nature'],
-            ['category_name' => 'Wildlife'],
-            ['category_name' => 'Urban'],
-            ['category_name' => 'Travel'],
-            ['category_name' => 'Portrait'],
-            ['category_name' => 'Short Films'],
-            ['category_name' => 'Fashion'],
-            ['category_name' => 'Music'],
-            ['category_name' => 'Street'],
-            ['category_name' => 'Event'],
-            ['category_name' => 'Sports'],
-            ['category_name' => 'Movies'],
-            ['category_name' => 'Food'],
-            ['category_name' => 'Cinematic'],
-            ['category_name' => 'Wedding'],
-            ['category_name' => 'Animation'],
-            ['category_name' => 'Astrophotography'],
-            ['category_name' => 'Education'],
-            ['category_name' => 'Black & White'],
-            ['category_name' => 'Drone'],
+            [
+                'category_name' => 'Makanan Tradisional',
+                'category_image' => 'category/Makanan.jpg'
+            ],
+            [
+                'category_name' => 'Seni Budaya',
+                'category_image' => 'category/Seni.jpg'
+            ],
+            [
+                'category_name' => 'Tempat Bersejarah',
+                'category_image' => 'category/Tempat.jpg'
+            ],
+            [
+                'category_name' => 'Alam dan Ruang Terbuka',
+                'category_image' => 'category/Terbuka.png'
+            ],
+            [
+                'category_name' => 'Acara dan Festival',
+                'category_image' => 'category/Festival.jpg'
+            ],
         ];
 
         foreach ($categories as $category) {

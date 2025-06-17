@@ -141,7 +141,7 @@ class InstallController extends Controller
             }
 
             // create db  seed
-            Artisan::call('db:seed');
+            Artisan::call('db:seed', ['--force' => true]);
             // Step 7: Create company profile
             try {
                 CompanyProfile::create([
