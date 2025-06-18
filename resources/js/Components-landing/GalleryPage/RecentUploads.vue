@@ -105,7 +105,7 @@
                             >
                                 <img
                                     :src="item.image_url"
-                                    :alt="title"
+                                    :alt="item.title"
                                     @error="handleAvatarError"
                                     class="w-full h-full object-cover rounded-t-xl"
                                 />
@@ -229,7 +229,7 @@
                             >
                                 <img
                                     :src="item.thumbnail"
-                                    :alt="title"
+                                    :alt="item.title"
                                     @error="handleAvatarError"
                                     class="w-full h-full object-cover rounded-t-xl"
                                 />

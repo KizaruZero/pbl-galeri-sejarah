@@ -66,8 +66,8 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->required(),
                     ])->columns(2),
 
-                Section::make('Background Images')
-                    ->description('These images will be used as background images for the home, events, gallery, and article sections. Recommended image size: 16:9 aspect ratio (e.g. 1920x1080 pixels)')
+                Section::make('Home Pages')
+                    ->description('Section ini digunakan untuk mengubah/mengisi background slide pada halaman home dan juga text yang ada di halaman home')
                     ->schema([
                         FileUpload::make('bg_home_1')
                             ->label('Home Background Slide 1')
@@ -81,10 +81,15 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->label('Home Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
+                    ])->columns(3),
+
+                Section::make('Events Pages')
+                    ->description('Section ini digunakan untuk mengubah/mengisi background slide pada halaman events dan juga text yang ada di halaman events')
+                    ->schema([
                         FileUpload::make('bg_events_1')
-                            ->label('Events Background Slide 1')
-                            ->image()
-                            ->directory('company-profile/backgrounds'),
+                        ->label('Events Background Slide 1')
+                        ->image()
+                        ->directory('company-profile/backgrounds'),
                         FileUpload::make('bg_events_2')
                             ->label('Events Background Slide 2')
                             ->image()
@@ -93,6 +98,14 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->label('Events Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
+                        Textarea::make('events_text')
+                            ->label('Events Text')
+                            ->columnSpanFull(),
+                        ])->columns(3),
+
+                Section::make('Gallery Pages')
+                    ->description('Section ini digunakan untuk mengubah/mengisi background slide pada halaman gallery dan juga text yang ada di halaman gallery')
+                    ->schema([
                         FileUpload::make('bg_gallery_1')
                             ->label('Gallery Background Slide 1')
                             ->image()
@@ -105,6 +118,14 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->label('Gallery Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
+                        Textarea::make('gallery_text')
+                            ->label('Gallery Text')
+                            ->columnSpanFull(),
+                    ])->columns(3),
+
+                Section::make('Article Pages')
+                    ->description('Section ini digunakan untuk mengubah/mengisi background slide pada halaman article dan juga text yang ada di halaman article')
+                    ->schema([
                         FileUpload::make('bg_article_1')
                             ->label('Article Background Slide 1')
                             ->image()
@@ -117,6 +138,14 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->label('Article Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
+                        Textarea::make('article_text')
+                            ->label('Article Text')
+                            ->columnSpanFull(),
+                    ])->columns(3),
+
+                Section::make('Member Pages')
+                    ->description('Section ini digunakan untuk mengubah/mengisi background slide pada halaman member dan juga text yang ada di halaman member')
+                    ->schema([
                         FileUpload::make('bg_member_1')
                             ->label('Member Background Slide 1')
                             ->image()
@@ -129,24 +158,10 @@ class CompanyProfileSettings extends Page implements HasForms
                             ->label('Member Background Slide 3')
                             ->image()
                             ->directory('company-profile/backgrounds'),
-                    ])->columns(3),
-
-                Section::make('Content')
-                    ->description('These are the text for the home, events, gallery, and article sections. You can change the text to your own content.')
-                    ->schema([
-                        Textarea::make('events_text')
-                            ->label('Events Text')
-                            ->columnSpanFull(),
-                        Textarea::make('gallery_text')
-                            ->label('Gallery Text')
-                            ->columnSpanFull(),
-                        Textarea::make('article_text')
-                            ->label('Article Text')
-                            ->columnSpanFull(),
                         Textarea::make('member_text')
                             ->label('Member Text')
                             ->columnSpanFull(),
-                    ]),
+                    ])->columns(3),
             ])
             ->statePath('data')
             ->model(CompanyProfile::class);

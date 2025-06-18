@@ -134,7 +134,7 @@
                                 <a @click.prevent="navigateToDetail(photo)" class="block cursor-pointer">
                                     <div class="relative">
                                         <img :src="photo.image_url" :alt="photo.title"
-                                            class="w-full h-48 object-cover" />
+                                            class="w-full h-48 object-cover" @error="handleImageError" />
                                         <div
                                             class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
                                             📸 PHOTO
@@ -270,8 +270,8 @@
                                 class="bg-zinc-200 dark:bg-zinc-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                                 <a @click.prevent="navigateToDetail(video)" class="block cursor-pointer">
                                     <div class="relative">
-                                        <img :src="video.image_url" :alt="video.title"
-                                            class="w-full h-48 object-cover" />
+                                        <img :src="video.thumbnail_url" :alt="video.title"
+                                            class="w-full h-48 object-cover" @error="handleImageError" />
                                         <div
                                             class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
                                             🎥 VIDEO
@@ -491,6 +491,11 @@
     } from "vue";
     import axios from "axios";
     import Fuse from "fuse.js";
+
+    // Add image error handler
+    const handleImageError = (e) => {
+        e.target.src = "/js/Assets/default-photo.jpg";
+    };
 
     // UI State
     const showDropdown = ref(false);

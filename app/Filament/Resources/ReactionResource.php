@@ -28,8 +28,8 @@ class ReactionResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('icon')
-                    ->image()
-                    ->public()
+                    ->image()   
+                    ->disk('public')
                     ->directory('reactions')
                     ->required()
                     ->maxSize(1024),
