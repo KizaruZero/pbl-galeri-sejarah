@@ -1,0 +1,88 @@
+@import "/vendor/filament/filament/resources/css/theme.css";
+@config 'tailwind.config.js';
+
+.fi-sidebar {
+    background-color: #548ca8 !important;
+
+    @apply dark:!bg-[#1B262C];
+
+    .fi-sidebar-header {
+        .fi-icon-btn-icon {
+            @apply text-white !important;
+        }
+    }
+
+    .fi-sidebar-group-label,
+    .fi-icon-btn-icon,
+    .fi-sidebar-group-icon,
+    .fi-sidebar-item-icon,
+    .fi-sidebar-item-button,
+    .fi-sidebar-item-label {
+        @apply text-white !important;
+    }
+
+    .fi-sidebar-item-active {
+        .fi-sidebar-item-button {
+            background-color: #334257 !important;
+            @apply text-white !important;
+        }
+    }
+
+    .fi-sidebar-item,
+    .fi-sidebar-item-button {
+        :hover {
+            background-color: #334257 !important;
+            @apply text-white !important;
+        }
+    }
+
+    .fi-icon-btn {
+        :hover {
+            @apply text-white !important;
+        }
+    }
+
+    .fi-sidebar-nav-groups {
+        @apply gap-y-0;
+    }
+}
+
+[data-theme="dark"] .fi-sidebar {
+    background-color: #1b262c !important;
+
+    .fi-sidebar-header {
+        .fi-icon-btn-icon {
+            @apply text-white !important;
+        }
+    }
+
+    .fi-sidebar-group-label,
+    .fi-icon-btn-icon,
+    .fi-sidebar-group-icon,
+    .fi-sidebar-item-icon,
+    .fi-sidebar-item-button,
+    .fi-sidebar-item-label {
+        @apply text-white !important;
+    }
+
+    .fi-sidebar-item-active {
+        .fi-sidebar-item-button {
+            background-color: #3282b8 !important;
+            @apply text-white !important;
+        }
+    }
+
+    .fi-sidebar-item,
+    .fi-sidebar-item-button {
+        :hover {
+            background-color: #3282b8 !important;
+            @apply text-white !important;
+        }
+    }
+
+    .fi-icon-btn {
+        :hover {
+            @apply text-white !important;
+        }
+    }
+}

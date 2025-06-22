@@ -22,6 +22,7 @@ use Filament\Navigation\NavigationItem;
 use Rupadana\ApiService\ApiServicePlugin;
 use App\Filament\Pages\CompanyProfileSettings;
 
+use Filament\Enums\ThemeMode;
 
 
 
@@ -34,13 +35,14 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('dashboard')
             ->login()
+            ->defaultThemeMode(ThemeMode::Light)
             ->colors([
                 'primary' => Color::Indigo,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path(path: 'Filament/Widgets'), for: 'App\\Filament\\Widgets')
-
             ->widgets([
                 \App\Filament\Widgets\LastLoggedInUsers::class,
 
