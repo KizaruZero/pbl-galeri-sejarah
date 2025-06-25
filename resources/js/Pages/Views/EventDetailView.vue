@@ -1,52 +1,52 @@
 <template>
     <MainLayout>
-        <div class="min-h-screen bg-black">
+        <div class="min-h-screen bg-white dark:bg-black">
             <!-- Loading state -->
             <div v-if="loading" class="animate-pulse">
                 <!-- Image placeholder -->
-                <div class="w-full h-[30vh] md:h-[70vh] bg-gray-800"></div>
+                <div class="w-full h-[30vh] md:h-[70vh] bg-zinc-900"></div>
 
                 <!-- Content placeholder -->
                 <div class="p-4 md:p-6 mx-4 md:mx-24">
                     <div class="flex justify-between mb-6">
-                        <div class="h-8 w-3/4 bg-gray-700 rounded"></div>
+                        <div class="h-8 w-3/4 bg-zinc-800 rounded"></div>
                         <div class="flex space-x-4">
-                            <div class="h-8 w-8 bg-gray-700 rounded-full"></div>
-                            <div class="h-8 w-8 bg-gray-700 rounded-full"></div>
+                            <div class="h-8 w-8 bg-zinc-800 rounded-full"></div>
+                            <div class="h-8 w-8 bg-zinc-800 rounded-full"></div>
                         </div>
                     </div>
 
                     <!-- Date placeholder -->
                     <div class="flex items-center mb-4">
-                        <div class="h-4 w-4 bg-gray-700 rounded-full mr-2"></div>
-                        <div class="h-4 w-1/2 bg-gray-700 rounded"></div>
+                        <div class="h-4 w-4 bg-zinc-800 rounded-full mr-2"></div>
+                        <div class="h-4 w-1/2 bg-zinc-800 rounded"></div>
                     </div>
 
                     <!-- Location placeholder -->
                     <div class="flex items-center mb-4">
-                        <div class="h-4 w-4 bg-gray-700 rounded-full mr-2"></div>
-                        <div class="h-4 w-2/3 bg-gray-700 rounded"></div>
+                        <div class="h-4 w-4 bg-zinc-800 rounded-full mr-2"></div>
+                        <div class="h-4 w-2/3 bg-zinc-800 rounded"></div>
                     </div>
 
                     <!-- Contact placeholder -->
                     <div class="flex items-center mb-4">
-                        <div class="h-4 w-4 bg-gray-700 rounded-full mr-2"></div>
-                        <div class="h-4 w-1/3 bg-gray-700 rounded"></div>
+                        <div class="h-4 w-4 bg-zinc-800 rounded-full mr-2"></div>
+                        <div class="h-4 w-1/3 bg-zinc-800 rounded"></div>
                     </div>
 
                     <!-- Social links placeholder -->
                     <div class="flex space-x-4 mb-6">
-                        <div class="h-6 w-20 bg-gray-700 rounded"></div>
-                        <div class="h-6 w-20 bg-gray-700 rounded"></div>
-                        <div class="h-6 w-20 bg-gray-700 rounded"></div>
+                        <div class="h-6 w-20 bg-zinc-800 rounded"></div>
+                        <div class="h-6 w-20 bg-zinc-800 rounded"></div>
+                        <div class="h-6 w-20 bg-zinc-800 rounded"></div>
                     </div>
 
                     <!-- Description placeholder -->
                     <div class="space-y-2">
-                        <div class="h-4 w-full bg-gray-700 rounded"></div>
-                        <div class="h-4 w-5/6 bg-gray-700 rounded"></div>
-                        <div class="h-4 w-4/6 bg-gray-700 rounded"></div>
-                        <div class="h-4 w-3/4 bg-gray-700 rounded"></div>
+                        <div class="h-4 w-full bg-zinc-800 rounded"></div>
+                        <div class="h-4 w-5/6 bg-zinc-800 rounded"></div>
+                        <div class="h-4 w-4/6 bg-zinc-800 rounded"></div>
+                        <div class="h-4 w-3/4 bg-zinc-800 rounded"></div>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                         <div class="w-full overflow-hidden">
                             <!-- Empty state for image -->
                             <div v-if="!event.imageUrl || imageError"
-                                class="w-full h-[30vh] md:h-[70vh] bg-zinc-900 flex items-center justify-center">
+                                class="w-full h-[30vh] md:h-[70vh] bg-gray-200 dark:bg-gray-950 flex items-center justify-center">
                                 <div class="text-center">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-16 w-16 md:h-24 md:w-24 mx-auto text-gray-600"
@@ -85,7 +85,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <p class="mt-4 text-gray-400 text-sm md:text-base">No image available</p>
+                                    <p class="mt-4 text-black dark:text-white text-sm md:text-base">No image available</p>
                                 </div>
                             </div>
 
@@ -102,25 +102,25 @@
                 </div>
 
                 <!-- Main Event Card -->
-                <div class="bg-black rounded-lg shadow-xl overflow-hidden">
+                <div class="bg-white dark:bg-black rounded-lg shadow-xl overflow-hidden">
                     <!-- Event Details -->
                     <div class="p-6 md:p-10 mx-4 md:mx-24">
 
                         <!-- Event Title -->
                         <div class="mb-6">
-                            <h1 class="text-2xl md:text-3xl font-bold text-white">
+                            <h1 class="text-2xl md:text-3xl font-bold text-black dark:text-white">
                                 {{ event.title }}
                             </h1>
                         </div>
 
                         <!-- Event Dates -->
                         <div class="flex items-center mb-3 md:mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-400 mr-2" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-black dark:text-white mr-2" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span class="text-gray-300 text-sm md:text-base">
+                            <span class="text-gray-500 dark:text-gray-400 text-sm md:text-base">
                                 {{ formatDate(event.date_start) }}
                                 <span v-if="event.date_end"> - {{ formatDate(event.date_end) }}</span>
                             </span>
@@ -128,7 +128,7 @@
 
                         <!-- Event Location -->
                         <div class="flex items-start md:items-center mb-3 md:mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-400 mr-2 mt-1 md:mt-0"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-black dark:text-white mr-2 mt-1 md:mt-0"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -136,7 +136,7 @@
                                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             <div class="flex flex-col md:flex-row md:items-center">
-                                <span class="text-gray-300 text-sm md:text-base">{{ event.location }}</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-sm md:text-base">{{ event.location }}</span>
                                 <a v-if="event.googleMapsUrl" :href="event.googleMapsUrl" target="_blank"
                                     class="text-sm md:ml-2 text-blue-400 hover:underline">
                                     (View on Map)
@@ -146,12 +146,12 @@
 
                         <!-- Contact Person -->
                         <div v-if="event.contactPerson" class="flex items-center mb-3 md:mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-400 mr-2" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-black dark:text-white mr-2" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-                            <span class="text-gray-300 text-sm md:text-base">Contact: {{ event.contactPerson }}</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-sm md:text-base">Contact: {{ event.contactPerson }}</span>
                         </div>
 
                         <!-- Social Links -->
@@ -185,7 +185,7 @@
                     </div>
 
                     <!-- Event Description -->
-                    <p class="text-gray-200 text-sm md:text-base mb-6 whitespace-pre-line">
+                    <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base mb-6 whitespace-pre-line">
                         {{ event.description }}
                     </p>
                 </div>
