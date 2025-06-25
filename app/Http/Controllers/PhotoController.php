@@ -119,7 +119,7 @@ class PhotoController extends Controller
 
         // Handle file upload
         if ($request->hasFile('image')) {
-            $slug = Str::slug($request->title);
+            $slug = $this->generateUniqueSlug($request->title);
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . $slug . '.' . $extension;
@@ -230,6 +230,29 @@ class PhotoController extends Controller
             'message' => 'No image file provided'
         ], 400);
     }
+    private function generateUniqueSlug($title, $excludeId = null)
+    {
+        $baseSlug = Str::slug($title);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        $query = ContentVideo::where('slug', $slug);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        while ($query->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+
+            $query = ContentVideo::where('slug', $slug);
+            if ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            }
+        }
+
+        return $slug;
+    }
 
     // update photo
     public function updatePhotoByUser(Request $request, $id)
@@ -270,7 +293,7 @@ class PhotoController extends Controller
 
             \Log::info('Validated data:', $validatedData);
 
-            $slug = Str::slug($validatedData['title']);
+            $slug = $this->generateUniqueSlug($validatedData['title']);
 
             $updateData = [
                 'title' => $validatedData['title'],

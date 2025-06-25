@@ -79,12 +79,31 @@ export const addWatermarkToVideo = async (videoFile) => {
         const watermarkText = await getCmsName();
 
         video.onloadedmetadata = () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            // Reduce canvas size for better performance
+            const maxWidth = 1280;
+            const maxHeight = 720;
 
-            const stream = canvas.captureStream();
+            let { videoWidth, videoHeight } = video;
+
+            // Scale down if video is too large
+            if (videoWidth > maxWidth || videoHeight > maxHeight) {
+                const aspectRatio = videoWidth / videoHeight;
+                if (videoWidth > videoHeight) {
+                    videoWidth = maxWidth;
+                    videoHeight = maxWidth / aspectRatio;
+                } else {
+                    videoHeight = maxHeight;
+                    videoWidth = maxHeight * aspectRatio;
+                }
+            }
+
+            canvas.width = videoWidth;
+            canvas.height = videoHeight;
+
+            const stream = canvas.captureStream(30); // Reduce frame rate to 30fps
             const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: "video/webm",
+                mimeType: "video/webm;codecs=vp8", // Use more efficient codec
+                videoBitsPerSecond: 1000000, // Reduce bitrate for faster processing
             });
 
             const chunks = [];
@@ -98,16 +117,21 @@ export const addWatermarkToVideo = async (videoFile) => {
                 resolve(watermarkedFile);
             };
 
+            let animationId;
             video.onplay = () => {
                 const drawFrame = () => {
-                    if (video.paused || video.ended) return;
+                    if (video.paused || video.ended) {
+                        cancelAnimationFrame(animationId);
+                        return;
+                    }
 
-                    // Draw current video frame
-                    ctx.drawImage(video, 0, 0);
+                    // Draw current video frame (scaled)
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    // Configure watermark
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-                    ctx.font = `${video.videoWidth * 0.08}px Arial`;
+                    // Configure watermark with optimized settings
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+                    const fontSize = Math.max(canvas.width * 0.04, 16); // Smaller font for better performance
+                    ctx.font = `${fontSize}px Arial`;
 
                     // Calculate position (center)
                     const metrics = ctx.measureText(watermarkText);
@@ -121,7 +145,7 @@ export const addWatermarkToVideo = async (videoFile) => {
                     ctx.fillText(watermarkText, -metrics.width / 2, 0);
                     ctx.restore();
 
-                    requestAnimationFrame(drawFrame);
+                    animationId = requestAnimationFrame(drawFrame);
                 };
 
                 mediaRecorder.start();
@@ -129,13 +153,20 @@ export const addWatermarkToVideo = async (videoFile) => {
             };
 
             video.onended = () => {
+                cancelAnimationFrame(animationId);
                 mediaRecorder.stop();
             };
 
+            // Set playback rate to speed up processing (optional)
+            video.playbackRate = 2.0;
             video.play();
         };
 
         video.onerror = reject;
+
+        // Mute video to prevent audio issues during processing
+        video.muted = true;
+        video.preload = "metadata";
         video.src = URL.createObjectURL(videoFile);
     });
 };

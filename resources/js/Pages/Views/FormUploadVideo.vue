@@ -19,7 +19,9 @@
                 </svg>
                 Back to Profile
             </button>
-            <h2 class="text-2xl font-bold text-center text-black dark:text-white mt-10 mb-8">
+            <h2
+                class="text-2xl font-bold text-center text-black dark:text-white mt-10 mb-8"
+            >
                 CREATE CONTENT VIDEO
             </h2>
 
@@ -59,11 +61,13 @@
                                 class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-500 border border-[#333333] rounded-lg text-black dark:text-white placeholder-black dark:placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="Enter Link youtube"
                             />
-                            <p v-if="form.video" class="mt-1 text-xs text-yellow-400">
+                            <p
+                                v-if="form.video"
+                                class="mt-1 text-xs text-yellow-400"
+                            >
                                 Remove uploaded video to use YouTube link
                             </p>
                         </div>
-
 
                         <!-- Video Upload Field -->
                         <div>
@@ -73,7 +77,10 @@
                             >
                             <div
                                 class="w-full aspect-video border-2 border-dashed border-gray-500 rounded-lg overflow-hidden hover:bg-gray-200 dark:hover:bg-gray-500 transition cursor-pointer relative"
-                                :class="{ 'opacity-50 cursor-not-allowed': form.link_youtube && !youtubeVideoId }"
+                                :class="{
+                                    'opacity-50 cursor-not-allowed':
+                                        form.link_youtube && !youtubeVideoId,
+                                }"
                                 @dragover.prevent
                                 @drop.prevent="handleVideoDrop"
                             >
@@ -123,10 +130,25 @@
                                         Your browser does not support the video
                                         tag.
                                     </video>
+                                    <!-- Processing Indicator -->
+                                    <div
+                                        v-if="isProcessingVideo"
+                                        class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                                    >
+                                        <div class="text-center text-white">
+                                            <div
+                                                class="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"
+                                            ></div>
+                                            <p class="text-sm">
+                                                Adding Watermark...
+                                            </p>
+                                        </div>
+                                    </div>
                                     <!-- Remove Button -->
                                     <button
                                         @click="removeVideo"
-                                        class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10"
+                                        :disabled="isProcessingVideo"
+                                        class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +171,11 @@
                                 <div
                                     v-else
                                     class="h-full flex flex-col items-center justify-center p-6"
-                                    @click="!form.link_youtube ? $refs.videoInput.click() : null"
+                                    @click="
+                                        !form.link_youtube
+                                            ? $refs.videoInput.click()
+                                            : null
+                                    "
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -165,13 +191,27 @@
                                             d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                                         />
                                     </svg>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
-                                        <span v-if="!form.link_youtube" class="text-blue-400 underline">Upload a video</span>
-                                        <span v-else class="text-gray-500">Clear YouTube link to upload video</span>
-                                        <br v-if="!form.link_youtube">
-                                        <span v-if="!form.link_youtube">or drag and drop</span>
+                                    <p
+                                        class="text-sm text-gray-500 dark:text-gray-400 text-center"
+                                    >
+                                        <span
+                                            v-if="!form.link_youtube"
+                                            class="text-blue-400 underline"
+                                            >Upload a video</span
+                                        >
+                                        <span v-else class="text-gray-500"
+                                            >Clear YouTube link to upload
+                                            video</span
+                                        >
+                                        <br v-if="!form.link_youtube" />
+                                        <span v-if="!form.link_youtube"
+                                            >or drag and drop</span
+                                        >
                                     </p>
-                                    <p v-if="!form.link_youtube" class="mt-1 text-xs text-gray-800 dark:text-gray-200">
+                                    <p
+                                        v-if="!form.link_youtube"
+                                        class="mt-1 text-xs text-gray-800 dark:text-gray-200"
+                                    >
                                         MP4, WebM, OGG up to 100MB
                                     </p>
                                 </div>
@@ -192,10 +232,19 @@
                                 class="mt-2 text-sm text-gray-500 dark:text-gray-400 truncate"
                             >
                                 {{ videoName }}
+                                <span
+                                    v-if="isProcessingVideo"
+                                    class="text-yellow-500 ml-2"
+                                >
+                                    (Processing watermark...)
+                                </span>
                             </p>
                             <!-- Instructions -->
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                Choose either YouTube link OR upload a video file
+                            <p
+                                class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                Choose either YouTube link OR upload a video
+                                file
                             </p>
                         </div>
                     </div>
@@ -217,7 +266,7 @@
                                 placeholder="Enter tags"
                             />
                         </div>
-<!-- Category Field -->
+                        <!-- Category Field -->
                         <div>
                             <label
                                 for="category"
@@ -298,10 +347,25 @@
                                         alt="Thumbnail Preview"
                                         class="w-full h-full object-contain bg-[#1a1a1a]"
                                     />
+                                    <!-- Processing Indicator -->
+                                    <div
+                                        v-if="isProcessingThumbnail"
+                                        class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                                    >
+                                        <div class="text-center text-white">
+                                            <div
+                                                class="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"
+                                            ></div>
+                                            <p class="text-sm">
+                                                Adding Watermark...
+                                            </p>
+                                        </div>
+                                    </div>
                                     <!-- Remove Button -->
                                     <button
                                         @click="removeThumbnail"
-                                        class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10"
+                                        :disabled="isProcessingThumbnail"
+                                        class="absolute top-2 right-2 p-1 hover:bg-black rounded-full text-white shadow-lg transition-colors z-10 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -348,13 +412,17 @@
                                             stroke-width="2"
                                         />
                                     </svg>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    <p
+                                        class="text-sm text-gray-500 dark:text-gray-400"
+                                    >
                                         <span class="text-blue-400 underline"
                                             >Upload a thumbnail</span
                                         >
                                         or drag and drop
                                     </p>
-                                    <p class="mt-1 text-xs text-gray-800 dark:text-gray-200">
+                                    <p
+                                        class="mt-1 text-xs text-gray-800 dark:text-gray-200"
+                                    >
                                         PNG, JPG, GIF up to 10MB
                                     </p>
                                 </div>
@@ -374,10 +442,14 @@
                                 class="mt-2 text-sm text-gray-400 truncate"
                             >
                                 {{ thumbnailName }}
+                                <span
+                                    v-if="isProcessingThumbnail"
+                                    class="text-yellow-500 ml-2"
+                                >
+                                    (Processing watermark...)
+                                </span>
                             </p>
                         </div>
-
-
                     </div>
                 </div>
 
@@ -448,7 +520,10 @@ import MainLayout from "@/Layouts/MainLayout.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "lite-youtube-embed/src/lite-yt-embed.css";
-import { addWatermarkToImage, addWatermarkToVideo } from '@/Services/WatermarkService';
+import {
+    addWatermarkToImage,
+    addWatermarkToVideo,
+} from "@/Services/WatermarkService";
 
 const form = ref({
     title: "",
@@ -470,6 +545,8 @@ const videoPreview = ref("");
 const thumbnailName = ref("");
 const thumbnailPreview = ref("");
 const youtubeVideoId = ref("");
+const isProcessingVideo = ref(false);
+const isProcessingThumbnail = ref(false);
 
 // YouTube URL validation function
 const getYoutubeVideoId = (url) => {
@@ -507,23 +584,61 @@ const handleVideoUpload = async (event) => {
     }
 
     try {
-        // Add watermark to video
+        // Show immediate preview using original file
+        videoName.value = file.name;
+        videoPreview.value = URL.createObjectURL(file);
+
+        // Set processing state
+        isProcessingVideo.value = true;
+
+        // Show loading notification
+        const loadingToast = Swal.fire({
+            title: "Processing Video...",
+            html: "Adding watermark to video in background",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
+
+        // Add watermark in background
         const watermarkedVideo = await addWatermarkToVideo(file);
         form.value.video = watermarkedVideo;
-        videoName.value = file.name;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            videoPreview.value = e.target.result;
-        };
-        reader.readAsDataURL(watermarkedVideo);
-    } catch (error) {
-        console.error('Error adding watermark to video:', error);
+        // Update preview with watermarked version
+        if (videoPreview.value.startsWith("blob:")) {
+            URL.revokeObjectURL(videoPreview.value);
+        }
+        videoPreview.value = URL.createObjectURL(watermarkedVideo);
+
+        // Close loading and show success
+        loadingToast.close();
+
+        // Show brief success notification
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to add watermark to video.',
+            icon: "success",
+            title: "Video Processed!",
+            text: "Watermark has been added to your video",
+            timer: 2000,
+            showConfirmButton: false,
         });
+    } catch (error) {
+        console.error("Error adding watermark to video:", error);
+
+        // Fallback to original file if watermarking fails
+        form.value.video = file;
+
+        Swal.fire({
+            icon: "warning",
+            title: "Watermark Failed",
+            text: "Using original video without watermark. Please try again or contact support.",
+            timer: 3000,
+            showConfirmButton: false,
+        });
+    } finally {
+        isProcessingVideo.value = false;
     }
 };
 
@@ -550,23 +665,37 @@ const handleThumbnailUpload = async (event) => {
     }
 
     try {
-        // Add watermark to thumbnail
+        // Show immediate preview
+        thumbnailName.value = file.name;
+        thumbnailPreview.value = URL.createObjectURL(file);
+
+        // Set processing state
+        isProcessingThumbnail.value = true;
+
+        // Add watermark in background
         const watermarkedThumbnail = await addWatermarkToImage(file);
         form.value.thumbnail = watermarkedThumbnail;
-        thumbnailName.value = file.name;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            thumbnailPreview.value = e.target.result;
-        };
-        reader.readAsDataURL(watermarkedThumbnail);
+        // Update preview with watermarked version
+        if (thumbnailPreview.value.startsWith("blob:")) {
+            URL.revokeObjectURL(thumbnailPreview.value);
+        }
+        thumbnailPreview.value = URL.createObjectURL(watermarkedThumbnail);
     } catch (error) {
-        console.error('Error adding watermark to thumbnail:', error);
+        console.error("Error adding watermark to thumbnail:", error);
+
+        // Fallback to original file if watermarking fails
+        form.value.thumbnail = file;
+
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to add watermark to thumbnail.',
+            icon: "warning",
+            title: "Watermark Failed",
+            text: "Using original thumbnail without watermark. Please try again or contact support.",
+            timer: 3000,
+            showConfirmButton: false,
         });
+    } finally {
+        isProcessingThumbnail.value = false;
     }
 };
 
@@ -638,7 +767,7 @@ const submitForm = async () => {
         // Store files in global variables to access later
         window.videoValidationFiles = {
             video: form.value.video,
-            thumbnail: form.value.thumbnail
+            thumbnail: form.value.thumbnail,
         };
 
         // Prepare data for validation page (without file objects)
@@ -649,31 +778,41 @@ const submitForm = async () => {
             tag: form.value.tag,
             link_youtube: form.value.link_youtube,
             category_ids: form.value.category_ids,
-            categories: categories.value.filter(cat => form.value.category_ids.includes(cat.id)),
-            videoPreview: videoPreview.value,
-            thumbnailPreview: thumbnailPreview.value,
+            categories: categories.value.filter((cat) =>
+                form.value.category_ids.includes(cat.id)
+            ),
             youtubeVideoId: youtubeVideoId.value,
             videoName: videoName.value,
-            thumbnailName: thumbnailName.value
+            thumbnailName: thumbnailName.value,
         };
 
         // Store data in sessionStorage
-        sessionStorage.setItem('videoValidationData', JSON.stringify(validationData));
+        sessionStorage.setItem(
+            "videoValidationData",
+            JSON.stringify(validationData)
+        );
 
         // Redirect to validation page
-        router.visit('/validate-video');
-
+        router.visit("/validate-video");
     } catch (error) {
-        console.error('Error preparing validation:', error);
+        console.error("Error preparing validation:", error);
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to prepare validation. Please try again.',
+            icon: "error",
+            title: "Error",
+            text: "Failed to prepare validation. Please try again.",
         });
     }
 };
 
 const resetForm = () => {
+    // Clean up object URLs to prevent memory leaks
+    if (videoPreview.value && videoPreview.value.startsWith("blob:")) {
+        URL.revokeObjectURL(videoPreview.value);
+    }
+    if (thumbnailPreview.value && thumbnailPreview.value.startsWith("blob:")) {
+        URL.revokeObjectURL(thumbnailPreview.value);
+    }
+
     form.value = {
         title: "",
         video: null,
@@ -690,6 +829,8 @@ const resetForm = () => {
     thumbnailPreview.value = "";
     youtubeVideoId.value = "";
     selectedCategory.value = "";
+    isProcessingVideo.value = false;
+    isProcessingThumbnail.value = false;
 };
 
 const videoInput = ref(null);
@@ -718,25 +859,63 @@ const handleVideoDrop = async (event) => {
     }
 
     try {
-        // Add watermark to video
-        const watermarkedVideo = await addWatermarkToVideo(file);
-        form.value.video = watermarkedVideo;
+        // Show immediate preview using original file
         form.value.link_youtube = "";
         videoName.value = file.name;
         youtubeVideoId.value = "";
+        videoPreview.value = URL.createObjectURL(file);
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            videoPreview.value = e.target.result;
-        };
-        reader.readAsDataURL(watermarkedVideo);
-    } catch (error) {
-        console.error('Error adding watermark to video:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to add watermark to video.',
+        // Set processing state
+        isProcessingVideo.value = true;
+
+        // Show loading notification
+        const loadingToast = Swal.fire({
+            title: "Processing Video...",
+            html: "Adding watermark to video in background",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
         });
+
+        // Add watermark in background
+        const watermarkedVideo = await addWatermarkToVideo(file);
+        form.value.video = watermarkedVideo;
+
+        // Update preview with watermarked version
+        if (videoPreview.value.startsWith("blob:")) {
+            URL.revokeObjectURL(videoPreview.value);
+        }
+        videoPreview.value = URL.createObjectURL(watermarkedVideo);
+
+        // Close loading and show success
+        loadingToast.close();
+
+        // Show brief success notification
+        Swal.fire({
+            icon: "success",
+            title: "Video Processed!",
+            text: "Watermark has been added to your video",
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    } catch (error) {
+        console.error("Error adding watermark to video:", error);
+
+        // Fallback to original file if watermarking fails
+        form.value.video = file;
+
+        Swal.fire({
+            icon: "warning",
+            title: "Watermark Failed",
+            text: "Using original video without watermark. Please try again or contact support.",
+            timer: 3000,
+            showConfirmButton: false,
+        });
+    } finally {
+        isProcessingVideo.value = false;
     }
 };
 
@@ -761,41 +940,69 @@ const handleThumbnailDrop = async (event) => {
     }
 
     try {
-        // Add watermark to thumbnail
+        // Show immediate preview
+        thumbnailName.value = file.name;
+        thumbnailPreview.value = URL.createObjectURL(file);
+
+        // Set processing state
+        isProcessingThumbnail.value = true;
+
+        // Add watermark in background
         const watermarkedThumbnail = await addWatermarkToImage(file);
         form.value.thumbnail = watermarkedThumbnail;
-        thumbnailName.value = file.name;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            thumbnailPreview.value = e.target.result;
-        };
-        reader.readAsDataURL(watermarkedThumbnail);
+        // Update preview with watermarked version
+        if (thumbnailPreview.value.startsWith("blob:")) {
+            URL.revokeObjectURL(thumbnailPreview.value);
+        }
+        thumbnailPreview.value = URL.createObjectURL(watermarkedThumbnail);
     } catch (error) {
-        console.error('Error adding watermark to thumbnail:', error);
+        console.error("Error adding watermark to thumbnail:", error);
+
+        // Fallback to original file if watermarking fails
+        form.value.thumbnail = file;
+
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to add watermark to thumbnail.',
+            icon: "warning",
+            title: "Watermark Failed",
+            text: "Using original thumbnail without watermark. Please try again or contact support.",
+            timer: 3000,
+            showConfirmButton: false,
         });
+    } finally {
+        isProcessingThumbnail.value = false;
     }
 };
 
 const removeVideo = () => {
+    // Clean up object URLs to prevent memory leaks
+    if (videoPreview.value && videoPreview.value.startsWith("blob:")) {
+        URL.revokeObjectURL(videoPreview.value);
+    }
+
     form.value.video = null;
     form.value.link_youtube = "";
     videoName.value = "";
     videoPreview.value = "";
     youtubeVideoId.value = "";
+    isProcessingVideo.value = false;
+
     if (videoInput.value) {
         videoInput.value.value = "";
     }
 };
 
 const removeThumbnail = () => {
+    // Clean up object URLs to prevent memory leaks
+    if (thumbnailPreview.value && thumbnailPreview.value.startsWith("blob:")) {
+        URL.revokeObjectURL(thumbnailPreview.value);
+    }
+
     form.value.thumbnail = null;
     thumbnailName.value = "";
     thumbnailPreview.value = "";
+    isProcessingThumbnail.value = false;
+
     if (thumbnailInput.value) {
         thumbnailInput.value.value = "";
     }

@@ -144,7 +144,7 @@ class VideoController extends Controller
             $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
         }
 
-        $slug = Str::slug($request->title);
+        $slug = $this->generateUniqueSlug($request->title);
 
         // Create new video record
         $video = ContentVideo::create([
@@ -178,6 +178,30 @@ class VideoController extends Controller
             'message' => 'Video uploaded successfully',
             'data' => $video->load(['metadataVideo', 'categoryContents'])
         ], 201);
+    }
+
+    private function generateUniqueSlug($title, $excludeId = null)
+    {
+        $baseSlug = Str::slug($title);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        $query = ContentVideo::where('slug', $slug);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        while ($query->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+
+            $query = ContentVideo::where('slug', $slug);
+            if ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            }
+        }
+
+        return $slug;
     }
 
     /**
@@ -312,7 +336,7 @@ class VideoController extends Controller
         ]);
 
         $data = [];
-        $slug = Str::slug($request->title);
+        $slug = $this->generateUniqueSlug($request->title);
 
         // Handle video file if uploaded
         if ($request->hasFile('video_url')) {
@@ -361,8 +385,10 @@ class VideoController extends Controller
             $linkYoutube = trim($request->input('link_youtube'));
             if (!empty($linkYoutube)) {
                 // Validate YouTube URL format
-                if (filter_var($linkYoutube, FILTER_VALIDATE_URL) && 
-                    (strpos($linkYoutube, 'youtube.com') !== false || strpos($linkYoutube, 'youtu.be') !== false)) {
+                if (
+                    filter_var($linkYoutube, FILTER_VALIDATE_URL) &&
+                    (strpos($linkYoutube, 'youtube.com') !== false || strpos($linkYoutube, 'youtu.be') !== false)
+                ) {
                     $data['link_youtube'] = $linkYoutube;
                     // Clear video_url when YouTube link is provided
                     if ($video->video_url) {
