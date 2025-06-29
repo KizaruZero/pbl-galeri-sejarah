@@ -212,7 +212,7 @@
                                         v-if="!form.link_youtube"
                                         class="mt-1 text-xs text-gray-800 dark:text-gray-200"
                                     >
-                                        MP4, WebM, OGG up to 100MB
+                                        MP4, WebM, OGG up to 20MB
                                     </p>
                                 </div>
 

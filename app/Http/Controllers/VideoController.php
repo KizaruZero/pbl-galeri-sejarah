@@ -109,38 +109,21 @@ class VideoController extends Controller
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        $userId = Auth::id(); // lebih aman
-
-
-        // Handle file upload
+        $userId = Auth::id();
         if ($request->hasFile('video_url')) {
             $slug = Str::slug($request->title);
             $videoFile = $request->file('video_url');
             $extension = $videoFile->getClientOriginalExtension();
-
-            // Generate filename
             $videoFilename = time() . '_' . $slug . '.' . $extension;
-
-            // Store file in public storage
             $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
-
-            // Save relative path to DB
             $videoUrl = 'video_content/' . $videoFilename;
         }
-
-        // Handle thumbnail upload
         if ($request->hasFile('thumbnail')) {
             $slug = Str::slug($request->title);
             $thumbnailFile = $request->file('thumbnail');
             $extensionThumbnail = $thumbnailFile->getClientOriginalExtension();
-
-            // Generate filename
             $thumbnailFilename = time() . '_' . $slug . '.' . $extensionThumbnail;
-
-            // Store file in public storage
             $thumbnailPath = $thumbnailFile->storeAs('thumbnail_video', $thumbnailFilename, 'public');
-
-            // Save relative path to DB
             $thumbnailUrl = 'thumbnail_video/' . $thumbnailFilename;
         }
 

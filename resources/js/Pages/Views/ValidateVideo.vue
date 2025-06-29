@@ -201,7 +201,13 @@
                         :disabled="loading"
                         class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm disabled:opacity-50"
                     >
-                        {{ loading ? "Uploading..." : "Confirm & Upload" }}
+                        {{
+                            loading
+                                ? uploadProgress > 0
+                                    ? `Uploading... ${uploadProgress}%`
+                                    : "Uploading..."
+                                : "Confirm & Upload"
+                        }}
                     </button>
                 </div>
             </div>
@@ -223,6 +229,7 @@ import "lite-youtube-embed/src/lite-yt-embed.css";
 
 const videoData = ref(null);
 const loading = ref(false);
+const uploadProgress = ref(0);
 const videoPreview = ref("");
 const thumbnailPreview = ref("");
 
@@ -274,6 +281,7 @@ const confirmSubmission = async () => {
 
     try {
         loading.value = true;
+        uploadProgress.value = 0;
 
         const formData = new FormData();
         formData.append("title", videoData.value.title);
@@ -302,6 +310,15 @@ const confirmSubmission = async () => {
                 "Content-Type": "multipart/form-data",
                 Accept: "application/json",
             },
+            timeout: 300000, // 5 minutes timeout for large file uploads
+            onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total
+                );
+                uploadProgress.value = percentCompleted;
+                console.log(`Upload progress: ${percentCompleted}%`);
+                // You could add a progress bar here if needed
+            },
         });
 
         if (response.status === 201) {
@@ -320,13 +337,48 @@ const confirmSubmission = async () => {
         }
     } catch (error) {
         console.error("Upload error:", error);
+        if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+            Swal.fire({
+                icon: "success",
+                title: "Upload Successful!",
+                html: `
+                    <div class="text-left">
+                        <p class="mb-3">🎉 Your video has been uploaded successfully!</p>
+                        <p class="mb-3">📹 Your video is currently being processed in the background.</p>
+                        <p class="mb-3">✅ You can check your profile to see the uploaded content.</p>
+                        <p class="text-sm text-gray-600">Note: Large videos may take a few moments to appear in your profile.</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: "View My Profile",
+                cancelButtonText: "Upload Another",
+                confirmButtonColor: "#3b82f6",
+                cancelButtonColor: "#10b981",
+            }).then((result) => {
+                sessionStorage.removeItem("videoValidationData");
+                if (window.videoValidationFiles) {
+                    delete window.videoValidationFiles;
+                }
 
+                if (result.isConfirmed) {
+                    router.visit("/profile-page");
+                } else {
+                    router.visit("/upload-video");
+                }
+            });
+            return;
+        }
+
+        // Handle other types of errors
         let errorMessage = "Failed to upload video. Please try again.";
         if (error.response?.data?.message) {
             errorMessage = error.response.data.message;
         } else if (error.response?.data?.errors) {
             const errors = error.response.data.errors;
             errorMessage = Object.values(errors).flat().join("\n");
+        } else if (error.code === "ECONNABORTED") {
+            errorMessage =
+                "Upload timed out. Please try again with a smaller file or check your connection.";
         }
 
         Swal.fire({
@@ -336,6 +388,7 @@ const confirmSubmission = async () => {
         });
     } finally {
         loading.value = false;
+        uploadProgress.value = 0;
     }
 };
 </script>

@@ -11,11 +11,10 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\NotificationController;
-// Installation routes - must be first and outside any middleware
+
 Route::get('/install', function () {
     return Inertia::render('Views/RegistrationForm');
 });
-
 Route::get('/requirements', function () {
     return Inertia::render('Views/RequirementsCheck');
 })->name('requirements')
@@ -29,7 +28,6 @@ Route::post('/install', [InstallController::class, 'install'])
     ->name('install.post')
     ->middleware('web');
 
-// Additional installation-related routes
 Route::get('/migrate-fresh', [InstallController::class, 'migrateFresh']);
 Route::post('/change-database', [InstallController::class, 'changeDatabase'])
     ->name('change-database')
@@ -47,10 +45,6 @@ Route::get('/', function () {
     ]);
 })->name('/')->middleware(['routestatistics']);
 
-/**
- * Routing Vue Pages (non-auth)
- */
-// middleware web
 Route::middleware('web')->group(function () {
     Route::get('/article', fn() => Inertia::render('Views/ArticleView'))->middleware(['routestatistics']);
     ;
@@ -90,10 +84,6 @@ Route::middleware('web')->group(function () {
 
     Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
         ->middleware('auth')->name('profile-page');
-
-    /**
-     * Routing untuk pengguna terautentikasi
-     */
     Route::middleware(['auth', 'verified'])->group(function () {
         // Halaman profile (auth bawaan Laravel Breeze/Jetstream)
         Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))->name('profile-page');
@@ -101,8 +91,6 @@ Route::middleware('web')->group(function () {
         Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
-
-    // user post
     Route::post('/api/content-photo', [PhotoController::class, 'store']);
     Route::post('/api/content-video', [VideoController::class, 'store']);
     Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']);
@@ -111,24 +99,18 @@ Route::middleware('web')->group(function () {
     Route::get('/api/content-video/edit/{id}', [VideoController::class, 'edit']);
     Route::post('/api/content-video/{id}', [VideoController::class, 'updateVideoByUser']);
     Route::delete('/api/content-video/{id}', [VideoController::class, 'destroy']); // Add delete route for videos
-    // get popular content
     Route::get('/api/popular-photo', [PhotoController::class, 'getPopularPhotos']);
-
     Route::get('/api/popular-video', [VideoController::class, 'getPopularVideos']);
-
     Route::get('/api/notifications', [NotificationController::class, 'index']);
     Route::post('/api/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
     Route::post('/api/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
 
 });
-
 Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'))->middleware('auth');
 Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'))->middleware('auth');
 
 Route::get('/bulk', fn() => Inertia::render('Views/BulkUploadView'))->middleware('auth');
 Route::post('/api/bulk-upload', [PhotoController::class, 'bulkUpload'])->middleware('auth');
-
-// Only load auth routes if they haven't been loaded yet
 if (!Route::has('register')) {
     require __DIR__ . '/auth.php';
 }
