@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('dashboard')
+            ->homeUrl('/')
             ->login()
             ->defaultThemeMode(ThemeMode::Light)
             ->colors([
