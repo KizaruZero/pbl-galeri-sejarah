@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
-    <meta name="description" content="PesonA Surakarta- koleksi foto, video, artikel dan acara sejarah Indonesia." />
+    <meta name="description" content="Pesona Surakarta- koleksi foto, video, artikel dan acara sejarah Indonesia." />
     <meta name="keywords"
         content="galeri sejarah, sejarah Indonesia, pesona surakarta, foto sejarah, video sejarah, artikel sejarah, event sejarah" />
     <!-- Fonts -->

@@ -17,7 +17,7 @@ class ContentPhotoFactory extends Factory
         return [
             'title' => $title,
             'slug' => Str::slug($title),
-            'user_id' => \App\Models\User::factory(), // otomatis membuat user baru
+            'user_id' => \App\Models\User::factory()->create()->id, // otomatis membuat user baru
             'description' => $this->faker->paragraph(),
             'source' => $this->faker->company,
             'alt_text' => $this->faker->words(3, true),
