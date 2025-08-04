@@ -16,7 +16,6 @@ class SearchController extends Controller
         $category = $request->input('category');
         $useFuzzy = $request->input('use_fuzzy', true);
 
-        // If no search criteria, return just categories
         if (empty($query) && (empty($category) || $category === 'All categories')) {
             return response()->json([
                 'photos' => [],
@@ -29,11 +28,9 @@ class SearchController extends Controller
             ]);
         }
 
-        // Get all data for fuzzy search
         $allPhotos = $this->getPhotosForSearch($category);
         $allVideos = $this->getVideosForSearch($category);
 
-        // If no query but category selected, return filtered results
         if (empty($query)) {
             $formattedPhotos = $this->formatPhotoResults($allPhotos);
             $formattedVideos = $this->formatVideoResults($allVideos);
@@ -243,7 +240,6 @@ class SearchController extends Controller
         if (!$tagString)
             return '';
 
-        // Split by comma, semicolon, or pipe and clean up
         $tags = preg_split('/[,;|]/', $tagString);
         $cleanTags = array_map('trim', $tags);
         $cleanTags = array_filter($cleanTags);
@@ -253,7 +249,6 @@ class SearchController extends Controller
 
     private function performServerSearch($query, $category)
     {
-        // Your existing server-side search logic as fallback
         $photoQuery = ContentPhoto::where('status', 'approved');
 
         if (!empty($category) && $category !== 'All categories') {
@@ -383,7 +378,6 @@ class SearchController extends Controller
         return $formattedResults;
     }
 
-    // Additional endpoint for getting fresh search data
     public function getSearchData(Request $request)
     {
         $category = $request->input('category');

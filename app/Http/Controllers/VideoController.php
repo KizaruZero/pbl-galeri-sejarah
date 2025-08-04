@@ -129,7 +129,6 @@ class VideoController extends Controller
 
         $slug = $this->generateUniqueSlug($request->title);
 
-        // Create new video record
         $video = ContentVideo::create([
             'title' => $request->title,
             'slug' => $slug,
@@ -143,7 +142,6 @@ class VideoController extends Controller
             'status' => 'pending',
         ]);
 
-        // Create category content associations for each selected category
         foreach ($request->category_ids as $categoryId) {
             CategoryContent::create([
                 'category_id' => $categoryId,
@@ -152,7 +150,6 @@ class VideoController extends Controller
             ]);
         }
 
-        // Extract video metadata if video file was uploaded
         if ($request->hasFile('video_url')) {
             $this->extractAndSaveVideoMetadata($videoFile, $video->id);
         }
@@ -197,24 +194,19 @@ class VideoController extends Controller
     private function extractAndSaveVideoMetadata($videoFile, $contentVideoId)
     {
         try {
-            // Use MediaAnalyzer facade to analyze the uploaded file
             $media = MediaAnalyzer::uploadFile($videoFile);
 
-            // Format file size
             $fileSize = $videoFile->getSize();
 
-            // Extract codec information
             $codec = null;
             if ($media->getNestedValue('video.codec')) {
                 $codec = 'Video: ' . $media->getNestedValue('video.codec');
 
-                // Add audio codec if available
                 if ($media->getNestedValue('audio.codec')) {
                     $codec .= ', Audio: ' . $media->getNestedValue('audio.codec');
                 }
             }
 
-            // Extract resolution
             $resolution = null;
             if ($media->getNestedValue('video.resolution_x') && $media->getNestedValue('video.resolution_y')) {
                 $resolution = $media->getNestedValue('video.resolution_x') . 'x' . $media->getNestedValue('video.resolution_y');
@@ -222,19 +214,16 @@ class VideoController extends Controller
                 $resolution = $media->getResolution();
             }
 
-            // Extract frame rate (ensure it's a numeric value before rounding)
             $frameRate = $media->getNestedValue('video.frame_rate');
             if ($frameRate && is_numeric($frameRate)) {
                 $frameRate = round($frameRate, 2);
             }
 
-            // Extract duration (ensure it's a numeric value before rounding)
             $duration = null;
             if (isset($media->playtime_seconds) && is_numeric($media->playtime_seconds)) {
                 $duration = round($media->playtime_seconds, 2);
             }
 
-            // Create metadata record
             MetadataVideo::create([
                 'content_video_id' => $contentVideoId,
                 'file_size' => $fileSize,
@@ -321,9 +310,7 @@ class VideoController extends Controller
         $data = [];
         $slug = $this->generateUniqueSlug($request->title);
 
-        // Handle video file if uploaded
         if ($request->hasFile('video_url')) {
-            // Delete old video
             if ($video->video_url) {
                 Storage::disk('public')->delete($video->video_url);
             }
@@ -334,16 +321,12 @@ class VideoController extends Controller
             $videoPath = $videoFile->storeAs('video_content', $videoFilename, 'public');
             $data['video_url'] = 'video_content/' . $videoFilename;
 
-            // Clear YouTube link when video file is uploaded
             $data['link_youtube'] = null;
 
-            // Update metadata for new video
             $this->extractAndSaveVideoMetadata($videoFile, $video->id);
         }
 
-        // Handle thumbnail if uploaded
         if ($request->hasFile('thumbnail')) {
-            // Delete old thumbnail
             if ($video->thumbnail) {
                 Storage::disk('public')->delete($video->thumbnail);
             }
@@ -355,7 +338,6 @@ class VideoController extends Controller
             $data['thumbnail'] = 'thumbnail_video/' . $thumbnailFilename;
         }
 
-        // Update text fields
         $fields = ['title', 'description', 'source', 'tag'];
         foreach ($fields as $field) {
             if ($request->has($field)) {
@@ -363,17 +345,14 @@ class VideoController extends Controller
             }
         }
 
-        // Handle YouTube link only if no video file is being uploaded and no existing video_url
         if (!$request->hasFile('video_url') && $request->has('link_youtube')) {
             $linkYoutube = trim($request->input('link_youtube'));
             if (!empty($linkYoutube)) {
-                // Validate YouTube URL format
                 if (
                     filter_var($linkYoutube, FILTER_VALIDATE_URL) &&
                     (strpos($linkYoutube, 'youtube.com') !== false || strpos($linkYoutube, 'youtu.be') !== false)
                 ) {
                     $data['link_youtube'] = $linkYoutube;
-                    // Clear video_url when YouTube link is provided
                     if ($video->video_url) {
                         Storage::disk('public')->delete($video->video_url);
                         $data['video_url'] = null;
@@ -388,15 +367,12 @@ class VideoController extends Controller
             }
         }
 
-        // Update slug if title is changed
         if (isset($data['title'])) {
             $data['slug'] = Str::slug($data['title']);
         }
 
-        // Update video
         $video->update($data);
 
-        // Update metadata if provided
         if ($request->has('metadata')) {
             $metadata = $video->metadataVideo()->updateOrCreate(
                 ['content_video_id' => $video->id],
@@ -413,7 +389,6 @@ class VideoController extends Controller
             );
         }
 
-        // Update category if provided
         if ($request->has('category_id')) {
             $video->categoryContents()->updateOrCreate(
                 ['content_video_id' => $video->id],

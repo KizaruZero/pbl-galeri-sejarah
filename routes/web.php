@@ -85,7 +85,6 @@ Route::middleware('web')->group(function () {
     Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))
         ->middleware('auth')->name('profile-page');
     Route::middleware(['auth', 'verified'])->group(function () {
-        // Halaman profile (auth bawaan Laravel Breeze/Jetstream)
         Route::get('/profile-page', fn() => Inertia::render('Views/ProfileView'))->name('profile-page');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
@@ -95,10 +94,10 @@ Route::middleware('web')->group(function () {
     Route::post('/api/content-video', [VideoController::class, 'store']);
     Route::get('/api/content-photo/{id}/edit', [PhotoController::class, 'edit']);
     Route::put('/api/content-photo/{id}', [PhotoController::class, 'updatePhotoByUser']);
-    Route::delete('/api/content-photo/{id}', [PhotoController::class, 'destroy']); // Add delete route for photos
+    Route::delete('/api/content-photo/{id}', [PhotoController::class, 'destroy']);
     Route::get('/api/content-video/edit/{id}', [VideoController::class, 'edit']);
     Route::post('/api/content-video/{id}', [VideoController::class, 'updateVideoByUser']);
-    Route::delete('/api/content-video/{id}', [VideoController::class, 'destroy']); // Add delete route for videos
+    Route::delete('/api/content-video/{id}', [VideoController::class, 'destroy']);
     Route::get('/api/popular-photo', [PhotoController::class, 'getPopularPhotos']);
     Route::get('/api/popular-video', [VideoController::class, 'getPopularVideos']);
     Route::get('/api/notifications', [NotificationController::class, 'index']);
@@ -106,6 +105,7 @@ Route::middleware('web')->group(function () {
     Route::post('/api/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
 
 });
+
 Route::get('/update-photo/{id}', fn() => Inertia::render('Views/FormUpdateUploadPhoto'))->middleware('auth');
 Route::get('/update-video/{id}', fn() => Inertia::render('Views/FormUpdateUploadVideo'))->middleware('auth');
 

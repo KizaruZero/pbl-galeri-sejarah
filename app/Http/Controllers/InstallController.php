@@ -23,7 +23,6 @@ class InstallController extends Controller
 {
     public function index()
     {
-        // Redirect if already installed
         if (file_exists(storage_path('installed'))) {
             return redirect('/')->with('info', 'Application already installed');
         }
@@ -42,12 +41,10 @@ class InstallController extends Controller
         ]);
 
         try {
-            // Clear all caches first
             Artisan::call('route:clear');
             Artisan::call('config:clear');
             Artisan::call('view:clear');
 
-            // Test database connection first
             $this->testDatabaseConnection(
                 $validated['db_name'],
                 $validated['db_user'],
@@ -64,21 +61,8 @@ class InstallController extends Controller
                 'DB_HOST' => $validated['db_host'],
             ]);
 
-            // Rebuild config cache
             Artisan::call('config:cache');
 
-            // // call migrate user table
-            // Artisan::
-            //     call('migrate', [
-            //         '--path' => 'database/migrations/0001_01_01_000000_create_users_table.php'
-            //     ]);
-            // Artisan::call('session:table');
-
-            // if (!$request->hasSession()) {
-            //     $request->setLaravelSession(app('session')->driver());
-            // }
-
-            // Return success response with a flag to indicate client should reload
             return response()->json([
                 'message' => 'Database configuration updated successfully.',
                 'status' => 200,
@@ -96,7 +80,6 @@ class InstallController extends Controller
 
     public function install(Request $request)
     {
-        // Check if already installed
         if (file_exists(storage_path('installed'))) {
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Application already installed'], 400);
@@ -107,13 +90,10 @@ class InstallController extends Controller
         if (!$request->hasSession()) {
             $request->setLaravelSession(app('session')->driver());
         }
-
-        // Set longer execution time and memory limit
         ini_set('max_execution_time', 300); // 5 minutes
         ini_set('memory_limit', '8048M');
         set_time_limit(300);
 
-        // Validate request
         $validated = $request->validate([
             'app_name' => 'required|string|max:255',
             'app_url' => 'required|url',
@@ -126,12 +106,8 @@ class InstallController extends Controller
         ]);
 
         try {
-            // Step 1: Test database connection
-            // Step 5: Run migrations
-            // Artisan::call('session:table');
             Artisan::call('migrate:fresh', ['--force' => true]);
 
-            // Step 6: Create storage link
             try {
                 if (!file_exists(public_path('storage'))) {
                     Artisan::call('storage:link');
@@ -140,9 +116,7 @@ class InstallController extends Controller
                 \Log::warning('Storage link failed: ' . $e->getMessage());
             }
 
-            // create db  seed
             Artisan::call('db:seed', ['--force' => true]);
-            // Step 7: Create company profile
             try {
                 CompanyProfile::create([
                     'logo' => null,
@@ -163,15 +137,13 @@ class InstallController extends Controller
                 \Log::warning('Company profile creation failed: ' . $e->getMessage());
             }
 
-            // Step 8: Create installation marker
             File::put(storage_path('installed'), now()->toDateTimeString());
             $request->session()->regenerate();
-            // Return success response
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Installation completed successfully!',
-                    'reload' => true // Tell client to reload
+                    'reload' => true
                 ]);
             }
 
@@ -208,7 +180,6 @@ class InstallController extends Controller
             $host = config('database.connections.mysql.host', '127.0.0.1');
             $port = config('database.connections.mysql.port', 3306);
 
-            // First try to connect without database name to check if we can create it
             $pdo = new \PDO(
                 "mysql:host={$host};port={$port}",
                 $username,
@@ -219,16 +190,13 @@ class InstallController extends Controller
                 ]
             );
 
-            // Check if database exists
             $stmt = $pdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{$database}'");
             $databaseExists = $stmt->fetch();
 
             if (!$databaseExists) {
-                // Create database if it doesn't exist
                 $pdo->exec("CREATE DATABASE `{$database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
             }
 
-            // Now connect to the specific database
             $pdo = new \PDO(
                 "mysql:host={$host};port={$port};dbname={$database}",
                 $username,
@@ -246,7 +214,6 @@ class InstallController extends Controller
         }
     }
 
-    // Helper function to update .env file
     private function updateEnv(array $data)
     {
         $envPath = base_path('.env');
@@ -274,7 +241,6 @@ class InstallController extends Controller
 
     private function getTableNameFromMigration($migrationName)
     {
-        // Extract table name from migration filename
         if (preg_match('/create_(\w+)_table/', $migrationName, $matches)) {
             return $matches[1];
         }

@@ -2,361 +2,403 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     <url>
     <loc>http://pbl-galeri-sejarah.test</loc>
-    <lastmod>2025-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-03T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
             </url>
     <url>
     <loc>http://pbl-galeri-sejarah.test/gallery</loc>
-    <lastmod>2025-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-03T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
     <loc>http://pbl-galeri-sejarah.test/article</loc>
-    <lastmod>2025-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-03T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
     <loc>http://pbl-galeri-sejarah.test/member</loc>
-    <lastmod>2025-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-03T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
     <loc>http://pbl-galeri-sejarah.test/contact</loc>
-    <lastmod>2025-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-03T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
     <loc>http://pbl-galeri-sejarah.test/events</loc>
-    <lastmod>2025-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2025-08-03T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/nature</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery/makanan-tradisional</loc>
+    <lastmod>2025-06-29T13:49:48+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/wildlife</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery/seni-budaya</loc>
+    <lastmod>2025-06-29T13:49:48+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/urban</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery/tempat-bersejarah</loc>
+    <lastmod>2025-06-29T13:49:48+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/travel</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery/alam-dan-ruang-terbuka</loc>
+    <lastmod>2025-06-29T13:49:48+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/portrait</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery/acara-dan-festival</loc>
+    <lastmod>2025-06-29T13:49:48+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/short-films</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/fashion</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/music</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/street</loc>
-    <lastmod>2025-06-16T09:22:30+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/event</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/sports</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/movies</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/food</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/cinematic</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/wedding</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/animation</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/astrophotography</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/education</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/black-white</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery/drone</loc>
-    <lastmod>2025-06-16T09:22:31+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/wildlife/sunset-at-the-beach</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/timlo-solo</loc>
+    <lastmod>2025-08-04T05:08:21+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/urban/sunset-at-the-beach</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/tengkleng-solo</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/nature/mountain-hike</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/selat-solo</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/portrait/mountain-hike</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/srabi-solo</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/fashion/city-lights</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/nasi-liwet-solo</loc>
+    <lastmod>2025-08-04T03:20:43+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/music/city-lights</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/seni-budaya/wayang-orang-sriwedari</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/event/forest-trail</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/seni-budaya/gamelan-keraton-surakarta</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-photo/black-white/kizaru-keren</loc>
-    <lastmod>2025-06-16T17:57:55+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/seni-budaya/karnaval-batik-solo</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-video/nature/exploring-the-mountains</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/tempat-bersejarah/pura-mangkunegaran</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-video/wildlife/exploring-the-mountains</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/tempat-bersejarah/masjid-zayed-solo</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-video/urban/exploring-the-mountains</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/tempat-bersejarah/balai-kota-solo</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-video/travel/exploring-the-mountains</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/acara-dan-festival/grebeg-maulud-keraton-surakarta</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-video/short-films/city-life-at-night</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/acara-dan-festival/kirab-kerbau-bule</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/gallery-video/street/underwater-adventure</loc>
-    <lastmod>2025-06-16T09:22:34+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/acara-dan-festival/sekaten-yogyakarta</loc>
+    <lastmod>2025-06-29T13:49:51+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/qui-a-cum-aut-doloribus</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/exploring-the-mountains</loc>
+    <lastmod>2025-08-04T03:15:37+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-1</loc>
+    <lastmod>2025-06-29T14:14:47+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-1-1</loc>
+    <lastmod>2025-06-29T14:14:51+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-1-2</loc>
+    <lastmod>2025-06-29T14:17:33+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/makanan-tradisional/kizaru-testing-29-1-2</loc>
+    <lastmod>2025-06-29T14:17:33+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-1-3</loc>
+    <lastmod>2025-06-29T14:17:36+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/makanan-tradisional/kizaru-testing-29-1-3</loc>
+    <lastmod>2025-06-29T14:17:36+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-3</loc>
+    <lastmod>2025-06-29T14:20:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-3-1</loc>
+    <lastmod>2025-06-29T14:20:04+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-4</loc>
+    <lastmod>2025-06-29T14:22:01+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-4-1</loc>
+    <lastmod>2025-06-29T14:22:05+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-5</loc>
+    <lastmod>2025-06-29T14:24:45+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-5-1</loc>
+    <lastmod>2025-06-29T14:24:48+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-6</loc>
+    <lastmod>2025-06-29T14:28:36+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-6-1</loc>
+    <lastmod>2025-06-29T14:28:39+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-7</loc>
+    <lastmod>2025-06-29T14:29:27+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/seni-budaya/kizaru-testing-29-7</loc>
+    <lastmod>2025-06-29T14:29:27+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/alam-dan-ruang-terbuka/kizaru-testing-29-7-1</loc>
+    <lastmod>2025-06-29T14:29:29+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/seni-budaya/kizaru-testing-29-7-1</loc>
+    <lastmod>2025-06-29T14:29:29+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-9</loc>
+    <lastmod>2025-06-29T14:32:21+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-9-1</loc>
+    <lastmod>2025-06-29T14:32:23+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-video/acara-dan-festival/kizaru-testing-29-10</loc>
+    <lastmod>2025-06-29T14:34:05+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/article/consequatur-aliquid-est-quisquam-repellendus-esse-earum-consectetur-et</loc>
+    <lastmod>2025-06-29T13:49:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/autem-et-unde-culpa-exercitationem</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/accusamus-voluptates-sint-dolores-ipsam-et-quia-excepturi-molestias</loc>
+    <lastmod>2025-06-29T13:49:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/ipsam-eum-impedit-necessitatibus-sunt</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/ea-voluptatem-et-quod-perspiciatis</loc>
+    <lastmod>2025-06-29T13:49:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/architecto-aut-at-eaque-sit-soluta-sed</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/aut-dolorem-facere-dolorum-et-et-nobis-debitis</loc>
+    <lastmod>2025-06-29T13:49:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/aliquid-at-dolor-soluta-nisi-a-quo-vel</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/laborum-doloribus-aperiam-totam-quasi-excepturi-qui</loc>
+    <lastmod>2025-06-29T13:49:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/quisquam-repellendus-aut-nesciunt-magnam-nihil-aut-ad</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/tenetur-qui-aliquam-optio-magnam-accusamus-laudantium-illum</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/quo-dolore-occaecati-error-ut-neque-perferendis-ut</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/velit-debitis-est-vero-sit</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/similique-quia-beatae-esse-asperiores-similique-et-eveniet-quam</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/culpa-suscipit-blanditiis-voluptatem-enim-eos-et-et</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/rem-repellendus-quaerat-ducimus-qui-consequatur</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/omnis-labore-id-blanditiis-cumque-qui</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/article/amet-itaque-ad-necessitatibus-qui-quia-architecto</loc>
-    <lastmod>2025-06-16T09:22:38+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/article/eveniet-quis-in-et-enim-accusamus-velit</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/music-festival-1976-zPr</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/workshop-1974-Exp</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/workshop-1974-zKg</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/tech-conference-2014-Z6g</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/music-festival-1986-oLi</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/startup-pitch-2015-EqG</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/art-exhibition-2016-xkp</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/charity-run-2014-moH</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/food-fair-2012-tgl</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/music-festival-2003-cam</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/tech-conference-1999-L8y</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/startup-pitch-1980-EEx</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/music-festival-1992-RGL</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/tech-conference-2012-zfL</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/charity-run-1994-Rks</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/workshop-1996-J78</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/workshop-2002-jSq</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/tech-conference-2019-1ef</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>http://pbl-galeri-sejarah.test/events/product-launch-1976-d4w</loc>
-    <lastmod>2025-06-16T09:22:39+00:00</lastmod>
+    <loc>http://pbl-galeri-sejarah.test/events/seminar-1972-Bmy</loc>
+    <lastmod>2025-06-29T13:49:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
             </url>

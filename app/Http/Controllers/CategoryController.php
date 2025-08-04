@@ -7,20 +7,16 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Mengembalikan semua data kategori tanpa pagination
-     */
+
     public function index()
     {
-        $categories = Category::all(); // Ambil semua data kategori
+        $categories = Category::all();
         return response()->json([
             'data' => $categories
         ]);
     }
 
-    /**
-     * Mengambil kategori berdasarkan nama
-     */
+
     public function getCategoryByName($name)
     {
         $category = Category::where('category_name', $name)->first();

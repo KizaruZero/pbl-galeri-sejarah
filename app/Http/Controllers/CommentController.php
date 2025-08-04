@@ -18,14 +18,12 @@ class CommentController extends Controller
             return response()->json(['message' => 'Content photo not found'], 404);
         }
 
-        // Get user ID from request
         $currentUserId = $request->user_id;
 
-        // Get published comments and user's own hidden comments
         $comments = UserComment::where('content_photo_id', $id)
-            ->where(function($query) use ($currentUserId) {
+            ->where(function ($query) use ($currentUserId) {
                 $query->where('status', 'published')
-                    ->orWhere(function($q) use ($currentUserId) {
+                    ->orWhere(function ($q) use ($currentUserId) {
                         $q->where('status', 'hidden')
                             ->where('user_id', $currentUserId);
                     });
@@ -41,10 +39,6 @@ class CommentController extends Controller
 
     public function getCommentByContentVideo(Request $request, $id)
     {
-        // $request->validate([
-        //     'content_video_id' => 'required|exists:content_videos,id',
-        // ]);
-
         $contentVideo = ContentVideo::find($id);
         if (!$contentVideo) {
             return response()->json(['message' => 'Content video not found'], 404);
@@ -55,9 +49,9 @@ class CommentController extends Controller
 
         // Get published comments and user's own hidden comments
         $comments = UserComment::where('content_video_id', $id)
-            ->where(function($query) use ($currentUserId) {
+            ->where(function ($query) use ($currentUserId) {
                 $query->where('status', 'published')
-                    ->orWhere(function($q) use ($currentUserId) {
+                    ->orWhere(function ($q) use ($currentUserId) {
                         $q->where('status', 'hidden')
                             ->where('user_id', $currentUserId);
                     });
@@ -93,18 +87,16 @@ class CommentController extends Controller
         }
 
         if ($photoOwner->id !== $reactingUser->id) {
-            $photoOwner->notify(new PhotoComment($contentPhoto->title, $request->content, $reactingUser));
+            $photoOwner->notify(new PhotoComment($contentPhoto->title, $request->input('content'), $reactingUser));
         }
 
-        // Create comment with 'hidden' status by default
         $comment = UserComment::create([
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'content_photo_id' => $id,
             'user_id' => $request->user_id,
-            'status' => 'hidden' // Set default status to hidden
+            'status' => 'hidden'
         ]);
 
-        // Add user data to response for immediate display
         $comment->load('user');
 
         return response()->json($comment);
@@ -146,11 +138,11 @@ class CommentController extends Controller
         }
 
         if ($videoOwner->id !== $reactingUser->id) {
-            $videoOwner->notify(new VideoComment($contentVideo->title, $request->content, $reactingUser));
+            $videoOwner->notify(new VideoComment($contentVideo->title, $request->input('content'), $reactingUser));
         }
 
         $comment = UserComment::create([
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'content_video_id' => $id,
             'user_id' => $request->user_id,
             'status' => 'hidden' // Set default status to hidden

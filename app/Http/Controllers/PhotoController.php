@@ -33,11 +33,9 @@ class PhotoController extends Controller
                 $photo->likes_count = $photo->contentReactions->count();
                 return $photo;
             });
-
         if ($contentPhoto->isEmpty()) {
             return response()->json(['message' => 'Photo not found'], 404);
         }
-
         return response()->json($contentPhoto);
     }
 
@@ -57,11 +55,7 @@ class PhotoController extends Controller
             ])
             ->orderByRaw('(content_reactions_count * 1) + (user_comments_count * 1) + (total_views * 0.5) + (user_favorite_count * 1) DESC')
             ->take(3)
-            ->get()
-            ->map(function ($photo) {
-                $photo->likes_count = $photo->contentReactions->count();
-                return $photo;
-            });
+            ->get();
 
         if ($popularPhotos->isEmpty()) {
             return response()->json([
@@ -107,55 +101,45 @@ class PhotoController extends Controller
             'tag' => 'nullable|string|max:255',
             'category_ids' => 'required|array',
             'category_ids.*' => 'required|exists:categories,id',
-            'exif_data' => 'nullable|array', // Accept pre-extracted EXIF data
+            'exif_data' => 'nullable|array',
         ]);
 
         if (!Auth::check()) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        $userId = Auth::id(); // lebih aman
+        $userId = Auth::id();
 
-
-        // Handle file upload
         if ($request->hasFile('image')) {
             $slug = $this->generateUniqueSlug($request->title);
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . $slug . '.' . $extension;
 
-            // Get company name
             $companyProfile = CompanyProfile::first();
             $companyName = $companyProfile ? "© " . $companyProfile->cms_name : "© Galeri Sejarah";
 
-            // Create image instance
             $image = Image::make($file->getPathname());
 
-            // Create a larger watermark canvas
-            $watermarkWidth = $image->width() * 0.8; // 80% of image width
-            $watermarkHeight = $image->height() * 0.8; // 80% of image height
+            $watermarkWidth = $image->width() * 0.8;
+            $watermarkHeight = $image->height() * 0.8;
             $watermark = Image::canvas($watermarkWidth, $watermarkHeight, [0, 0, 0, 0]);
 
-            // Add text to watermark canvas with larger size
             $watermark->text($companyName, $watermarkWidth / 2, $watermarkHeight / 2, function ($font) {
-                $font->file(public_path('fonts/Roboto-Bold.ttf')); // Ganti path sesuai lokasi font Anda
-                $font->size(80); // Ukuran besar akan benar-benar terlihat
+                $font->file(public_path('fonts/Roboto-Bold.ttf'));
+                $font->size(80);
                 $font->color([255, 255, 255, 0.3]);
                 $font->align('center');
                 $font->valign('center');
                 $font->angle(-120);
             });
 
-            // Insert watermark onto original image
             $image->insert($watermark, 'center');
 
-            // Save watermarked image
             $path = $image->save(storage_path('app/public/foto_content/' . $filename));
 
-            // Save only the relative path (without 'public/') to DB
             $imageUrl = 'foto_content/' . $filename;
 
-            // Create new photo record
             $photo = ContentPhoto::create([
                 'title' => $request->title,
                 'slug' => $slug,
@@ -169,7 +153,6 @@ class PhotoController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Create category content associations for each selected category
             foreach ($request->category_ids as $categoryId) {
                 CategoryContent::create([
                     'category_id' => $categoryId,
@@ -178,12 +161,9 @@ class PhotoController extends Controller
                 ]);
             }
 
-            // Extract EXIF metadata
-            // Handle EXIF metadata
             $exifData = $request->input('exif_data');
 
             if ($exifData) {
-                // Use pre-extracted EXIF data from bulk upload
                 MetadataPhoto::create([
                     'content_photo_id' => $photo->id,
                     'collection_date' => !empty($exifData['collection_date']) ? $exifData['collection_date'] : null,
@@ -195,7 +175,6 @@ class PhotoController extends Controller
                     'dimensions' => $exifData['dimensions'],
                 ]);
             } else {
-                // Extract EXIF from uploaded file (regular upload)
                 try {
                     $exif = exif_read_data($file->getPathname());
                     $image = Image::make($file->getPathname());
@@ -305,7 +284,6 @@ class PhotoController extends Controller
                 'slug' => $slug,
             ];
 
-            // Only update image if new one is provided
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $extension = $file->getClientOriginalExtension();
@@ -316,7 +294,6 @@ class PhotoController extends Controller
 
             $photo->update($updateData);
 
-            // Update category if provided
             if ($request->has('category_id')) {
                 $photo->categoryContents()->updateOrCreate(
                     ['content_photo_id' => $photo->id],
@@ -324,7 +301,6 @@ class PhotoController extends Controller
                 );
             }
 
-            // Update metadata
             if ($request->has('metadata')) {
                 $metadata = $photo->metadataPhoto()->updateOrCreate(
                     ['content_photo_id' => $photo->id],
@@ -395,7 +371,6 @@ class PhotoController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($photo) {
-                // Add likes count to each photo
                 $photo->likes_count = $photo->contentReactions->count();
                 return $photo;
             });
@@ -461,10 +436,8 @@ class PhotoController extends Controller
         ]);
 
         try {
-            // Get the authenticated user's ID
             $userId = Auth::id();
 
-            // Pass the user ID to the importer
             $import = new PhotosImport($userId);
 
             Excel::import($import, $request->file('file'));
@@ -490,20 +463,17 @@ class PhotoController extends Controller
     public function bulkUpload(Request $request)
     {
         $request->validate([
-            'zip_file' => 'required|file|mimes:zip|max:102400', // Max 100MB
+            'zip_file' => 'required|file|mimes:zip|max:102400',
         ]);
-        $userId = Auth::user()->id;
+        Auth::user()->id;
 
         try {
-            // Create temporary directory with unique name
             $tempDir = storage_path('app/temp/' . uniqid());
             mkdir($tempDir, 0755, true);
 
-            // Extract ZIP file
             $zipFile = $request->file('zip_file');
             $zipPath = $zipFile->getPathname();
 
-            // Try ZipArchive first, fallback to alternative method if not available
             if (class_exists('ZipArchive')) {
                 $zip = new \ZipArchive();
                 if ($zip->open($zipPath) !== true) {
@@ -512,7 +482,6 @@ class PhotoController extends Controller
                 $zip->extractTo($tempDir);
                 $zip->close();
             } else {
-                // Alternative method using system commands
                 $command = "powershell -command \"Expand-Archive -Path '{$zipPath}' -DestinationPath '{$tempDir}' -Force\"";
                 exec($command, $output, $returnVar);
                 if ($returnVar !== 0) {
@@ -520,30 +489,26 @@ class PhotoController extends Controller
                 }
             }
 
-            // Check if metadata.xlsx exists
             $metadataPath = $tempDir . '/metadata_template.xlsx';
             if (!file_exists($metadataPath)) {
                 throw new \Exception('metadata_template.xlsx not found in ZIP file');
             }
 
-            // Check if media directory exists
             $mediaDir = $tempDir . '/media';
             if (!is_dir($mediaDir)) {
                 throw new \Exception('media directory not found in ZIP file');
             }
 
-            // Parse Excel file
             $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $metadataPath)[0];
 
             $parsedItems = [];
             $tempFiles = [];
 
-            // Process each row
             foreach ($rows as $index => $row) {
                 if ($index == 0 || !isset($row[0]))
-                    continue; // Skip header row
+                    continue;
 
-                $type = strtolower(trim($row[0])); // photo / video
+                $type = strtolower(trim($row[0]));
                 $fileName = trim($row[1]);
                 $title = trim($row[2]);
                 $source = trim($row[3]);
@@ -574,9 +539,7 @@ class PhotoController extends Controller
                     'thumbnail_url' => null,
                 ];
 
-                // Handle media file
                 if ($type === 'photo') {
-                    // For photos, file is required
                     $mediaPath = $mediaDir . '/' . $fileName;
                     if (!file_exists($mediaPath)) {
                         throw new \Exception("File tidak ditemukan: $fileName - pastikan nama file yang ditulis sama dengan nama file yang di upload");
@@ -586,7 +549,6 @@ class PhotoController extends Controller
                         $image = Image::make($mediaPath);
                         $dimensions = $image->width() . 'x' . $image->height();
 
-                        // Only try to extract EXIF for JPEG/JPG files
                         $exif = null;
                         if (in_array(strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION)), ['jpg', 'jpeg'])) {
                             $exif = @exif_read_data($mediaPath);
@@ -607,7 +569,6 @@ class PhotoController extends Controller
                         ];
                     } catch (\Exception $e) {
                         \Log::warning('Error processing image ' . $fileName . ': ' . $e->getMessage());
-                        // Set default values for unsupported formats
                         $item['exif_data'] = [
                             'collection_date' => null,
                             'file_size' => filesize($mediaPath),
@@ -619,7 +580,6 @@ class PhotoController extends Controller
                         ];
                     }
 
-                    // Create temporary file in storage
                     $tempStoragePath = 'temp/' . uniqid() . '/' . $newFileName;
                     Storage::disk('public')->putFileAs(
                         dirname($tempStoragePath),
@@ -629,14 +589,12 @@ class PhotoController extends Controller
                     $item['media_url'] = $tempStoragePath;
                     $tempFiles[] = $tempStoragePath;
                 } elseif ($type === 'video') {
-                    // For videos, file is only required if no YouTube link is provided
                     if (empty($link_youtube)) {
                         $mediaPath = $mediaDir . '/' . $fileName;
                         if (!file_exists($mediaPath)) {
                             throw new \Exception("File tidak ditemukan: $fileName - pastikan nama file yang ditulis sama dengan nama file yang di upload");
                         }
 
-                        // Create temporary file in storage
                         $tempStoragePath = 'temp/' . uniqid() . '/' . $newFileName;
                         Storage::disk('public')->putFileAs(
                             dirname($tempStoragePath),
@@ -648,7 +606,6 @@ class PhotoController extends Controller
                     }
                 }
 
-                // Handle thumbnail for videos
                 if ($type === 'video' && !empty($thumbnail_url)) {
                     $thumbnailDir = $tempDir . '/thumbnail';
                     if (!is_dir($thumbnailDir)) {
@@ -671,7 +628,6 @@ class PhotoController extends Controller
                 }
 
                 $parsedItems[] = $item;
-                // Only add to tempFiles if media_url exists
                 if ($item['media_url']) {
                     $tempFiles[] = $item['media_url'];
                 }
@@ -680,7 +636,6 @@ class PhotoController extends Controller
                 }
             }
 
-            // Clean up original temp directory
             $this->deleteDirectory($tempDir);
 
             return response()->json([
@@ -695,7 +650,6 @@ class PhotoController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            // Clean up temporary directory if it exists
             if (isset($tempDir) && is_dir($tempDir)) {
                 $this->deleteDirectory($tempDir);
             }
@@ -727,26 +681,22 @@ class PhotoController extends Controller
         try {
             $photo = ContentPhoto::findOrFail($id);
 
-            // Check if the authenticated user owns this photo
             if ($photo->user_id !== Auth::id()) {
                 return response()->json([
                     'message' => 'Unauthorized. You can only delete your own photos.'
                 ], 403);
             }
 
-            // Delete the image file from storage
             if ($photo->image_url) {
                 Storage::disk('public')->delete($photo->image_url);
             }
 
-            // Delete related records (metadata, category contents, reactions, comments, favorites)
             $photo->metadataPhoto()->delete();
             $photo->categoryContents()->delete();
             $photo->contentReactions()->delete();
             $photo->userComments()->delete();
             $photo->userFavorite()->delete();
 
-            // Delete the photo record
             $photo->delete();
 
             return response()->json([
