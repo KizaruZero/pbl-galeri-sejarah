@@ -68,7 +68,7 @@
             </url>
     <url>
     <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/timlo-solo</loc>
-    <lastmod>2025-08-04T05:08:21+00:00</lastmod>
+    <lastmod>2025-08-04T07:04:36+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
@@ -147,6 +147,12 @@
     <url>
     <loc>http://pbl-galeri-sejarah.test/gallery-photo/acara-dan-festival/sekaten-yogyakarta</loc>
     <lastmod>2025-06-29T13:49:51+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://pbl-galeri-sejarah.test/gallery-photo/makanan-tradisional/testing</loc>
+    <lastmod>2025-08-04T07:05:49+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
